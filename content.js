@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.20
+// @version      1.21
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -112,6 +112,14 @@
       e.preventDefault();
       e.stopImmediatePropagation();
     }
+  }, true);
+
+  // Links to other sites open in a new tab. Set at click time, so it also covers links added later.
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest?.('a[href]');
+    if (!link || !/^https?:$/.test(link.protocol) || link.hostname === location.hostname) return;
+    link.target = '_blank';
+    link.relList.add('noopener');
   }, true);
 
   // Ctrl+Enter (Cmd+Enter on Mac) sends a comment or message reply. Event delegation also covers inline edit boxes.
