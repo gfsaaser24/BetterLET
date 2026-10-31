@@ -5,6 +5,9 @@
   const FONT_URL = 'https://api.fontshare.com/css?f[]=general-sans@400,500,600,700&display=swap';
   const root = document.documentElement;
   const media = matchMedia('(prefers-color-scheme: dark)');
+  // The site's own dark mode paints pale text over our themes. Keep it off: this runs before
+  // the site's script reads the setting, so its dark styles never load.
+  try { localStorage.setItem('theme', 'light'); } catch {}
   const read = () => { try { return localStorage.getItem(KEY) || 'auto'; } catch { return 'auto'; } };
   const readDesign = () => { try { return localStorage.getItem(DESIGN_KEY) || 'v1'; } catch { return 'v1'; } };
   // V2 uses LowEndBox's font. It loads only when V2 is on.
