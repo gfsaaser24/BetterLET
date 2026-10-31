@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.11
+// @version      1.12
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none

@@ -45,12 +45,9 @@ Wider layout, better type, and your menus stay within reach.
 - **Hide seen.** Clears threads you have opened. Your own threads always stay.
 - **Hide pinned**, **Mark all seen**, and **Load next page** without leaving the list.
 
-### Know before you click
+### Know who you are reading
 
 - **User hover cards.** Roles, join date, last active, threads, comments, and thanks.
-- **Link previews.** Image, title, description, and the real domain.
-- **Safety check.** Every previewed link is checked against Cloudflare's security DNS. Only sites that pass get fetched.
-- **Link text check.** Warns when the text of a link names a different site than its target.
 
 ### A forum that fits your screen
 
@@ -103,8 +100,8 @@ To update, pull the latest code and click reload on the BetterLET card.
 ## Privacy
 
 - Your seen threads and settings stay in your browser.
-- Hovering a link sends its domain to Cloudflare, then contacts that site from your IP to read its preview. No cookies are sent.
-- V2 loads its font from Fontshare.
+- BetterLET asks for no extra browser permissions. It talks only to LowEndTalk.
+- The one exception is V2, which loads its font from Fontshare.
 
 ## How it is built
 
@@ -115,8 +112,7 @@ Plain JavaScript and CSS, with no build step, so it stays fast and does not figh
 | `early.js` | Sets the theme before the page paints |
 | `styles.css` | All tokens, layouts, V1, and V2 |
 | `content.js` | Sidebar, rows, sorting, and page rebuilds |
-| `popovers.js` | User and link hover cards |
-| `background.js` | Fetches link previews and safety checks |
+| `popovers.js` | User hover cards |
 | `tools/icons.py` | Pulls Phosphor icons into `styles.css` |
 | `docs/SITE-MAP.md` | Map of the forum's pages and markup |
 | `DESIGN.md` | The design rules. Read this before changing anything visual |

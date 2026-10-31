@@ -477,12 +477,6 @@ html.bl-on .Flyout hr { margin: 4px 6px !important; border: 0 !important; border
 #bl-pop p { margin: 0; }
 #bl-pop .bl-pop-note { margin-top: 8px; color: var(--bl-muted); font-size: 12px; }
 #bl-pop p.bl-pop-body.bl-pop-note { margin: 0; }
-.bl-pop-image { display: block; width: 100%; height: 150px; object-fit: cover; background: var(--bl-surface2); }
-.bl-pop-title { display: -webkit-box; overflow: hidden; font-size: 14px; font-weight: 600; line-height: 1.3; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-#bl-pop .bl-pop-desc { display: -webkit-box; margin-top: 3px; overflow: hidden; color: var(--bl-muted); -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
-#bl-pop .bl-pop-host { margin-top: 6px; color: var(--bl-muted); font-size: 12px; overflow-wrap: anywhere; }
-#bl-pop .bl-pop-safety { color: var(--bl-accent); font-size: 12px; font-weight: 600; }
-#bl-pop .bl-pop-safety.bl-danger { color: var(--bl-danger); }
 .bl-skel { height: 12px; margin-bottom: 8px; border-radius: 4px; background: var(--bl-surface2); }
 .bl-skel-short { width: 60%; }
 

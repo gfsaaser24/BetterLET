@@ -35,7 +35,7 @@ One family of tinted green neutrals and one accent. Never a cool blue charcoal, 
 | `--bl-muted` | Secondary text | `#4d5f53` | `#93a697` |
 | `--bl-accent` | Links, active items | `#1c6b3f` | `#8fdca4` |
 | `--bl-led` | Status light | `#1f9d57` | `#6fe08f` |
-| `--bl-danger` | Safety warnings only | `#a3341f` | `#f0a08a` |
+| `--bl-danger` | Form errors only | `#a3341f` | `#f0a08a` |
 | `--bl-fill` / `--bl-on-fill` | Primary button | `#173d27` / `#e9f5ea` | `#c9f0cf` / `#0b140e` |
 
 - Body text is at least 4.5:1 on its surface in both themes.
@@ -90,8 +90,7 @@ Recipe: `--bl-glass` fill, `blur(18px) saturate(160%)`, inset top highlight, tig
 - **Profile:** one header card. Small avatar, name, edit button, then a spec plate of label over value. Empty warnings are one fact on the plate, not a section.
 - **Primary button:** `--bl-fill`. One per view. All other buttons use `--bl-surface2`.
 - **Pop-out menus:** 12 radius, 4 padding, rows with 8 radius. Scale in from the top left. No arrow on the account menus.
-- **Hover cards:** one shared `#bl-pop`. People cards open after 350ms, link cards after 450ms. The card stops at the ad column, so it never covers an ad. Skeleton while loading. Outside text is always plain text, never HTML. People cards never show email.
-- **Link safety:** Cloudflare security DNS, no key. Say "No known threats", never "safe". Only a site that passes is fetched. Private addresses are skipped, redirects are refused, and images reach the card as local data, never as remote URLs.
+- **Hover cards:** one shared `#bl-pop` for people. Cards open after 350ms. The card stops at the ad column, so it never covers an ad. Skeleton while loading. Outside text is always plain text, never HTML. People cards never show email.
 - **Comment boxes:** Ctrl+Enter or Cmd+Enter sends a comment or message reply. It never sends an empty box.
 - **Thread:** posts on `--bl-surface`. Signatures and thanks names stay closed until clicked.
 
