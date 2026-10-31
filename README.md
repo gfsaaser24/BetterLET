@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="icons/icon128.png" width="96" alt="BetterLET icon">
+  <img src="docs/media/icon128.png" width="96" alt="BetterLET icon">
 </p>
 
 <h1 align="center">BetterLET</h1>
@@ -7,7 +7,7 @@
 <p align="center">
   <strong>LowEndTalk, rebuilt in your browser.</strong><br>
   A Chrome extension that gives the forum a real layout, real scanning, and two real themes.<br>
-  Every ad stays right where the site needs it.
+  <strong>Not an ad blocker. Ads pay for LET and LEB, so they stay.</strong>
 </p>
 
 <p align="center">
@@ -78,9 +78,17 @@ A switch in the header flips between two designs, so you can compare them on rea
 
 Both run on the same code, so every feature works in both.
 
-## The ads stay
+## No, we are not blocking the ads
 
-LowEndTalk runs on ads, so this is a hard rule. BetterLET never hides, shrinks, or covers them. Hover cards stop at the ad column, and on narrow screens ads move below the threads at full size.
+Ads are how LowEndTalk and LowEndBox stay online. We use this forum every day, so we want it to keep running.
+
+BetterLET has a hard rule: it never hides, shrinks, or covers an ad.
+
+- The ad column keeps its full size and its full stack.
+- The header stops before the ads, and hover cards stop at the ad column.
+- On narrow screens, ads move below the threads at full size.
+
+If you want an ad blocker, this is the wrong extension.
 
 ## Install
 
