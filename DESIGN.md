@@ -2,6 +2,10 @@
 
 This file is the rule book. `styles.css` holds the tokens. If the two disagree, fix them in the same change.
 
+## OG
+
+A third choice on the same switch. It keeps the original LowEndTalk look: mint page, white frame, `#60a96d` header band, green links, yellow new counts, Lucida text. It adds our layout, features, and spacing, plus a dark theme. Like V2, it is only a token and spacing layer in `styles.css`, under `html.bl-og`. The header band runs full width, so it never sits beside the ads.
+
 ## V2 trial
 
 A V1 / V2 switch sits in the header. It is saved in `letBetter.design`. V2 matches LowEndBox: General Sans from Fontshare, 16px text, green `#05872f`, 2px corners, thin gray borders, a white page on mint, no glass, no rack rails, round avatars.
@@ -93,6 +97,7 @@ Recipe: `--bl-glass` fill, `blur(18px) saturate(160%)`, inset top highlight, tig
 - **Pop-out menus:** 12 radius, 4 padding, rows with 8 radius. Scale in from the top left. No arrow on the account menus.
 - **Hover cards:** one shared `#bl-pop` for people. Cards open after 350ms. The card stops at the ad column, so it never covers an ad. Skeleton while loading. Outside text is always plain text, never HTML. People cards never show email.
 - **Comment boxes:** Ctrl+Enter or Cmd+Enter sends a comment or message reply. It never sends an empty box.
+- **Thanks:** the site's link moves from the date line to the button row beside Quote. The site gives no Thanks link on your own posts, or on one you already thanked.
 - **Thread:** posts on `--bl-surface`. Signatures and thanks names stay closed until clicked.
 
 ## 9. Motion

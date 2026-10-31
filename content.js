@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.15
+// @version      1.16
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -84,7 +84,7 @@
     version.className = 'bl-seg';
     version.setAttribute('role', 'group');
     version.setAttribute('aria-label', 'Design version');
-    version.innerHTML = ['v1', 'v2'].map((v) => `<button type="button" data-design="${v}">${v.toUpperCase()}</button>`).join('');
+    version.innerHTML = ['og', 'v1', 'v2'].map((v) => `<button type="button" data-design="${v}">${v.toUpperCase()}</button>`).join('');
     const markVersion = () => version.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.design === theme.getDesign())));
     version.addEventListener('click', (e) => {
       const design = e.target.dataset.design;
@@ -165,6 +165,12 @@
         else addEventListener('load', () => setTimeout(jump, 120), { once: true });
       }
     }
+    // The site puts Thanks in the small date line. Move it beside Quote. Moving keeps the site's click handler.
+    document.querySelectorAll('.ItemComment, .ItemDiscussion').forEach((item) => {
+      const thank = item.querySelector('span.Thank, span.UnThank');
+      const row = item.querySelector('.Reactions');
+      if (thank && row) row.append(thank);
+    });
     document.querySelectorAll('.Signature').forEach((sig) => {
       const btn = document.createElement('button');
       btn.type = 'button';
