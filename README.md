@@ -42,10 +42,6 @@
 - Fixed search bar, plus a spinner that shows only on slow loads.
 - Mark All Viewed asks first.
 
-## The ads stay
-
-Ads keep LowEndTalk and LowEndBox online. BetterLET never hides, shrinks, or covers them.
-
 ## Install
 
 1. Download this repo.
