@@ -458,16 +458,17 @@ html.bl-on .ContentColumn input[type="submit"].Button.Primary {
   color: var(--bl-on-fill) !important;
   -webkit-text-fill-color: var(--bl-on-fill);
 }
-html.bl-on .Pager a, html.bl-on .Pager span {
-  background: var(--bl-surface) !important;
-  border: 1px solid var(--bl-line) !important;
-  border-radius: var(--bl-r-md);
+/* Page numbers are plain text. The current page is the only one marked. */
+:is(html.bl-on, html.bl-og) .Pager a, :is(html.bl-on, html.bl-og) .Pager span {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
   color: var(--bl-ink) !important;
   font-family: var(--bl-display);
 }
-/* Same box for every page number, so a 1 is not thinner than a 2. */
-html.bl-on .Pager a, html.bl-on .Pager > span { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 28px; height: 28px; padding: 0 6px !important; margin: 0 1px; }
-html.bl-on .Pager .Highlight { background: var(--bl-surface2) !important; color: var(--bl-accent) !important; }
+:is(html.bl-on, html.bl-og) .Pager a, :is(html.bl-on, html.bl-og) .Pager > span { display: inline-block; min-width: 18px; margin: 0 2px; padding: 0 2px !important; text-align: center; }
+:is(html.bl-on, html.bl-og) .Pager a:hover { color: var(--bl-accent) !important; }
+:is(html.bl-on, html.bl-og) .Pager .Highlight { color: var(--bl-accent) !important; font-weight: 700; }
 html.bl-on .DataList, html.bl-on .MessageList, html.bl-on .Item, html.bl-on .DataTable, html.bl-on .DataTable td, html.bl-on .DataTable th {
   border-color: var(--bl-line) !important;
   background-color: transparent !important;

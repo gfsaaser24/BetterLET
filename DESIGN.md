@@ -8,6 +8,10 @@ A third choice on the same switch. It is the stock page: stock layout, stock pag
 
 OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is in `styles.css` under `html.bl-og`. Dark is the site's own dark mode, so changing theme or leaving OG reloads the page. Its gear sits in the green bar, left of the search box.
 
+## Page numbers
+
+Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color.
+
 ## Settings gear
 
 One gear to the left of the search box, in every design. Its menu holds Design (OG, V1, V2) and Theme (Auto, Light, Dark). A check mark shows the current choice. Clicking an item applies it.
