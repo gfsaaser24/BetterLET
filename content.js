@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.10
+// @version      1.11
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -326,6 +326,14 @@
     glide(render);
   });
 
+  // Logged-in rows link to the last comment. Guest rows link to the first post, so work out the last page.
+  const PER_PAGE = 30;
+  const lastCommentUrl = (li, href) => {
+    if (href.includes('#')) return href;
+    const exact = +(li.querySelector('.CommentCount .Number')?.title.match(/[\d,]+/)?.[0].replace(/,/g, '') || 0) || comments(li);
+    return `${href.replace(/\/p\d+$/, '')}/p${Math.ceil(exact / PER_PAGE) || 1}#latest`;
+  };
+
   // ---- compact row: rebuild the meta line as columns ----
   const cell = (cls) => { const el = document.createElement('div'); el.className = `bl-cell ${cls}`; return el; };
 
@@ -372,7 +380,7 @@
     line.className = 'bl-lastline';
     const ms = replyTime(li);
     if (comments(li) > 0 && ms) {
-      const latest = link?.getAttribute('href') || '';
+      const latest = lastCommentUrl(li, link?.getAttribute('href') || '');
       line.append('Last comment by ');
       const by = li.querySelector('.LastCommentBy a');
       if (by) line.appendChild(by.cloneNode(true));
@@ -392,8 +400,8 @@
       line.textContent = 'No replies yet';
     }
     main.appendChild(line);
-    // The title opens the first post. The site points it at the last one.
-    if (link) link.setAttribute('href', (link.getAttribute('href') || '').replace(/(\/p\d+)?#.*$/, ''));
+    // The title opens the first post. Without /p1 the site can resume at the last page you read.
+    if (link) link.setAttribute('href', (link.getAttribute('href') || '').replace(/(\/p\d+)?(#.*)?$/, '/p1'));
 
     const replies = cell('bl-replies');
     replies.innerHTML = '<b></b>';

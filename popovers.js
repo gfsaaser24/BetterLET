@@ -138,6 +138,7 @@
     ok: ['No known threats', ''],
     blocked: ['Flagged as unsafe by Cloudflare', 'bl-danger'],
     missing: ['This domain does not exist', 'bl-danger'],
+    private: ['Private address, preview skipped', 'bl-danger'],
     unknown: ['Safety check not available', ''],
   };
 
@@ -153,10 +154,10 @@
 
   const linkCard = (a, url, data) => {
     const nodes = [];
-    if (data.image) {
+    // Only local image data. A remote URL here would send the forum's cookies.
+    if (/^data:image\/(jpeg|png|webp|gif|avif);base64,/.test(data.image || '')) {
       const img = el('img', 'bl-pop-image');
       img.alt = '';
-      img.referrerPolicy = 'no-referrer';
       img.addEventListener('error', () => { img.remove(); place(); });
       img.src = data.image;
       nodes.push(img);

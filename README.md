@@ -49,7 +49,7 @@ Wider layout, better type, and your menus stay within reach.
 
 - **User hover cards.** Roles, join date, last active, threads, comments, and thanks.
 - **Link previews.** Image, title, description, and the real domain.
-- **Safety check.** Every previewed link is checked against Cloudflare's security DNS. Flagged sites are never fetched.
+- **Safety check.** Every previewed link is checked against Cloudflare's security DNS. Only sites that pass get fetched.
 - **Link text check.** Warns when the text of a link names a different site than its target.
 
 ### A forum that fits your screen
