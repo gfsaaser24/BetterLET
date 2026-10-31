@@ -6,7 +6,7 @@ This file is the rule book. `styles.css` holds the tokens. If the two disagree, 
 
 A third choice on the same switch. It is the stock page: stock layout, stock pages, stock fonts, and no left sidebar. Our features sit on top: hover cards, Phosphor icons, the toolbar, the title opening the first post, the date and arrow jumping to the last comment, Thanks beside Quote, closed signatures, and Ctrl+Enter.
 
-OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is in `styles.css` under `html.bl-og`. Dark is the site's own dark mode, so changing theme or leaving OG reloads the page. Its gear sits in the green bar, left of the search box.
+OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is in `styles.css` under `html.bl-og`. Dark is the site's own dark mode, so changing theme or leaving OG reloads the page. Its gear sits in the green bar, left of the search box and level with it.
 
 ## Page numbers
 

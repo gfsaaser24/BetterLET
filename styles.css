@@ -1106,7 +1106,7 @@ html.bl-og.bl-dark {
   --bl-shadow: 0 2px 8px rgba(0, 0, 0, .6);
 }
 /* The gear floats left of the search box in the green bar. */
-html.bl-og #bl-settings { float: right; margin: 4px 8px 0 0; }
+html.bl-og #bl-settings { float: right; margin: -7px 8px 0 0; }
 html.bl-og .bl-gear { width: 24px; height: 24px; }
 html.bl-og .bl-gear { color: #fff; }
 html.bl-og .bl-gear:hover, html.bl-og .bl-gear[aria-expanded="true"] { background: rgba(0, 0, 0, .18); color: #fff; }
