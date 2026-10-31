@@ -23,6 +23,7 @@
     const mode = read();
     const design = readDesign();
     root.classList.toggle('bl-v2', design === 'v2');
+    root.classList.toggle('bl-og', design === 'og');
     root.dataset.blDesign = design;
     if (design === 'v2') loadFont();
     root.classList.add('bl-on');
