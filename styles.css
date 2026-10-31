@@ -10,6 +10,8 @@ html.bl-on {
   --bl-accent: #1c6b3f;
   --bl-led: #1f9d57;
   --bl-danger: #a3341f;
+  --bl-field: #fff;
+  --bl-field-line: rgba(23, 61, 39, .34);
   --bl-fill: #173d27;
   --bl-on-fill: #e9f5ea;
   --bl-hole: rgba(23, 61, 39, .3);
@@ -42,6 +44,8 @@ html.bl-on.bl-dark {
   --bl-accent: #8fdca4;
   --bl-led: #6fe08f;
   --bl-danger: #f0a08a;
+  --bl-field: #0d1310;
+  --bl-field-line: rgba(190, 235, 200, .24);
   --bl-fill: #c9f0cf;
   --bl-on-fill: #0b140e;
   --bl-hole: rgba(190, 235, 200, .28);
@@ -93,7 +97,7 @@ html.bl-on #Body, html.bl-on .Column, html.bl-on #Frame .MItem, html.bl-on .Meta
 html.bl-on a { color: var(--bl-accent); text-underline-offset: 2px; }
 html.bl-on ::selection { background: var(--bl-accent); color: var(--bl-surface); }
 html.bl-on :focus-visible { outline: 2px solid var(--bl-accent); outline-offset: 2px; border-radius: 4px; }
-html.bl-on mark { background: var(--bl-surface2) !important; color: var(--bl-accent) !important; font-weight: 600; }
+html.bl-on mark { background: var(--bl-surface2) !important; color: var(--bl-ink) !important; font-weight: 700; }
 html.bl-on #Frame { width: auto !important; margin: 0 !important; background: transparent !important; color: var(--bl-ink) !important; }
 
 /* ---- header island: stops before the ad column ---- */
@@ -293,7 +297,6 @@ html.bl-on #Foot {
   border-top: 1px solid var(--bl-line);
   color: var(--bl-muted) !important;
 }
-html.bl-on #Foot a { color: var(--bl-muted) !important; }
 
 /* ---- three columns: rail, content, ads ---- */
 html.bl-on #Body { width: auto !important; margin: 12px 0 0 !important; background: transparent !important; }
@@ -391,14 +394,40 @@ html.bl-on .BoxNewDiscussion .Button, html.bl-on .Button.Primary {
   font-weight: 600;
 }
 html.bl-on input.InputBox, html.bl-on textarea, html.bl-on select, html.bl-on .TextBox {
-  background: var(--bl-surface) !important;
-  border: 1px solid var(--bl-line) !important;
+  background: var(--bl-field) !important;
+  border: 1px solid var(--bl-field-line) !important;
   border-radius: var(--bl-r-md) !important;
   box-shadow: none !important;
   color: var(--bl-ink) !important;
   font-family: inherit !important;
+  -webkit-text-fill-color: var(--bl-ink);
 }
-html.bl-on ::placeholder { color: var(--bl-muted); opacity: 1; }
+html.bl-on input.InputBox:focus, html.bl-on textarea:focus, html.bl-on select:focus { border-color: var(--bl-accent) !important; }
+html.bl-on ::placeholder { color: var(--bl-muted); opacity: 1; -webkit-text-fill-color: var(--bl-muted); }
+
+/* Form text is locked to theme tokens, so no site stylesheet can fade it. */
+html.bl-on .ContentColumn label, html.bl-on .FormWrapper label, html.bl-on .FormWrapper .P, html.bl-on .FormWrapper .Category, html.bl-on .CheckBoxLabel, html.bl-on .editor-help-text, html.bl-on .PostFormHelp { color: var(--bl-ink) !important; }
+html.bl-on .editor-action, html.bl-on .editor-action .icon, html.bl-on .editor-dropdown .icon { color: var(--bl-ink) !important; }
+html.bl-on .editor, html.bl-on .editor-dropdown { background-color: transparent !important; }
+html.bl-on .editor-insert-dialog { background: var(--bl-surface) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; }
+html.bl-on #Foot, html.bl-on #Foot p, html.bl-on #Foot span, html.bl-on #Foot div { color: var(--bl-muted) !important; }
+html.bl-on #Foot a { color: var(--bl-ink) !important; }
+
+/* New thread and new message: same card as settings. */
+html.bl-on #vanilla_post_discussion .FormWrapper, html.bl-on #conversations_messages_add .FormWrapper, html.bl-on #vanilla_post_editdiscussion .FormWrapper {
+  max-width: 860px;
+  padding: 20px !important;
+  background: var(--bl-surface) !important;
+  border: 1px solid var(--bl-line);
+  border-radius: var(--bl-r-lg);
+}
+html.bl-on .FormWrapper input[type="submit"].Button.Primary, html.bl-on .CommentForm input[type="submit"].Button.Primary {
+  background: var(--bl-fill) !important;
+  border-color: transparent !important;
+  color: var(--bl-on-fill) !important;
+  -webkit-text-fill-color: var(--bl-on-fill);
+  font-weight: 600;
+}
 html.bl-on .Pager a, html.bl-on .Pager span {
   background: var(--bl-surface) !important;
   border: 1px solid var(--bl-line) !important;
@@ -890,6 +919,8 @@ html.bl-on.bl-v2 {
   --bl-fill: #05872f;
   --bl-on-fill: #fff;
   --bl-hole: #dfdfdf;
+  --bl-field: #fff;
+  --bl-field-line: #b5b5b5;
   --bl-glass: #fff;
   --bl-sheen: transparent;
   --bl-shadow: 0 1px 3px rgba(0, 0, 0, .12);
@@ -913,6 +944,8 @@ html.bl-on.bl-v2.bl-dark {
   --bl-fill: #4cd07a;
   --bl-on-fill: #08130b;
   --bl-hole: #303832;
+  --bl-field: #0f1311;
+  --bl-field-line: #48524a;
   --bl-glass: #151a16;
   --bl-shadow: 0 1px 3px rgba(0, 0, 0, .5);
 }

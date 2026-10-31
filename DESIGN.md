@@ -34,6 +34,7 @@ One family of tinted green neutrals and one accent. Never a cool blue charcoal, 
 | `--bl-accent` | Links, active items | `#1c6b3f` | `#8fdca4` |
 | `--bl-led` | Status light | `#1f9d57` | `#6fe08f` |
 | `--bl-danger` | Form errors only | `#a3341f` | `#f0a08a` |
+| `--bl-field` / `--bl-field-line` | Form fields and their border | `#fff` / `rgba(23,61,39,.34)` | `#0d1310` / `rgba(190,235,200,.24)` |
 | `--bl-fill` / `--bl-on-fill` | Primary button | `#173d27` / `#e9f5ea` | `#c9f0cf` / `#0b140e` |
 
 - Body text is at least 4.5:1 on its surface in both themes.
@@ -42,7 +43,7 @@ One family of tinted green neutrals and one accent. Never a cool blue charcoal, 
 
 ## 4. Theme
 
-Three modes: Auto, Light, Dark. Auto follows the system. The choice is saved in `letBetter.theme`. The control is a text segmented switch in the header, never a sun and moon toggle. The site's moon button is hidden so there is one control.
+Three modes: Auto, Light, Dark. Auto follows the system. The choice is saved in `letBetter.theme`. The control is a text segmented switch in the header, never a sun and moon toggle. The site's moon button is hidden so there is one control. `early.js` keeps the site's own dark mode off, because its pale text breaks our light themes.
 
 ## 5. Type
 
@@ -161,6 +162,7 @@ Text selection, caret, scrollbars, focus rings and `mark` highlights all use the
 ## 14. Check before shipping
 
 - Both themes viewed on list, categories, thread, profile, settings, search and post pages.
+- Contrast audit run on form pages with the site's dark styles forced on, as a worst case.
 - Tested with `styles.css` loaded before the site's CSS, as the real plugin does. Site rules with an ID or `!important` can beat ours, so check them.
 - No sideways scroll at 1920, 1366, 1280, 1024, 800 and 375 wide.
 - All ads visible at full size.
