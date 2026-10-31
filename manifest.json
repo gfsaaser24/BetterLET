@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "LET Better",
+  "version": "1.0",
+  "description": "Sort LowEndTalk threads by newest created or newest reply, hide what you've seen, load more pages.",
+  "content_scripts": [
+    {
+      "matches": ["https://lowendtalk.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
