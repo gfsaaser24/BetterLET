@@ -87,6 +87,7 @@ Recipe: `--bl-glass` fill, `blur(18px) saturate(160%)`, inset top highlight, tig
 - **Hide seen:** hides opened threads only. Your own threads always stay.
 - **Categories:** the same rack. Name, description, threads, replies, latest post. Subcategories join their parent with a curved connector. The whole row is a link.
 - **Profile:** one header card. Small avatar, name, edit button, then a spec plate of label over value. Empty warnings are one fact on the plate, not a section.
+- **Composer:** one system on new thread, full reply, comment box, message pages, and post edits. Card with 16 padding, label above field, 38 tall inputs, 15px text. Every action button is 36 tall at 14px. Way out on the left, then Preview, Save Draft, and the main action last on the right. Settings pages keep Save on the left under their short forms.
 - **Primary button:** `--bl-fill`. One per view. All other buttons use `--bl-surface2`.
 - **Pop-out menus:** 12 radius, 4 padding, rows with 8 radius. Scale in from the top left. No arrow on the account menus.
 - **Hover cards:** one shared `#bl-pop` for people. Cards open after 350ms. The card stops at the ad column, so it never covers an ad. Skeleton while loading. Outside text is always plain text, never HTML. People cards never show email.
