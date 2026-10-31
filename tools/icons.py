@@ -51,7 +51,11 @@ lines = [f'/* ICONS START: Phosphor {VERSION}. Made by tools/icons.py. Do not ed
 for selector, (name, weight) in ICONS.items():
     uri = 'data:image/svg+xml,' + urllib.parse.quote(fetch(name, weight), safe="/:=' ")
     url = 'url("' + uri + '")'
-    lines.append(f'html.bl-on {selector} {{ -webkit-mask-image: {url}; mask-image: {url}; }}')
+    both = f'html.bl-on {selector}'
+    # OG uses the same icons, but keeps the stock search button.
+    if 'SiteSearch' not in selector:
+        both += ', ' + both.replace('html.bl-on', 'html.bl-og')
+    lines.append(f'{both} {{ -webkit-mask-image: {url}; mask-image: {url}; }}')
 lines.append('/* ICONS END */')
 
 path = 'styles.css'
