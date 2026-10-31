@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.17
+// @version      1.18
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -65,42 +65,44 @@
     }
   }
 
-  // ---- theme switch: Auto, Light, Dark ----
+  // ---- settings: one gear beside the search box, with design and theme inside ----
   const headRow = document.querySelector('#Head .Row');
   if (headRow && window.__letBetterTheme) {
     const theme = window.__letBetterTheme;
-    const seg = document.createElement('div');
-    seg.id = 'bl-theme';
-    seg.setAttribute('role', 'group');
-    seg.setAttribute('aria-label', 'Theme');
-    seg.innerHTML = ['auto', 'light', 'dark'].map((m) => `<button type="button" data-mode="${m}">${m[0].toUpperCase()}${m.slice(1)}</button>`).join('');
-    const mark = () => seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === theme.get())));
-    seg.addEventListener('click', (e) => {
-      const mode = e.target.dataset.mode;
-      if (mode) { theme.set(mode); mark(); }
+    const box = document.createElement('div');
+    box.id = 'bl-settings';
+    const option = (key, value, label) => `<button type="button" role="menuitemradio" data-${key}="${value}">${label}</button>`;
+    box.innerHTML = `
+      <button type="button" class="bl-gear" title="BetterLET settings" aria-label="BetterLET settings" aria-haspopup="menu" aria-expanded="false"><span class="bl-gear-icon" aria-hidden="true"></span></button>
+      <div class="bl-menu" role="menu" hidden>
+        <div class="bl-menu-label">Design</div>
+        ${option('design', 'og', 'OG')}${option('design', 'v1', 'V1')}${option('design', 'v2', 'V2')}
+        <div class="bl-menu-label">Theme</div>
+        ${option('mode', 'auto', 'Auto')}${option('mode', 'light', 'Light')}${option('mode', 'dark', 'Dark')}
+      </div>`;
+    const gear = box.querySelector('.bl-gear');
+    const menu = box.querySelector('.bl-menu');
+    const mark = () => menu.querySelectorAll('button').forEach((b) => {
+      const on = b.dataset.design ? b.dataset.design === theme.getDesign() : b.dataset.mode === theme.get();
+      b.setAttribute('aria-checked', String(on));
     });
+    const toggle = (open) => {
+      menu.hidden = !open;
+      gear.setAttribute('aria-expanded', String(open));
+    };
+    gear.addEventListener('click', () => toggle(menu.hidden));
+    menu.addEventListener('click', (e) => {
+      const { design, mode } = e.target.dataset;
+      if (design) theme.setDesign(design);
+      if (mode) theme.set(mode);
+      mark();
+    });
+    document.addEventListener('click', (e) => { if (!box.contains(e.target)) toggle(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggle(false); });
     mark();
-
-    const version = document.createElement('div');
-    version.id = 'bl-design';
-    version.className = 'bl-seg';
-    version.setAttribute('role', 'group');
-    version.setAttribute('aria-label', 'Design version');
-    version.innerHTML = ['og', 'v1', 'v2'].map((v) => `<button type="button" data-design="${v}">${v.toUpperCase()}</button>`).join('');
-    const markVersion = () => version.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.design === theme.getDesign())));
-    version.addEventListener('click', (e) => {
-      const design = e.target.dataset.design;
-      if (design) { theme.setDesign(design); markVersion(); }
-    });
-    markVersion();
-    if (og && panel) {
-      const controls = document.createElement('div');
-      controls.id = 'bl-og-controls';
-      controls.append(version, seg);
-      panel.prepend(controls);
-    } else {
-      headRow.append(seg, version);
-    }
+    // The search box floats right on the stock page, so a float placed after it lands to its left.
+    if (og) headRow.querySelector('.SiteSearch')?.after(box);
+    else headRow.appendChild(box);
   }
 
   // ---- clicks that work on every page ----
@@ -273,6 +275,95 @@
       }
       content.append(count('bl-threads', '.DiscussionCount'), count('bl-replies', '.CommentCount'), latest);
     });
+  }
+
+  // ---- dashboard: your numbers and threads on one page, at /discussions#dashboard ----
+  const signedIn = document.querySelector('.MeBox .Username, .MeBox a[href^="/profile/"]');
+  const discussionsLink = document.querySelector('#Head .SiteMenu a[href="/discussions"]');
+  if (signedIn && discussionsLink) {
+    const li = document.createElement('li');
+    li.innerHTML = '<a href="/discussions#dashboard">Dashboard</a>';
+    discussionsLink.closest('li').after(li);
+  }
+  addEventListener('hashchange', () => { if (location.pathname === '/discussions') location.reload(); });
+  const content = document.querySelector('.ContentColumn');
+  if (location.pathname === '/discussions' && location.hash === '#dashboard' && content) {
+    document.documentElement.classList.add('bl-dash-on');
+    document.title = 'Dashboard — LowEndTalk';
+    const dash = document.createElement('div');
+    dash.id = 'bl-dash';
+    content.prepend(dash);
+    const el = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    dash.appendChild(el('h1', '', 'Dashboard'));
+    if (!signedIn) {
+      dash.appendChild(el('p', 'bl-dash-empty', 'Sign in to see your dashboard.'));
+      return;
+    }
+    const stats = el('div', 'bl-dash-stats');
+    dash.appendChild(stats);
+    const stat = (label, value, href) => {
+      const card = el('a', 'bl-dash-stat');
+      card.href = href;
+      card.append(el('b', '', value), el('span', '', label));
+      stats.appendChild(card);
+      return card;
+    };
+    const countOf = (href) => document.querySelector(`a[href="${href}"] .Count, a[href="${href}"] .Aside`)?.textContent.trim() || '0';
+    const profile = signedIn.getAttribute('href');
+    const bell = [...document.querySelectorAll('.MeBox a')].find((link) => link.textContent.includes('Notifications'));
+    stat('Notifications', bell?.querySelector('.Alert')?.textContent.trim() || '0', '/profile/notifications');
+    stat('Bookmarks', countOf('/discussions/bookmarked'), '/discussions/bookmarked');
+    stat('My threads', countOf('/discussions/mine'), '/discussions/mine');
+    stat('Drafts', countOf('/drafts'), '/drafts');
+    const thanks = stat('Thanks received', '…', '/profile');
+    const pageOf = (url) => fetch(url, { credentials: 'include' }).then((r) => r.text()).then((html) => new DOMParser().parseFromString(html, 'text/html'));
+    if (profile) {
+      pageOf(profile).then((doc) => {
+        thanks.firstChild.textContent = doc.querySelector('dd.ReceivedThankCount')?.textContent.trim() || '0';
+      }).catch(() => { thanks.firstChild.textContent = '?'; });
+    }
+    const threads = (title, url) => {
+      const section = el('section', 'bl-dash-box');
+      section.appendChild(el('h2', '', title));
+      const rows = el('ul');
+      section.appendChild(rows);
+      dash.appendChild(section);
+      pageOf(url).then((doc) => {
+        const items = [...doc.querySelectorAll('li.ItemDiscussion')].map((li) => ({
+          link: li.querySelector('.Title a'),
+          fresh: li.querySelector('.HasNew')?.textContent.trim() || '',
+          by: li.querySelector('.LastCommentBy a')?.textContent.trim() || '',
+          ms: Date.parse(li.querySelector('.LastCommentDate time')?.getAttribute('datetime') || '') || 0,
+        })).filter((t) => t.link);
+        items.sort((a, b) => Boolean(b.fresh) - Boolean(a.fresh) || b.ms - a.ms);
+        if (!items.length) section.appendChild(el('p', 'bl-dash-empty', 'Nothing here yet.'));
+        items.slice(0, 10).forEach((t) => {
+          const href = t.link.getAttribute('href') || '';
+          const row = el('li', t.fresh ? 'bl-dash-new' : '');
+          const name = el('a', 'bl-dash-title', t.link.textContent.trim());
+          name.href = href.replace(/(\/p\d+)?(#.*)?$/, '/p1');
+          row.appendChild(name);
+          const meta = el('div', 'bl-dash-meta');
+          if (t.fresh) meta.appendChild(el('span', 'bl-dash-badge', t.fresh));
+          if (t.ms) {
+            meta.append(t.by ? `Last comment by ${t.by} on ` : 'Last comment on ');
+            const when = el('a', 'bl-when', stamp(t.ms));
+            when.href = href.includes('#') ? href : `${href}#latest`;
+            meta.appendChild(when);
+          }
+          row.appendChild(meta);
+          rows.appendChild(row);
+        });
+      }).catch(() => section.appendChild(el('p', 'bl-dash-empty', 'Could not load this list.')));
+    };
+    threads('My threads', '/discussions/mine');
+    threads('Bookmarks', '/discussions/bookmarked');
+    return;
   }
 
   const list = document.querySelector('ul.Discussions');
