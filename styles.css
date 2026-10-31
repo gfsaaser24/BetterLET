@@ -55,8 +55,6 @@ html.bl-on.bl-dark {
   color-scheme: dark;
 }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .26s; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
-::view-transition-old(bl-theme), ::view-transition-old(bl-design) { display: none; }
-::view-transition-new(bl-theme), ::view-transition-new(bl-design) { animation: none; opacity: 1; }
 
 /* ---- page load: hidden only until content.js finishes, and never past 3s ---- */
 html.bl-on { background: var(--bl-bg); }
@@ -158,43 +156,21 @@ html.bl-on #Head .dropdown-menu, html.bl-on #Head .SiteMenu ul {
 }
 html.bl-on #Head .SiteMenu ul a { background: none !important; color: var(--bl-ink) !important; font-family: inherit !important; }
 
-/* ---- theme switch ---- */
-#bl-theme {
-  position: relative;
-  view-transition-name: bl-theme;
-  order: 4;
-  flex: none;
-  display: grid;
-  grid-template-columns: repeat(3, 46px);
-  padding: 2px;
-  border-radius: var(--bl-r-md);
-  background: var(--bl-surface2);
-}
-#bl-theme::before {
-  content: "";
-  position: absolute;
-  top: 2px;
-  bottom: 2px;
-  left: 2px;
-  width: 46px;
-  border-radius: 6px;
-  background: var(--bl-surface);
-  box-shadow: 0 1px 2px var(--bl-line);
-  transition: transform .3s var(--bl-ease);
-}
-html[data-bl-theme="light"] #bl-theme::before { transform: translateX(46px); }
-html[data-bl-theme="dark"] #bl-theme::before { transform: translateX(92px); }
-#bl-theme button {
-  position: relative;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--bl-muted);
-  font: 500 12px/1 var(--bl-text);
-  cursor: pointer;
-}
-#bl-theme button[aria-pressed="true"] { color: var(--bl-ink); font-weight: 600; }
+/* ---- settings gear: design and theme in one small menu ---- */
+#bl-settings { position: relative; order: 2; flex: none; margin-left: auto; }
+html.bl-on #Head .SiteSearch { order: 3; margin-left: 0 !important; }
+/* The menu must sit over the toolbar and page numbers, also when the header is not sticky. */
+html.bl-on #Head .Row { position: relative; z-index: var(--bl-z-head); }
+.bl-gear { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; background: none; border: 0; border-radius: var(--bl-r-md); color: var(--bl-muted); cursor: pointer; }
+.bl-gear:hover, .bl-gear[aria-expanded="true"] { background: var(--bl-surface2); color: var(--bl-ink); }
+.bl-gear-icon { display: block; width: 20px; height: 20px; background: currentColor; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.bl-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: var(--bl-z-flyout); box-sizing: border-box; width: 160px; padding: 6px; background: var(--bl-surface); border: 1px solid var(--bl-line); border-radius: var(--bl-r-lg); box-shadow: var(--bl-shadow); text-align: left; }
+.bl-menu[hidden] { display: none; }
+.bl-menu-label { padding: 6px 8px 4px; color: var(--bl-muted); font: 600 11px/1.2 var(--bl-text); }
+.bl-menu button { display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; width: 100%; height: 30px; padding: 0 8px; background: none; border: 0; border-radius: var(--bl-r-md); color: var(--bl-ink); font: 400 13px/1 var(--bl-text); cursor: pointer; }
+.bl-menu button:hover { background: var(--bl-surface2); }
+.bl-menu button[aria-checked="true"] { font-weight: 600; }
+.bl-menu button[aria-checked="true"]::after { content: ""; width: 14px; height: 14px; background: var(--bl-accent); -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 
 /* ---- icons: site sprites become Phosphor masks tinted by the theme ---- */
 html.bl-on .Sprite, html.bl-on .Sprite16, html.bl-on a.Bookmark, html.bl-on .OptionsTitle, html.bl-on .SiteSearch input[type="submit"] {
@@ -254,6 +230,8 @@ html.bl-on .SpPicture, html.bl-og .SpPicture { -webkit-mask-image: url("data:ima
 html.bl-on .SpSignatures, html.bl-og .SpSignatures { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M232%2C168H63.86c2.66-5.24%2C5.33-10.63%2C8-16.11%2C15%2C1.65%2C32.58-8.78%2C52.66-31.14%2C5%2C13.46%2C14.45%2C30.93%2C30.58%2C31.25%2C9.06.18%2C18.11-5.2%2C27.42-16.37C189.31%2C143.75%2C203.3%2C152%2C232%2C152a8%2C8%2C0%2C0%2C0%2C0-16c-30.43%2C0-39.43-10.45-40-16.11a7.67%2C7.67%2C0%2C0%2C0-5.46-7.75%2C8.14%2C8.14%2C0%2C0%2C0-9.25%2C3.49c-12.07%2C18.54-19.38%2C20.43-21.92%2C20.37-8.26-.16-16.66-19.52-19.54-33.42a8%2C8%2C0%2C0%2C0-14.09-3.37C101.54%2C124.55%2C88%2C133.08%2C79.57%2C135.29%2C88.06%2C116.42%2C94.4%2C99.85%2C98.46%2C85.9c6.82-23.44%2C7.32-39.83%2C1.51-50.1-3-5.38-9.34-11.8-22.06-11.8C61.85%2C24%2C49.18%2C39.18%2C43.14%2C65.65c-3.59%2C15.71-4.18%2C33.21-1.62%2C48s7.87%2C25.55%2C15.59%2C31.94c-3.73%2C7.72-7.53%2C15.26-11.23%2C22.41H24a8%2C8%2C0%2C0%2C0%2C0%2C16H37.41c-11.32%2C21-20.12%2C35.64-20.26%2C35.88a8%2C8%2C0%2C1%2C0%2C13.71%2C8.24c.15-.26%2C11.27-18.79%2C24.7-44.12H232a8%2C8%2C0%2C0%2C0%2C0-16ZM58.74%2C69.21C62.72%2C51.74%2C70.43%2C40%2C77.91%2C40c5.33%2C0%2C7.1%2C1.86%2C8.13%2C3.67%2C3%2C5.33%2C6.52%2C24.19-21.66%2C86.39C56.12%2C118.78%2C53.31%2C93%2C58.74%2C69.21Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M232%2C168H63.86c2.66-5.24%2C5.33-10.63%2C8-16.11%2C15%2C1.65%2C32.58-8.78%2C52.66-31.14%2C5%2C13.46%2C14.45%2C30.93%2C30.58%2C31.25%2C9.06.18%2C18.11-5.2%2C27.42-16.37C189.31%2C143.75%2C203.3%2C152%2C232%2C152a8%2C8%2C0%2C0%2C0%2C0-16c-30.43%2C0-39.43-10.45-40-16.11a7.67%2C7.67%2C0%2C0%2C0-5.46-7.75%2C8.14%2C8.14%2C0%2C0%2C0-9.25%2C3.49c-12.07%2C18.54-19.38%2C20.43-21.92%2C20.37-8.26-.16-16.66-19.52-19.54-33.42a8%2C8%2C0%2C0%2C0-14.09-3.37C101.54%2C124.55%2C88%2C133.08%2C79.57%2C135.29%2C88.06%2C116.42%2C94.4%2C99.85%2C98.46%2C85.9c6.82-23.44%2C7.32-39.83%2C1.51-50.1-3-5.38-9.34-11.8-22.06-11.8C61.85%2C24%2C49.18%2C39.18%2C43.14%2C65.65c-3.59%2C15.71-4.18%2C33.21-1.62%2C48s7.87%2C25.55%2C15.59%2C31.94c-3.73%2C7.72-7.53%2C15.26-11.23%2C22.41H24a8%2C8%2C0%2C0%2C0%2C0%2C16H37.41c-11.32%2C21-20.12%2C35.64-20.26%2C35.88a8%2C8%2C0%2C1%2C0%2C13.71%2C8.24c.15-.26%2C11.27-18.79%2C24.7-44.12H232a8%2C8%2C0%2C0%2C0%2C0-16ZM58.74%2C69.21C62.72%2C51.74%2C70.43%2C40%2C77.91%2C40c5.33%2C0%2C7.1%2C1.86%2C8.13%2C3.67%2C3%2C5.33%2C6.52%2C24.19-21.66%2C86.39C56.12%2C118.78%2C53.31%2C93%2C58.74%2C69.21Z%22/%3E%3C/svg%3E"); }
 html.bl-on .SpQuote, html.bl-og .SpQuote { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M100%2C56H40A16%2C16%2C0%2C0%2C0%2C24%2C72v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C100%2C56Zm0%2C80H40V72h60ZM216%2C56H156a16%2C16%2C0%2C0%2C0-16%2C16v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C216%2C56Zm0%2C80H156V72h60Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M100%2C56H40A16%2C16%2C0%2C0%2C0%2C24%2C72v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C100%2C56Zm0%2C80H40V72h60ZM216%2C56H156a16%2C16%2C0%2C0%2C0-16%2C16v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C216%2C56Zm0%2C80H156V72h60Z%22/%3E%3C/svg%3E"); }
 html.bl-on .SpMessage, html.bl-og .SpMessage { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M227.32%2C28.68a16%2C16%2C0%2C0%2C0-15.66-4.08l-.15%2C0L19.57%2C82.84a16%2C16%2C0%2C0%2C0-2.49%2C29.8L102%2C154l41.3%2C84.87A15.86%2C15.86%2C0%2C0%2C0%2C157.74%2C248q.69%2C0%2C1.38-.06a15.88%2C15.88%2C0%2C0%2C0%2C14-11.51l58.2-191.94c0-.05%2C0-.1%2C0-.15A16%2C16%2C0%2C0%2C0%2C227.32%2C28.68ZM157.83%2C231.85l-.05.14%2C0-.07-40.06-82.3%2C48-48a8%2C8%2C0%2C0%2C0-11.31-11.31l-48%2C48L24.08%2C98.25l-.07%2C0%2C.14%2C0L216%2C40Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M227.32%2C28.68a16%2C16%2C0%2C0%2C0-15.66-4.08l-.15%2C0L19.57%2C82.84a16%2C16%2C0%2C0%2C0-2.49%2C29.8L102%2C154l41.3%2C84.87A15.86%2C15.86%2C0%2C0%2C0%2C157.74%2C248q.69%2C0%2C1.38-.06a15.88%2C15.88%2C0%2C0%2C0%2C14-11.51l58.2-191.94c0-.05%2C0-.1%2C0-.15A16%2C16%2C0%2C0%2C0%2C227.32%2C28.68ZM157.83%2C231.85l-.05.14%2C0-.07-40.06-82.3%2C48-48a8%2C8%2C0%2C0%2C0-11.31-11.31l-48%2C48L24.08%2C98.25l-.07%2C0%2C.14%2C0L216%2C40Z%22/%3E%3C/svg%3E"); }
+html.bl-on .bl-gear-icon, html.bl-og .bl-gear-icon { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M128%2C80a48%2C48%2C0%2C1%2C0%2C48%2C48A48.05%2C48.05%2C0%2C0%2C0%2C128%2C80Zm0%2C80a32%2C32%2C0%2C1%2C1%2C32-32A32%2C32%2C0%2C0%2C1%2C128%2C160Zm109.94-52.79a8%2C8%2C0%2C0%2C0-3.89-5.4l-29.83-17-.12-33.62a8%2C8%2C0%2C0%2C0-2.83-6.08%2C111.91%2C111.91%2C0%2C0%2C0-36.72-20.67%2C8%2C8%2C0%2C0%2C0-6.46.59L128%2C41.85%2C97.88%2C25a8%2C8%2C0%2C0%2C0-6.47-.6A112.1%2C112.1%2C0%2C0%2C0%2C54.73%2C45.15a8%2C8%2C0%2C0%2C0-2.83%2C6.07l-.15%2C33.65-29.83%2C17a8%2C8%2C0%2C0%2C0-3.89%2C5.4%2C106.47%2C106.47%2C0%2C0%2C0%2C0%2C41.56%2C8%2C8%2C0%2C0%2C0%2C3.89%2C5.4l29.83%2C17%2C.12%2C33.62a8%2C8%2C0%2C0%2C0%2C2.83%2C6.08%2C111.91%2C111.91%2C0%2C0%2C0%2C36.72%2C20.67%2C8%2C8%2C0%2C0%2C0%2C6.46-.59L128%2C214.15%2C158.12%2C231a7.91%2C7.91%2C0%2C0%2C0%2C3.9%2C1%2C8.09%2C8.09%2C0%2C0%2C0%2C2.57-.42%2C112.1%2C112.1%2C0%2C0%2C0%2C36.68-20.73%2C8%2C8%2C0%2C0%2C0%2C2.83-6.07l.15-33.65%2C29.83-17a8%2C8%2C0%2C0%2C0%2C3.89-5.4A106.47%2C106.47%2C0%2C0%2C0%2C237.94%2C107.21Zm-15%2C34.91-28.57%2C16.25a8%2C8%2C0%2C0%2C0-3%2C3c-.58%2C1-1.19%2C2.06-1.81%2C3.06a7.94%2C7.94%2C0%2C0%2C0-1.22%2C4.21l-.15%2C32.25a95.89%2C95.89%2C0%2C0%2C1-25.37%2C14.3L134%2C199.13a8%2C8%2C0%2C0%2C0-3.91-1h-.19c-1.21%2C0-2.43%2C0-3.64%2C0a8.08%2C8.08%2C0%2C0%2C0-4.1%2C1l-28.84%2C16.1A96%2C96%2C0%2C0%2C1%2C67.88%2C201l-.11-32.2a8%2C8%2C0%2C0%2C0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09%2C8.09%2C0%2C0%2C0-3-3.06l-28.6-16.29a90.49%2C90.49%2C0%2C0%2C1%2C0-28.26L61.67%2C97.63a8%2C8%2C0%2C0%2C0%2C3-3c.58-1%2C1.19-2.06%2C1.81-3.06a7.94%2C7.94%2C0%2C0%2C0%2C1.22-4.21l.15-32.25a95.89%2C95.89%2C0%2C0%2C1%2C25.37-14.3L122%2C56.87a8%2C8%2C0%2C0%2C0%2C4.1%2C1c1.21%2C0%2C2.43%2C0%2C3.64%2C0a8.08%2C8.08%2C0%2C0%2C0%2C4.1-1l28.84-16.1A96%2C96%2C0%2C0%2C1%2C188.12%2C55l.11%2C32.2a8%2C8%2C0%2C0%2C0%2C1.22%2C4.22c.62%2C1%2C1.23%2C2%2C1.8%2C3.06a8.09%2C8.09%2C0%2C0%2C0%2C3%2C3.06l28.6%2C16.29A90.49%2C90.49%2C0%2C0%2C1%2C222.9%2C142.12Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M128%2C80a48%2C48%2C0%2C1%2C0%2C48%2C48A48.05%2C48.05%2C0%2C0%2C0%2C128%2C80Zm0%2C80a32%2C32%2C0%2C1%2C1%2C32-32A32%2C32%2C0%2C0%2C1%2C128%2C160Zm109.94-52.79a8%2C8%2C0%2C0%2C0-3.89-5.4l-29.83-17-.12-33.62a8%2C8%2C0%2C0%2C0-2.83-6.08%2C111.91%2C111.91%2C0%2C0%2C0-36.72-20.67%2C8%2C8%2C0%2C0%2C0-6.46.59L128%2C41.85%2C97.88%2C25a8%2C8%2C0%2C0%2C0-6.47-.6A112.1%2C112.1%2C0%2C0%2C0%2C54.73%2C45.15a8%2C8%2C0%2C0%2C0-2.83%2C6.07l-.15%2C33.65-29.83%2C17a8%2C8%2C0%2C0%2C0-3.89%2C5.4%2C106.47%2C106.47%2C0%2C0%2C0%2C0%2C41.56%2C8%2C8%2C0%2C0%2C0%2C3.89%2C5.4l29.83%2C17%2C.12%2C33.62a8%2C8%2C0%2C0%2C0%2C2.83%2C6.08%2C111.91%2C111.91%2C0%2C0%2C0%2C36.72%2C20.67%2C8%2C8%2C0%2C0%2C0%2C6.46-.59L128%2C214.15%2C158.12%2C231a7.91%2C7.91%2C0%2C0%2C0%2C3.9%2C1%2C8.09%2C8.09%2C0%2C0%2C0%2C2.57-.42%2C112.1%2C112.1%2C0%2C0%2C0%2C36.68-20.73%2C8%2C8%2C0%2C0%2C0%2C2.83-6.07l.15-33.65%2C29.83-17a8%2C8%2C0%2C0%2C0%2C3.89-5.4A106.47%2C106.47%2C0%2C0%2C0%2C237.94%2C107.21Zm-15%2C34.91-28.57%2C16.25a8%2C8%2C0%2C0%2C0-3%2C3c-.58%2C1-1.19%2C2.06-1.81%2C3.06a7.94%2C7.94%2C0%2C0%2C0-1.22%2C4.21l-.15%2C32.25a95.89%2C95.89%2C0%2C0%2C1-25.37%2C14.3L134%2C199.13a8%2C8%2C0%2C0%2C0-3.91-1h-.19c-1.21%2C0-2.43%2C0-3.64%2C0a8.08%2C8.08%2C0%2C0%2C0-4.1%2C1l-28.84%2C16.1A96%2C96%2C0%2C0%2C1%2C67.88%2C201l-.11-32.2a8%2C8%2C0%2C0%2C0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09%2C8.09%2C0%2C0%2C0-3-3.06l-28.6-16.29a90.49%2C90.49%2C0%2C0%2C1%2C0-28.26L61.67%2C97.63a8%2C8%2C0%2C0%2C0%2C3-3c.58-1%2C1.19-2.06%2C1.81-3.06a7.94%2C7.94%2C0%2C0%2C0%2C1.22-4.21l.15-32.25a95.89%2C95.89%2C0%2C0%2C1%2C25.37-14.3L122%2C56.87a8%2C8%2C0%2C0%2C0%2C4.1%2C1c1.21%2C0%2C2.43%2C0%2C3.64%2C0a8.08%2C8.08%2C0%2C0%2C0%2C4.1-1l28.84-16.1A96%2C96%2C0%2C0%2C1%2C188.12%2C55l.11%2C32.2a8%2C8%2C0%2C0%2C0%2C1.22%2C4.22c.62%2C1%2C1.23%2C2%2C1.8%2C3.06a8.09%2C8.09%2C0%2C0%2C0%2C3%2C3.06l28.6%2C16.29A90.49%2C90.49%2C0%2C0%2C1%2C222.9%2C142.12Z%22/%3E%3C/svg%3E"); }
+html.bl-on .bl-menu button[aria-checked="true"]::after, html.bl-og .bl-menu button[aria-checked="true"]::after { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M232.49%2C80.49l-128%2C128a12%2C12%2C0%2C0%2C1-17%2C0l-56-56a12%2C12%2C0%2C1%2C1%2C17-17L96%2C183%2C215.51%2C63.51a12%2C12%2C0%2C0%2C1%2C17%2C17Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M232.49%2C80.49l-128%2C128a12%2C12%2C0%2C0%2C1-17%2C0l-56-56a12%2C12%2C0%2C1%2C1%2C17-17L96%2C183%2C215.51%2C63.51a12%2C12%2C0%2C0%2C1%2C17%2C17Z%22/%3E%3C/svg%3E"); }
 html.bl-on .ReactQuote, html.bl-og .ReactQuote { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M100%2C56H40A16%2C16%2C0%2C0%2C0%2C24%2C72v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C100%2C56Zm0%2C80H40V72h60ZM216%2C56H156a16%2C16%2C0%2C0%2C0-16%2C16v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C216%2C56Zm0%2C80H156V72h60Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M100%2C56H40A16%2C16%2C0%2C0%2C0%2C24%2C72v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C100%2C56Zm0%2C80H40V72h60ZM216%2C56H156a16%2C16%2C0%2C0%2C0-16%2C16v64a16%2C16%2C0%2C0%2C0%2C16%2C16h60v8a32%2C32%2C0%2C0%2C1-32%2C32%2C8%2C8%2C0%2C0%2C0%2C0%2C16%2C48.05%2C48.05%2C0%2C0%2C0%2C48-48V72A16%2C16%2C0%2C0%2C0%2C216%2C56Zm0%2C80H156V72h60Z%22/%3E%3C/svg%3E"); }
 html.bl-on .Reactions .Thank > a::before, html.bl-og .Reactions .Thank > a::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M178%2C40c-20.65%2C0-38.73%2C8.88-50%2C23.89C116.73%2C48.88%2C98.65%2C40%2C78%2C40a62.07%2C62.07%2C0%2C0%2C0-62%2C62c0%2C70%2C103.79%2C126.66%2C108.21%2C129a8%2C8%2C0%2C0%2C0%2C7.58%2C0C136.21%2C228.66%2C240%2C172%2C240%2C102A62.07%2C62.07%2C0%2C0%2C0%2C178%2C40ZM128%2C214.8C109.74%2C204.16%2C32%2C155.69%2C32%2C102A46.06%2C46.06%2C0%2C0%2C1%2C78%2C56c19.45%2C0%2C35.78%2C10.36%2C42.6%2C27a8%2C8%2C0%2C0%2C0%2C14.8%2C0c6.82-16.67%2C23.15-27%2C42.6-27a46.06%2C46.06%2C0%2C0%2C1%2C46%2C46C224%2C155.61%2C146.24%2C204.15%2C128%2C214.8Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M178%2C40c-20.65%2C0-38.73%2C8.88-50%2C23.89C116.73%2C48.88%2C98.65%2C40%2C78%2C40a62.07%2C62.07%2C0%2C0%2C0-62%2C62c0%2C70%2C103.79%2C126.66%2C108.21%2C129a8%2C8%2C0%2C0%2C0%2C7.58%2C0C136.21%2C228.66%2C240%2C172%2C240%2C102A62.07%2C62.07%2C0%2C0%2C0%2C178%2C40ZM128%2C214.8C109.74%2C204.16%2C32%2C155.69%2C32%2C102A46.06%2C46.06%2C0%2C0%2C1%2C78%2C56c19.45%2C0%2C35.78%2C10.36%2C42.6%2C27a8%2C8%2C0%2C0%2C0%2C14.8%2C0c6.82-16.67%2C23.15-27%2C42.6-27a46.06%2C46.06%2C0%2C0%2C1%2C46%2C46C224%2C155.61%2C146.24%2C204.15%2C128%2C214.8Z%22/%3E%3C/svg%3E"); }
 html.bl-on .Reactions .UnThank > a::before, html.bl-og .Reactions .UnThank > a::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M240%2C102c0%2C70-103.79%2C126.66-108.21%2C129a8%2C8%2C0%2C0%2C1-7.58%2C0C119.79%2C228.66%2C16%2C172%2C16%2C102A62.07%2C62.07%2C0%2C0%2C1%2C78%2C40c20.65%2C0%2C38.73%2C8.88%2C50%2C23.89C139.27%2C48.88%2C157.35%2C40%2C178%2C40A62.07%2C62.07%2C0%2C0%2C1%2C240%2C102Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M240%2C102c0%2C70-103.79%2C126.66-108.21%2C129a8%2C8%2C0%2C0%2C1-7.58%2C0C119.79%2C228.66%2C16%2C172%2C16%2C102A62.07%2C62.07%2C0%2C0%2C1%2C78%2C40c20.65%2C0%2C38.73%2C8.88%2C50%2C23.89C139.27%2C48.88%2C157.35%2C40%2C178%2C40A62.07%2C62.07%2C0%2C0%2C1%2C240%2C102Z%22/%3E%3C/svg%3E"); }
@@ -263,34 +241,6 @@ html.bl-on a.Bookmark, html.bl-og a.Bookmark { -webkit-mask-image: url("data:ima
 html.bl-on a.Bookmark.Bookmarked, html.bl-on .Bookmarked a.Bookmark, html.bl-og a.Bookmark.Bookmarked, html.bl-og .Bookmarked a.Bookmark { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M184%2C32H72A16%2C16%2C0%2C0%2C0%2C56%2C48V224a8%2C8%2C0%2C0%2C0%2C12.24%2C6.78L128%2C193.43l59.77%2C37.35A8%2C8%2C0%2C0%2C0%2C200%2C224V48A16%2C16%2C0%2C0%2C0%2C184%2C32Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M184%2C32H72A16%2C16%2C0%2C0%2C0%2C56%2C48V224a8%2C8%2C0%2C0%2C0%2C12.24%2C6.78L128%2C193.43l59.77%2C37.35A8%2C8%2C0%2C0%2C0%2C200%2C224V48A16%2C16%2C0%2C0%2C0%2C184%2C32Z%22/%3E%3C/svg%3E"); }
 html.bl-on .SiteSearch input[type="submit"] { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M229.66%2C218.34l-50.07-50.06a88.11%2C88.11%2C0%2C1%2C0-11.31%2C11.31l50.06%2C50.07a8%2C8%2C0%2C0%2C0%2C11.32-11.32ZM40%2C112a72%2C72%2C0%2C1%2C1%2C72%2C72A72.08%2C72.08%2C0%2C0%2C1%2C40%2C112Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M229.66%2C218.34l-50.07-50.06a88.11%2C88.11%2C0%2C1%2C0-11.31%2C11.31l50.06%2C50.07a8%2C8%2C0%2C0%2C0%2C11.32-11.32ZM40%2C112a72%2C72%2C0%2C1%2C1%2C72%2C72A72.08%2C72.08%2C0%2C0%2C1%2C40%2C112Z%22/%3E%3C/svg%3E"); }
 /* ICONS END */
-
-#bl-design {
-  position: relative;
-  view-transition-name: bl-design;
-  order: 3;
-  flex: none;
-  display: grid;
-  grid-template-columns: repeat(3, 34px);
-  padding: 2px;
-  border-radius: var(--bl-r-md);
-  background: var(--bl-surface2);
-}
-#bl-design::before {
-  content: "";
-  position: absolute;
-  top: 2px;
-  bottom: 2px;
-  left: 2px;
-  width: 34px;
-  border-radius: var(--bl-r-md);
-  background: var(--bl-surface);
-  box-shadow: 0 1px 2px var(--bl-line);
-  transition: transform .3s var(--bl-ease);
-}
-html[data-bl-design="v1"] #bl-design::before { transform: translateX(34px); }
-html[data-bl-design="v2"] #bl-design::before { transform: translateX(68px); }
-#bl-design button { position: relative; height: 28px; padding: 0; border: 0; background: none; color: var(--bl-muted); font: 500 12px/1 var(--bl-text); cursor: pointer; }
-#bl-design button[aria-pressed="true"] { color: var(--bl-ink); font-weight: 600; }
 
 /* ---- footer ---- */
 html.bl-on #Foot {
@@ -369,7 +319,8 @@ html.bl-on #Panel { grid-column: 3; grid-row: 1; float: none !important; width: 
 #bl-rail .PanelInfo .Depth2 a { padding-left: 20px !important; color: var(--bl-muted) !important; }
 #bl-rail .FilterMenu a:hover, #bl-rail .PanelInfo a:hover { background: var(--bl-surface2) !important; }
 #bl-rail .Active > a { background: var(--bl-surface2) !important; color: var(--bl-accent) !important; font-weight: 600; }
-#bl-rail .Box h4 { margin: 0 0 4px !important; padding: 0 4px !important; background: none !important; border: 0 !important; color: var(--bl-muted) !important; font: 500 12px/1.3 var(--bl-display) !important; pointer-events: none; }
+#bl-rail .Box { box-shadow: none !important; }
+#bl-rail .Box h4 { margin: 6px 0 6px !important; padding: 0 12px !important; background: none !important; border: 0 !important; color: var(--bl-muted) !important; font: 500 12px/1.3 var(--bl-display) !important; pointer-events: none; }
 #bl-rail .Box h4::before, #bl-rail .Box h4::after { display: none !important; }
 #bl-rail .Aside { float: right; }
 #bl-rail .Count, #bl-rail .Count .Number { background: none !important; border: 0 !important; color: var(--bl-muted) !important; font: 400 12px/1.5 var(--bl-display); }
@@ -514,6 +465,8 @@ html.bl-on .Pager a, html.bl-on .Pager span {
   color: var(--bl-ink) !important;
   font-family: var(--bl-display);
 }
+/* Same box for every page number, so a 1 is not thinner than a 2. */
+html.bl-on .Pager a, html.bl-on .Pager > span { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 28px; height: 28px; padding: 0 6px !important; margin: 0 1px; }
 html.bl-on .Pager .Highlight { background: var(--bl-surface2) !important; color: var(--bl-accent) !important; }
 html.bl-on .DataList, html.bl-on .MessageList, html.bl-on .Item, html.bl-on .DataTable, html.bl-on .DataTable td, html.bl-on .DataTable th {
   border-color: var(--bl-line) !important;
@@ -975,7 +928,6 @@ html.bl-on .CommentForm, html.bl-on .FormWrapper, html.bl-on .FormTitleWrapper {
   html.bl-on #Head { padding: 8px 8px 0 !important; }
   html.bl-on #Head .Row { gap: 8px 10px; padding: 6px 8px; }
   html.bl-on #Head .SiteSearch { order: 6; flex: 1 1 100%; margin: 0 !important; }
-  #bl-design { margin-left: auto; }
   html.bl-on .ContentColumn .CommentForm, html.bl-on .ContentColumn .FormWrapper { padding: 12px !important; }
   html.bl-on .CommentForm .FormWrapper { padding: 0 !important; }
   html.bl-on :is(.CommentFormWrap, .MessageFormWrap) { grid-template-columns: minmax(0, 1fr); }
@@ -1129,6 +1081,7 @@ html.bl-og {
   --bl-r-lg: 4px;
   --bl-r-md: 3px;
   --bl-ease: ease;
+  --bl-z-flyout: 60;
   --bl-z-pop: 70;
 }
 html.bl-og.bl-dark {
@@ -1147,8 +1100,10 @@ html.bl-og.bl-dark {
   --bl-glass: #1c1c21;
   --bl-shadow: 0 2px 8px rgba(0, 0, 0, .6);
 }
-html.bl-og #bl-og-controls { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 12px; }
-html.bl-og #bl-og-controls > * { order: 0; }
+/* The gear floats left of the search box in the green bar. */
+html.bl-og #bl-settings { float: right; margin: -3px 8px 0 0; }
+html.bl-og .bl-gear { color: #fff; }
+html.bl-og .bl-gear:hover, html.bl-og .bl-gear[aria-expanded="true"] { background: rgba(0, 0, 0, .18); color: #fff; }
 html.bl-og .Reactions .ReactSprite { color: var(--bl-ink); }
 /* The theme switch above replaces the site's moon button. */
 html.bl-og .MeMenu > span[style*="cursor"] { display: none; }
@@ -1167,6 +1122,27 @@ html.bl-og .Sprite, html.bl-og .Sprite16 { display: inline-block; width: 18px !i
 html.bl-og a.Bookmark, html.bl-og .OptionsTitle { width: 18px !important; height: 18px !important; text-indent: -999px; overflow: hidden; }
 html.bl-og a.Bookmark.Bookmarked, html.bl-og .Bookmarked a.Bookmark { background: var(--bl-accent) !important; }
 html.bl-og a:hover > .Sprite, html.bl-og a.Bookmark:hover { background: var(--bl-ink) !important; }
+
+/* Dark inner pages: the site's dark mode leaves fields flat, labels dim, and the header too bright for white text. */
+html.bl-og.bl-dark #Head { background: #177a41 !important; }
+html.bl-og.bl-dark .ContentColumn :is(input.InputBox, input[type="text"], input[type="password"], input[type="email"], textarea, select) {
+  background: var(--bl-field) !important;
+  border: 1px solid var(--bl-field-line) !important;
+  border-radius: var(--bl-r-md);
+  color: var(--bl-ink) !important;
+}
+html.bl-og.bl-dark .ContentColumn :is(input, textarea, select):focus { border-color: var(--bl-accent) !important; outline: 0; }
+html.bl-og.bl-dark .ContentColumn input[disabled] { color: var(--bl-muted) !important; }
+html.bl-og.bl-dark .ContentColumn :is(input.Button, a.Button, button.Button) { background: var(--bl-surface2) !important; border: 1px solid var(--bl-field-line) !important; color: var(--bl-ink) !important; }
+html.bl-og.bl-dark .ContentColumn input.Button.Primary, html.bl-og.bl-dark .ContentColumn form .Buttons input.Button:last-of-type { background: var(--bl-fill) !important; border-color: transparent !important; color: var(--bl-on-fill) !important; }
+html.bl-og.bl-dark #Frame dl.About dt { color: var(--bl-muted) !important; }
+html.bl-og.bl-dark .ContentColumn label, html.bl-og.bl-dark .DataTable th, html.bl-og.bl-dark .PreferenceGroup th { color: var(--bl-ink) !important; }
+html.bl-og.bl-dark dl.About dd { color: var(--bl-muted); }
+html.bl-og.bl-dark .Info, html.bl-og.bl-dark .Messages.Information { background: var(--bl-surface2) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; }
+html.bl-og.bl-dark :is(.DataTable, .PreferenceGroup) :is(td, th) { background: transparent !important; border-color: var(--bl-line) !important; }
+html.bl-og .ContentColumn form li { margin-bottom: 10px; }
+html.bl-og .ContentColumn form label { margin-bottom: 3px; }
+html.bl-og .ContentColumn :is(input.InputBox, textarea, select) { padding: 6px 8px; border-radius: var(--bl-r-md); box-sizing: border-box; }
 
 /* Small spacing and alignment on the stock rows and posts */
 html.bl-og #let-better-bar { position: static; margin: 0 0 10px; padding: 8px 10px; font-size: 12px; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
@@ -1198,10 +1174,31 @@ html.bl-og :is(.ItemComment, .ItemDiscussion):not(.bl-sig-open) .Signature { dis
   html.bl-og #Body > .Row { display: flex; flex-direction: column; }
   html.bl-og .ContentColumn { order: 1; width: auto !important; min-width: 0; margin: 0 !important; }
   html.bl-og #Panel { order: 2; float: none; width: auto !important; margin-top: 16px !important; }
-  html.bl-og #bl-og-controls { flex-wrap: wrap; }
   html.bl-og #let-better-bar { flex-wrap: wrap; }
   html.bl-og .LastDiscussionTitle, html.bl-og .MostRecent { white-space: normal; overflow-wrap: anywhere; }
 }
+
+/* ---- dashboard: /discussions#dashboard, in every design ---- */
+html.bl-dash-on .ContentColumn > *:not(#bl-dash) { display: none !important; }
+#bl-dash h1 { margin: 0 0 12px; color: var(--bl-ink); font: 700 22px/1.25 var(--bl-display); }
+.bl-dash-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 8px; margin: 0 0 16px; }
+.bl-dash-stat { display: block; padding: 12px; background: var(--bl-surface); border: 1px solid var(--bl-line); border-radius: var(--bl-r-lg); color: var(--bl-muted); font: 400 12px/1.3 var(--bl-text); text-decoration: none; }
+.bl-dash-stat:hover { border-color: var(--bl-accent); }
+.bl-dash-stat b { display: block; margin-bottom: 2px; color: var(--bl-ink); font: 700 22px/1.2 var(--bl-display); }
+.bl-dash-box { margin: 0 0 16px; background: var(--bl-surface); border: 1px solid var(--bl-line); border-radius: var(--bl-r-lg); }
+.bl-dash-box h2 { margin: 0; padding: 10px 12px; border-bottom: 1px solid var(--bl-line); color: var(--bl-ink); font: 600 15px/1.3 var(--bl-display); }
+.bl-dash-box ul { margin: 0; padding: 0; list-style: none; }
+.bl-dash-box li { margin: 0; padding: 9px 12px; border-bottom: 1px solid var(--bl-line); list-style: none; }
+.bl-dash-box li:last-child { border-bottom: 0; }
+.bl-dash-title { display: block; color: var(--bl-ink); font: 400 14px/1.35 var(--bl-text); overflow-wrap: anywhere; text-decoration: none; }
+.bl-dash-new .bl-dash-title { color: var(--bl-accent); font-weight: 700; }
+.bl-dash-title:hover { text-decoration: underline; }
+.bl-dash-meta { margin-top: 2px; color: var(--bl-muted); font: 400 12px/1.4 var(--bl-text); }
+.bl-dash-meta a { color: inherit; }
+.bl-dash-meta a:hover { color: var(--bl-accent); }
+.bl-dash-badge { display: inline-block; margin-right: 6px; padding: 0 5px; background: var(--bl-fill); border-radius: 2px; color: var(--bl-on-fill); font-size: 11px; font-weight: 700; }
+html.bl-og .bl-dash-badge { background: #ff0; color: #000; }
+.bl-dash-empty { margin: 0; padding: 12px; color: var(--bl-muted); font: 400 13px/1.4 var(--bl-text); }
 
 /* Keeps the sticky rail free of the page end. A grid item sticks inside its grid area, so the rail
    spans a second row that reaches behind the footer (height set in content.js). */
