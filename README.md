@@ -58,3 +58,7 @@ BetterLET asks for no extra browser permissions. Your settings stay in your brow
 ## Development
 
 Plain JavaScript and CSS, with no build step. Read [DESIGN.md](DESIGN.md) before changing anything visual.
+
+## License
+
+[MIT](LICENSE)

@@ -12,8 +12,6 @@ V2 is only a token and spacing layer at the end of `styles.css` under `html.bl-v
 
 **The rack.** LowEndTalk is where people buy and run small servers, so the forum reads like a server rack at night. The thread list is a rack: mounting rails down both sides, one thread per unit, and a status light on each unit. A lit light means you have not opened it, or it has new replies since you did.
 
-- **Surface mode:** Operate. People scan, then read. Speed beats expression.
-- **Dials:** variance 4, motion 4, density 7.
 - **Signature:** the rack rails and status lights. Nothing else competes with them.
 - **Heritage:** green stays. It is the site's own colour, deepened and made tonal.
 
