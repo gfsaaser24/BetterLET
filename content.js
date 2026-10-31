@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.9
+// @version      1.10
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -102,6 +102,17 @@
       e.stopImmediatePropagation();
     }
   }, true);
+
+  // Ctrl+Enter (Cmd+Enter on Mac) sends a comment or message reply. Event delegation also covers inline edit boxes.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || !(e.ctrlKey || e.metaKey) || e.repeat || e.isComposing) return;
+    const box = e.target.closest?.('textarea');
+    if (!box?.value.trim()) return;
+    const send = box.closest('form')?.querySelector('input.CommentButton, input#Form_SendMessage');
+    if (!send || send.disabled) return;
+    e.preventDefault();
+    send.click();
+  });
 
   document.addEventListener('click', (e) => {
     const thanked = e.target.closest?.('.ThankedBy');
