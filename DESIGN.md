@@ -14,7 +14,7 @@ Plain numbers with no boxes, in every design and theme. The current page is bold
 
 ## Settings gear
 
-One gear to the left of the search box, in every design. Its menu holds Design (OG, V1, V2) and Theme (Auto, Light, Dark). A check mark shows the current choice. Clicking an item applies it.
+One gear to the left of the search box, in every design. Its menu holds Design (OG, V1, V2), Theme (Auto, Light, Dark), and Signatures (Expanded, Collapsed). A check mark shows the current choice. Clicking an item applies it.
 
 ## Dashboard
 
@@ -112,7 +112,7 @@ Recipe: `--bl-glass` fill, `blur(18px) saturate(160%)`, inset top highlight, tig
 - **Hover cards:** one shared `#bl-pop` for people. Cards open after 350ms. The card stops at the ad column, so it never covers an ad. Skeleton while loading. Outside text is always plain text, never HTML. People cards never show email.
 - **Comment boxes:** Ctrl+Enter or Cmd+Enter sends a comment or message reply. It never sends an empty box.
 - **Thanks:** the site's link moves from the date line to the button row beside Quote. The site gives no Thanks link on your own posts, or on one you already thanked.
-- **Thread:** posts on `--bl-surface`. Signatures and thanks names stay closed until clicked.
+- **Thread:** posts on `--bl-surface`. Signatures follow the gear setting and are expanded by default. Thanks names stay closed until clicked.
 
 ## 9. Motion
 

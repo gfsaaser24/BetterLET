@@ -25,7 +25,8 @@
 - Load the next page in place, and mark all seen.
 
 **Threads**
-- Signatures and long "Thanked by" lists stay closed until clicked.
+- Long "Thanked by" lists stay closed until clicked.
+- Keep signatures expanded or collapsed from the gear.
 - Each thread shows when it started and its last comment.
 - Thanks sits beside Quote as a button on every post.
 - Links to other sites open in a new tab.

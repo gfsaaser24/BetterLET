@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.22
+// @version      1.23
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -79,11 +79,14 @@
         ${option('design', 'og', 'OG')}${option('design', 'v1', 'V1')}${option('design', 'v2', 'V2')}
         <div class="bl-menu-label">Theme</div>
         ${option('mode', 'auto', 'Auto')}${option('mode', 'light', 'Light')}${option('mode', 'dark', 'Dark')}
+        <div class="bl-menu-label">Signatures</div>
+        ${option('sig', 'expanded', 'Expanded')}${option('sig', 'collapsed', 'Collapsed')}
       </div>`;
     const gear = box.querySelector('.bl-gear');
     const menu = box.querySelector('.bl-menu');
     const mark = () => menu.querySelectorAll('button').forEach((b) => {
-      const on = b.dataset.design ? b.dataset.design === theme.getDesign() : b.dataset.mode === theme.get();
+      const { design, mode, sig } = b.dataset;
+      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : sig === theme.getSignatures();
       b.setAttribute('aria-checked', String(on));
     });
     const toggle = (open) => {
@@ -92,9 +95,10 @@
     };
     gear.addEventListener('click', () => toggle(menu.hidden));
     menu.addEventListener('click', (e) => {
-      const { design, mode } = e.target.dataset;
+      const { design, mode, sig } = e.target.dataset;
       if (design) theme.setDesign(design);
       if (mode) theme.set(mode);
+      if (sig) theme.setSignatures(sig);
       mark();
     });
     document.addEventListener('click', (e) => { if (!box.contains(e.target)) toggle(false); });
