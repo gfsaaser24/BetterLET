@@ -413,20 +413,95 @@ html.bl-on .editor-insert-dialog { background: var(--bl-surface) !important; bor
 html.bl-on #Foot, html.bl-on #Foot p, html.bl-on #Foot span, html.bl-on #Foot div { color: var(--bl-muted) !important; }
 html.bl-on #Foot a { color: var(--bl-ink) !important; }
 
-/* New thread and new message: same card as settings. */
-html.bl-on #vanilla_post_discussion .FormWrapper, html.bl-on #conversations_messages_add .FormWrapper, html.bl-on #vanilla_post_editdiscussion .FormWrapper {
-  max-width: 860px;
-  padding: 20px !important;
+/* ---- composer: one system for new thread, full reply, comment box, messages, and edits ---- */
+html.bl-on .ContentColumn .CommentForm,
+html.bl-on #vanilla_post_discussion .FormWrapper,
+html.bl-on #vanilla_post_editdiscussion .FormWrapper,
+html.bl-on #conversations_messages_add .FormWrapper {
+  box-sizing: border-box;
+  width: auto !important;
+  max-width: none !important;
+  margin: 16px 0 0 !important;
+  padding: 16px !important;
   background: var(--bl-surface) !important;
   border: 1px solid var(--bl-line);
   border-radius: var(--bl-r-lg);
 }
-html.bl-on .FormWrapper input[type="submit"].Button.Primary, html.bl-on .CommentForm input[type="submit"].Button.Primary {
+html.bl-on #vanilla_post_comment .CommentForm, html.bl-on #vanilla_post_discussion .FormWrapper, html.bl-on #conversations_messages_add .FormWrapper { margin-top: 0 !important; }
+html.bl-on .CommentForm .FormWrapper { margin: 0 !important; padding: 0 !important; background: transparent !important; border: 0 !important; }
+html.bl-on .ContentColumn .CommentForm h2.H { margin: 0 0 12px !important; padding: 0 !important; color: var(--bl-ink) !important; font: 600 18px/1.3 var(--bl-display) !important; letter-spacing: 0; }
+html.bl-on :is(.CommentFormWrap, .MessageFormWrap) { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; margin: 0 !important; padding: 0 !important; }
+html.bl-on :is(.CommentFormWrap, .MessageFormWrap)::before, html.bl-on :is(.CommentFormWrap, .MessageFormWrap)::after { display: none !important; }
+html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .Form-HeaderWrap, html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .Form-Header { float: none !important; width: auto !important; margin: 0 !important; padding: 0 !important; background: none !important; }
+html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .Form-Header .Author, html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .Form-Header .PhotoWrap { float: none !important; display: block; margin: 0 !important; padding: 0 !important; }
+html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .ProfilePhoto { display: block; width: 40px !important; height: 40px !important; border-radius: 4px; }
+html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .Form-BodyWrap, html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .Form-Body { float: none !important; width: auto !important; min-width: 0; margin: 0 !important; padding: 0 !important; background: none !important; border: 0 !important; }
+
+/* Fields */
+html.bl-on .ContentColumn .FormWrapper .P { margin: 0 0 14px !important; padding: 0 !important; }
+html.bl-on .ContentColumn .FormWrapper .P:empty { display: none; }
+html.bl-on .ContentColumn .FormWrapper label:not(.CheckBoxLabel) { display: block; margin: 0 0 4px !important; padding: 0 !important; font: 500 13px/1.3 var(--bl-text) !important; }
+html.bl-on .ContentColumn .FormWrapper .CheckBoxLabel { display: inline-flex !important; align-items: center; gap: 8px; margin: 0 !important; padding: 0 !important; font: 400 14px/1.3 var(--bl-text) !important; }
+html.bl-on .ContentColumn .FormWrapper input[type="checkbox"] { margin: 0 !important; accent-color: var(--bl-accent); }
+html.bl-on .ContentColumn .FormWrapper input.InputBox:not(.BodyBox) { box-sizing: border-box; width: 100% !important; height: 38px; padding: 0 12px !important; font-size: 15px !important; }
+html.bl-on .ContentColumn .FormWrapper .bodybox-wrap { margin: 0 !important; padding: 0 !important; }
+html.bl-on .ContentColumn .FormWrapper .editor { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 0 0 6px !important; padding: 0 !important; border: 0 !important; }
+html.bl-on .ContentColumn .FormWrapper .TextBoxWrapper { margin: 0 !important; padding: 0 !important; }
+html.bl-on .ContentColumn .FormWrapper textarea.BodyBox { display: block; box-sizing: border-box; width: 100% !important; min-height: 200px; padding: 10px 12px !important; font-size: 15px !important; line-height: 1.5 !important; resize: vertical; }
+html.bl-on .ContentColumn .CommentForm textarea.BodyBox, html.bl-on #conversations_messages_index textarea.BodyBox { min-height: 120px; }
+html.bl-on .ContentColumn .FormWrapper .editor-help-text, html.bl-on .ContentColumn .FormWrapper .PostFormHelp { margin: 6px 0 0 !important; padding: 0 !important; color: var(--bl-muted) !important; font-size: 12px !important; }
+html.bl-on .ContentColumn .FormWrapper .Info { margin: 0 0 14px !important; padding: 0 !important; background: none !important; border: 0 !important; color: var(--bl-muted) !important; font-size: 13px; }
+html.bl-on .ContentColumn .token-input-list {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-height: 38px;
+  padding: 4px 8px !important;
+  background: var(--bl-field) !important;
+  border: 1px solid var(--bl-field-line) !important;
+  border-radius: var(--bl-r-md);
+}
+html.bl-on .ContentColumn .token-input-list input { background: transparent !important; border: 0 !important; color: var(--bl-ink) !important; }
+
+/* Action row: quiet way out on the left, then Preview, Save Draft, and the main action last. */
+html.bl-on body:not(.EditMode) .ContentColumn form .Buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 12px 0 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  text-align: right !important;
+}
+html.bl-on body:not(.EditMode) .ContentColumn form .Buttons .Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  order: 1;
+  height: 36px;
+  margin: 0 !important;
+  padding: 0 14px !important;
+  font: 500 14px/1 var(--bl-text) !important;
+}
+html.bl-on body:not(.EditMode) .ContentColumn form .Buttons .Button.Hidden { display: none !important; }
+html.bl-on body:not(.EditMode) .ContentColumn form .Buttons .DraftButton { order: 2; }
+html.bl-on body:not(.EditMode) .ContentColumn form .Buttons .Button.Primary { order: 3; font-weight: 600 !important; }
+html.bl-on .ContentColumn form .Buttons .Back { order: 0; margin: 0 auto 0 0 !important; padding: 0 !important; color: var(--bl-muted); font-size: 13px; }
+html.bl-on .ContentColumn form .Buttons .Back a, html.bl-on .ContentColumn form .Buttons .Bullet { color: var(--bl-muted) !important; }
+html.bl-on .ContentColumn form .Buttons .Back a:hover { color: var(--bl-accent) !important; }
+html.bl-on body:not(.EditMode) .ContentColumn form .Buttons a.Cancel { order: 0; margin: 0 auto 0 0 !important; padding: 0 !important; background: none !important; border: 0 !important; color: var(--bl-muted) !important; }
+html.bl-on body:not(.EditMode) .ContentColumn form .Buttons a.Cancel:hover { color: var(--bl-accent) !important; }
+html.bl-on .ContentColumn .FormWrapper .Preview, html.bl-on .ContentColumn .Preview { margin: 0 0 12px !important; padding: 12px !important; background: var(--bl-surface2) !important; border: 0 !important; border-radius: var(--bl-r-md); color: var(--bl-ink) !important; }
+
+/* The main button keeps its fill everywhere. */
+html.bl-on .ContentColumn input[type="submit"].Button.Primary {
   background: var(--bl-fill) !important;
   border-color: transparent !important;
   color: var(--bl-on-fill) !important;
   -webkit-text-fill-color: var(--bl-on-fill);
-  font-weight: 600;
 }
 html.bl-on .Pager a, html.bl-on .Pager span {
   background: var(--bl-surface) !important;
@@ -883,6 +958,12 @@ html.bl-on .CommentForm, html.bl-on .FormWrapper, html.bl-on .FormTitleWrapper {
   html.bl-on #Head .Row { gap: 8px 10px; padding: 6px 8px; }
   html.bl-on #Head .SiteSearch { order: 6; flex: 1 1 100%; margin: 0 !important; }
   #bl-design { margin-left: auto; }
+  html.bl-on .ContentColumn .CommentForm, html.bl-on .ContentColumn .FormWrapper { padding: 12px !important; }
+  html.bl-on .CommentForm .FormWrapper { padding: 0 !important; }
+  html.bl-on :is(.CommentFormWrap, .MessageFormWrap) { grid-template-columns: minmax(0, 1fr); }
+  html.bl-on :is(.CommentFormWrap, .MessageFormWrap) .Form-HeaderWrap { display: none; }
+  html.bl-on body:not(.EditMode) .ContentColumn form .Buttons .Button.Primary { flex: 1 1 100%; }
+  html.bl-on .ContentColumn form .Buttons .Back, html.bl-on body:not(.EditMode) .ContentColumn form .Buttons a.Cancel { flex: 1 1 100%; margin: 0 !important; }
   html.bl-on #Body > .Row { gap: 12px; padding: 0 8px; }
   #let-better-bar { position: static; gap: 8px; padding: 8px; }
   #let-better-bar .lb-count { margin-left: 0; }
