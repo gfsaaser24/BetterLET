@@ -6,8 +6,8 @@
 
 <p align="center">
   <strong>LowEndTalk, rebuilt in your browser.</strong><br>
-  A Chrome extension that gives the forum a real layout, real scanning, and two real themes.<br>
-  <strong>Not an ad blocker. Ads pay for LET and LEB, so they stay.</strong>
+  A Chrome extension that gives the forum a real layout, real scanning, and two real themes.<br><br>
+  Works in all chromium based browsers.
 </p>
 
 <p align="center">
