@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.14
+// @version      1.22
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -35,10 +35,13 @@
   const saveStarted = () => { try { localStorage.setItem(DKEY, JSON.stringify(started)); } catch {} };
   const firstPostTime = (doc) => Date.parse(doc.querySelector('.DateCreated time')?.getAttribute('datetime') || '') || 0;
 
+  // OG keeps the stock page: no rail, no rebuilt pages, only the small features.
+  const og = document.documentElement.classList.contains('bl-og');
+
   // ---- left rail: move the useful sidebar blocks away from the ads ----
   const row = document.querySelector('#Body > .Row');
   const panel = document.querySelector('#Panel');
-  if (row && panel) {
+  if (row && panel && !og) {
     const rail = document.createElement('div');
     rail.id = 'bl-rail';
     const scroll = document.createElement('div');
@@ -62,36 +65,44 @@
     }
   }
 
-  // ---- theme switch: Auto, Light, Dark ----
+  // ---- settings: one gear beside the search box, with design and theme inside ----
   const headRow = document.querySelector('#Head .Row');
   if (headRow && window.__letBetterTheme) {
     const theme = window.__letBetterTheme;
-    const seg = document.createElement('div');
-    seg.id = 'bl-theme';
-    seg.setAttribute('role', 'group');
-    seg.setAttribute('aria-label', 'Theme');
-    seg.innerHTML = ['auto', 'light', 'dark'].map((m) => `<button type="button" data-mode="${m}">${m[0].toUpperCase()}${m.slice(1)}</button>`).join('');
-    const mark = () => seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === theme.get())));
-    seg.addEventListener('click', (e) => {
-      const mode = e.target.dataset.mode;
-      if (mode) { theme.set(mode); mark(); }
+    const box = document.createElement('div');
+    box.id = 'bl-settings';
+    const option = (key, value, label) => `<button type="button" role="menuitemradio" data-${key}="${value}">${label}</button>`;
+    box.innerHTML = `
+      <button type="button" class="bl-gear" title="BetterLET settings" aria-label="BetterLET settings" aria-haspopup="menu" aria-expanded="false"><span class="bl-gear-icon" aria-hidden="true"></span></button>
+      <div class="bl-menu" role="menu" hidden>
+        <div class="bl-menu-label">Design</div>
+        ${option('design', 'og', 'OG')}${option('design', 'v1', 'V1')}${option('design', 'v2', 'V2')}
+        <div class="bl-menu-label">Theme</div>
+        ${option('mode', 'auto', 'Auto')}${option('mode', 'light', 'Light')}${option('mode', 'dark', 'Dark')}
+      </div>`;
+    const gear = box.querySelector('.bl-gear');
+    const menu = box.querySelector('.bl-menu');
+    const mark = () => menu.querySelectorAll('button').forEach((b) => {
+      const on = b.dataset.design ? b.dataset.design === theme.getDesign() : b.dataset.mode === theme.get();
+      b.setAttribute('aria-checked', String(on));
     });
+    const toggle = (open) => {
+      menu.hidden = !open;
+      gear.setAttribute('aria-expanded', String(open));
+    };
+    gear.addEventListener('click', () => toggle(menu.hidden));
+    menu.addEventListener('click', (e) => {
+      const { design, mode } = e.target.dataset;
+      if (design) theme.setDesign(design);
+      if (mode) theme.set(mode);
+      mark();
+    });
+    document.addEventListener('click', (e) => { if (!box.contains(e.target)) toggle(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggle(false); });
     mark();
-    headRow.appendChild(seg);
-
-    const version = document.createElement('div');
-    version.id = 'bl-design';
-    version.className = 'bl-seg';
-    version.setAttribute('role', 'group');
-    version.setAttribute('aria-label', 'Design version');
-    version.innerHTML = ['v1', 'v2'].map((v) => `<button type="button" data-design="${v}">${v.toUpperCase()}</button>`).join('');
-    const markVersion = () => version.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.design === theme.getDesign())));
-    version.addEventListener('click', (e) => {
-      const design = e.target.dataset.design;
-      if (design) { theme.setDesign(design); markVersion(); }
-    });
-    markVersion();
-    headRow.appendChild(version);
+    // The search box floats right on the stock page, so a float placed after it lands to its left.
+    if (og) headRow.querySelector('.SiteSearch')?.after(box);
+    else headRow.appendChild(box);
   }
 
   // ---- clicks that work on every page ----
@@ -101,6 +112,14 @@
       e.preventDefault();
       e.stopImmediatePropagation();
     }
+  }, true);
+
+  // Links to other sites open in a new tab. Set at click time, so it also covers links added later.
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest?.('a[href]');
+    if (!link || !/^https?:$/.test(link.protocol) || link.hostname === location.hostname) return;
+    link.target = '_blank';
+    link.relList.add('noopener');
   }, true);
 
   // Ctrl+Enter (Cmd+Enter on Mac) sends a comment or message reply. Event delegation also covers inline edit boxes.
@@ -165,6 +184,12 @@
         else addEventListener('load', () => setTimeout(jump, 120), { once: true });
       }
     }
+    // The site puts Thanks in the small date line. Move it beside Quote. Moving keeps the site's click handler.
+    document.querySelectorAll('.ItemComment, .ItemDiscussion').forEach((item) => {
+      const thank = item.querySelector('span.Thank, span.UnThank');
+      const row = item.querySelector('.Reactions');
+      if (thank && row) row.append(thank);
+    });
     document.querySelectorAll('.Signature').forEach((sig) => {
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -176,7 +201,7 @@
 
   // ---- profile page: one header card with a spec plate ----
   const user = document.querySelector('.Profile .User');
-  if (document.body.classList.contains('Profile') && user) {
+  if (document.body.classList.contains('Profile') && user && !og) {
     const card = document.createElement('div');
     card.id = 'bl-profile-head';
     const photo = document.querySelector('.PhotoWrapLarge');
@@ -211,7 +236,7 @@
 
   // ---- categories page: same rack as the thread list ----
   const catRows = [...document.querySelectorAll('li[id^="Category_"]')];
-  if (catRows.length) {
+  if (catRows.length && !og) {
     const rack = catRows[0].closest('ul');
     rack.classList.add('bl-rack', 'bl-cats');
     const head = document.createElement('div');
@@ -260,9 +285,99 @@
     });
   }
 
+  // ---- dashboard: your numbers and threads on one page, at /discussions#dashboard ----
+  const signedIn = document.querySelector('.MeBox .Username, .MeBox a[href^="/profile/"]');
+  const discussionsLink = document.querySelector('#Head .SiteMenu a[href="/discussions"]');
+  if (signedIn && discussionsLink) {
+    const li = document.createElement('li');
+    li.innerHTML = '<a href="/discussions#dashboard">Dashboard</a>';
+    // The space matches the stock menu, where spaces set the gap between items.
+    discussionsLink.closest('li').after(' ', li);
+  }
+  addEventListener('hashchange', () => { if (location.pathname === '/discussions') location.reload(); });
+  const content = document.querySelector('.ContentColumn');
+  if (location.pathname === '/discussions' && location.hash === '#dashboard' && content) {
+    document.documentElement.classList.add('bl-dash-on');
+    document.title = 'Dashboard — LowEndTalk';
+    const dash = document.createElement('div');
+    dash.id = 'bl-dash';
+    content.prepend(dash);
+    const el = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    dash.appendChild(el('h1', '', 'Dashboard'));
+    if (!signedIn) {
+      dash.appendChild(el('p', 'bl-dash-empty', 'Sign in to see your dashboard.'));
+      return;
+    }
+    const stats = el('div', 'bl-dash-stats');
+    dash.appendChild(stats);
+    const stat = (label, value, href) => {
+      const card = el('a', 'bl-dash-stat');
+      card.href = href;
+      card.append(el('b', '', value), el('span', '', label));
+      stats.appendChild(card);
+      return card;
+    };
+    const countOf = (href) => document.querySelector(`a[href="${href}"] .Count, a[href="${href}"] .Aside`)?.textContent.trim() || '0';
+    const profile = signedIn.getAttribute('href');
+    const bell = [...document.querySelectorAll('.MeBox a')].find((link) => link.textContent.includes('Notifications'));
+    stat('Notifications', bell?.querySelector('.Alert')?.textContent.trim() || '0', '/profile/notifications');
+    stat('Bookmarks', countOf('/discussions/bookmarked'), '/discussions/bookmarked');
+    stat('My threads', countOf('/discussions/mine'), '/discussions/mine');
+    stat('Drafts', countOf('/drafts'), '/drafts');
+    const thanks = stat('Thanks received', '…', '/profile');
+    const pageOf = (url) => fetch(url, { credentials: 'include' }).then((r) => r.text()).then((html) => new DOMParser().parseFromString(html, 'text/html'));
+    if (profile) {
+      pageOf(profile).then((doc) => {
+        thanks.firstChild.textContent = doc.querySelector('dd.ReceivedThankCount')?.textContent.trim() || '0';
+      }).catch(() => { thanks.firstChild.textContent = '?'; });
+    }
+    const threads = (title, url) => {
+      const section = el('section', 'bl-dash-box');
+      section.appendChild(el('h2', '', title));
+      const rows = el('ul');
+      section.appendChild(rows);
+      dash.appendChild(section);
+      pageOf(url).then((doc) => {
+        const items = [...doc.querySelectorAll('li.ItemDiscussion')].map((li) => ({
+          link: li.querySelector('.Title a'),
+          fresh: li.querySelector('.HasNew')?.textContent.trim() || '',
+          by: li.querySelector('.LastCommentBy a')?.textContent.trim() || '',
+          ms: Date.parse(li.querySelector('.LastCommentDate time')?.getAttribute('datetime') || '') || 0,
+        })).filter((t) => t.link);
+        items.sort((a, b) => Boolean(b.fresh) - Boolean(a.fresh) || b.ms - a.ms);
+        if (!items.length) section.appendChild(el('p', 'bl-dash-empty', 'Nothing here yet.'));
+        items.slice(0, 10).forEach((t) => {
+          const href = t.link.getAttribute('href') || '';
+          const row = el('li', t.fresh ? 'bl-dash-new' : '');
+          const name = el('a', 'bl-dash-title', t.link.textContent.trim());
+          name.href = href.replace(/(\/p\d+)?(#.*)?$/, '/p1');
+          row.appendChild(name);
+          const meta = el('div', 'bl-dash-meta');
+          if (t.fresh) meta.appendChild(el('span', 'bl-dash-badge', t.fresh));
+          if (t.ms) {
+            meta.append(t.by ? `Last comment by ${t.by} on ` : 'Last comment on ');
+            const when = el('a', 'bl-when', stamp(t.ms));
+            when.href = href.includes('#') ? href : `${href}#latest`;
+            meta.appendChild(when);
+          }
+          row.appendChild(meta);
+          rows.appendChild(row);
+        });
+      }).catch(() => section.appendChild(el('p', 'bl-dash-empty', 'Could not load this list.')));
+    };
+    threads('My threads', '/discussions/mine');
+    threads('Bookmarks', '/discussions/bookmarked');
+    return;
+  }
+
   const list = document.querySelector('ul.Discussions');
   if (!list) return;
-  list.classList.add('bl-rack');
+  if (!og) list.classList.add('bl-rack');
 
   const state = Object.assign({ sort: 'reply', hideSeen: false, hidePinned: false, seen: {}, opened: {} }, load());
   const save = () => {
@@ -312,7 +427,7 @@
   const head = document.createElement('div');
   head.id = 'bl-list-head';
   head.innerHTML = '<span>Thread</span><span>Replies</span><span>Views</span><span>Started</span>';
-  list.parentNode.insertBefore(head, list);
+  if (!og) list.parentNode.insertBefore(head, list);
 
   bar.querySelector('[data-k="sort"]').value = state.sort;
   bar.querySelector('[data-k="hideSeen"]').checked = state.hideSeen;
@@ -412,10 +527,39 @@
     content.append(replies, views, start);
   };
 
+  // OG keeps the stock row. The title opens the first post, and the date and arrow jump to the last comment.
+  const ogRow = (li) => {
+    const link = li.querySelector('.Title a');
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    const time = li.querySelector('.LastCommentDate time');
+    if (time && comments(li) > 0) {
+      const latest = lastCommentUrl(li, href);
+      const when = document.createElement('a');
+      when.className = 'bl-when';
+      when.href = latest;
+      when.title = 'Go to the last comment';
+      time.before(when);
+      when.appendChild(time);
+      const go = document.createElement('a');
+      go.className = 'bl-go';
+      go.href = latest;
+      go.title = 'Go to the last comment';
+      go.setAttribute('aria-label', 'Go to the last comment');
+      when.after(go);
+    }
+    link.setAttribute('href', href.replace(/(\/p\d+)?(#.*)?$/, '/p1'));
+  };
+
   // ---- per-row "mark seen" button + click tracking ----
   const decorate = (li) => {
     if (li.dataset.lb) return;
     li.dataset.lb = '1';
+    if (og) {
+      ogRow(li);
+      li.querySelectorAll('.Title a, .bl-when, .bl-go').forEach((a) => a.addEventListener('mousedown', () => markSeen(li)));
+      return;
+    }
     compact(li);
     const x = document.createElement('button');
     x.className = 'lb-x';

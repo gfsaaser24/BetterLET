@@ -2,9 +2,27 @@
 
 This file is the rule book. `styles.css` holds the tokens. If the two disagree, fix them in the same change.
 
+## OG
+
+A third choice on the same switch. It is the stock page: stock layout, stock pages, stock fonts, and no left sidebar. Our features sit on top: hover cards, Phosphor icons, the toolbar, the title opening the first post, the date and arrow jumping to the last comment, Thanks beside Quote, closed signatures, and Ctrl+Enter.
+
+OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is in `styles.css` under `html.bl-og`. Dark is the site's own dark mode, so changing theme or leaving OG reloads the page. Its gear sits in the green bar, left of the search box.
+
+## Page numbers
+
+Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color. They always sit on their own row, clear of the cards above and below.
+
+## Settings gear
+
+One gear to the left of the search box, in every design. Its menu holds Design (OG, V1, V2) and Theme (Auto, Light, Dark). A check mark shows the current choice. Clicking an item applies it.
+
+## Dashboard
+
+`/discussions#dashboard`, linked in the top menu when signed in. It shows counts, then My threads and Bookmarks with new replies first. It only reads list pages, and it never opens the notifications page by itself.
+
 ## V2 trial
 
-A V1 / V2 switch sits in the header. It is saved in `letBetter.design`. V2 matches LowEndBox: General Sans from Fontshare, 16px text, green `#05872f`, 2px corners, thin gray borders, a white page on mint, no glass, no rack rails, round avatars.
+The design choice is in the settings gear. It is saved in `letBetter.design`. V2 matches LowEndBox: General Sans from Fontshare, 16px text, green `#05872f`, 2px corners, thin gray borders, a white page on mint, no glass, no rack rails, round avatars.
 
 V2 is only a token and spacing layer at the end of `styles.css` under `html.bl-v2`. All markup and features are shared, so every new feature works in both. Sections below describe V1 unless they say otherwise. If V2 wins, its tokens become the base and the switch goes away.
 
@@ -43,7 +61,7 @@ One family of tinted green neutrals and one accent. Never a cool blue charcoal, 
 
 ## 4. Theme
 
-Three modes: Auto, Light, Dark. Auto follows the system. The choice is saved in `letBetter.theme`. The control is a text segmented switch in the header, never a sun and moon toggle. The site's moon button is hidden so there is one control. `early.js` keeps the site's own dark mode off, because its pale text breaks our light themes.
+Three modes: Auto, Light, Dark. Auto follows the system. The choice is saved in `letBetter.theme`. The control is a text segmented switch in the header, never a sun and moon toggle. The site's moon button is hidden so there is one control. `early.js` keeps the site's own dark mode off in V1 and V2, because its pale text breaks our light themes. OG uses it.
 
 ## 5. Type
 
@@ -88,10 +106,12 @@ Recipe: `--bl-glass` fill, `blur(18px) saturate(160%)`, inset top highlight, tig
 - **Categories:** the same rack. Name, description, threads, replies, latest post. Subcategories join their parent with a curved connector. The whole row is a link.
 - **Profile:** one header card. Small avatar, name, edit button, then a spec plate of label over value. Empty warnings are one fact on the plate, not a section.
 - **Composer:** one system on new thread, full reply, comment box, message pages, and post edits. Card with 16 padding, label above field, 38 tall inputs, 15px text. Every action button is 36 tall at 14px. Way out on the left, then Preview, Save Draft, and the main action last on the right. Settings pages keep Save on the left under their short forms.
+- **Polls:** one card inside the post, with the same bar fill for every option. The plugin's rainbow colors and arrow images stay off. Add a Question and Add an Option are plain buttons.
 - **Primary button:** `--bl-fill`. One per view. All other buttons use `--bl-surface2`.
 - **Pop-out menus:** 12 radius, 4 padding, rows with 8 radius. Scale in from the top left. No arrow on the account menus.
 - **Hover cards:** one shared `#bl-pop` for people. Cards open after 350ms. The card stops at the ad column, so it never covers an ad. Skeleton while loading. Outside text is always plain text, never HTML. People cards never show email.
 - **Comment boxes:** Ctrl+Enter or Cmd+Enter sends a comment or message reply. It never sends an empty box.
+- **Thanks:** the site's link moves from the date line to the button row beside Quote. The site gives no Thanks link on your own posts, or on one you already thanked.
 - **Thread:** posts on `--bl-surface`. Signatures and thanks names stay closed until clicked.
 
 ## 9. Motion

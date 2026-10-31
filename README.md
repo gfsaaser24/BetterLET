@@ -27,13 +27,17 @@
 **Threads**
 - Signatures and long "Thanked by" lists stay closed until clicked.
 - Each thread shows when it started and its last comment.
+- Thanks sits beside Quote as a button on every post.
+- Links to other sites open in a new tab.
 - Ctrl+Enter sends a comment or message reply.
 
 **Layout**
 - Wider layout with a left sidebar that stays in place.
 - Works on wide screens, older laptops, small windows, and phones.
 - Auto, Light, and Dark themes.
-- Two designs to compare: V1 and a V2 that matches LowEndBox.
+- A gear beside the search box holds design and theme.
+- A Dashboard page shows your counts, threads, and bookmarks.
+- Three designs to compare: OG keeps the original layout and fonts with no sidebar, V1 is a server rack, and V2 matches LowEndBox.
 
 **Pages and details**
 - Rebuilt Categories, Profile, and all six settings pages.
