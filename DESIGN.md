@@ -4,7 +4,9 @@ This file is the rule book. `styles.css` holds the tokens. If the two disagree, 
 
 ## OG
 
-A third choice on the same switch. It keeps the original LowEndTalk look: mint page, white frame, `#60a96d` header band, green links, yellow new counts, Lucida text. It adds our layout, features, and spacing, plus a dark theme. Like V2, it is only a token and spacing layer in `styles.css`, under `html.bl-og`. The header band runs full width, so it never sits beside the ads.
+A third choice on the same switch. It is the stock page: stock layout, stock pages, stock fonts, and no left sidebar. Our features sit on top: hover cards, Phosphor icons, the toolbar, the title opening the first post, the date and arrow jumping to the last comment, Thanks beside Quote, closed signatures, and Ctrl+Enter.
+
+OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is in `styles.css` under `html.bl-og`. Dark is the site's own dark mode, so changing theme or leaving OG reloads the page. The switches sit at the top of the right panel, above the ads.
 
 ## V2 trial
 
@@ -47,7 +49,7 @@ One family of tinted green neutrals and one accent. Never a cool blue charcoal, 
 
 ## 4. Theme
 
-Three modes: Auto, Light, Dark. Auto follows the system. The choice is saved in `letBetter.theme`. The control is a text segmented switch in the header, never a sun and moon toggle. The site's moon button is hidden so there is one control. `early.js` keeps the site's own dark mode off, because its pale text breaks our light themes.
+Three modes: Auto, Light, Dark. Auto follows the system. The choice is saved in `letBetter.theme`. The control is a text segmented switch in the header, never a sun and moon toggle. The site's moon button is hidden so there is one control. `early.js` keeps the site's own dark mode off in V1 and V2, because its pale text breaks our light themes. OG uses it.
 
 ## 5. Type
 

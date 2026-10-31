@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.16
+// @version      1.17
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -35,10 +35,13 @@
   const saveStarted = () => { try { localStorage.setItem(DKEY, JSON.stringify(started)); } catch {} };
   const firstPostTime = (doc) => Date.parse(doc.querySelector('.DateCreated time')?.getAttribute('datetime') || '') || 0;
 
+  // OG keeps the stock page: no rail, no rebuilt pages, only the small features.
+  const og = document.documentElement.classList.contains('bl-og');
+
   // ---- left rail: move the useful sidebar blocks away from the ads ----
   const row = document.querySelector('#Body > .Row');
   const panel = document.querySelector('#Panel');
-  if (row && panel) {
+  if (row && panel && !og) {
     const rail = document.createElement('div');
     rail.id = 'bl-rail';
     const scroll = document.createElement('div');
@@ -77,7 +80,6 @@
       if (mode) { theme.set(mode); mark(); }
     });
     mark();
-    headRow.appendChild(seg);
 
     const version = document.createElement('div');
     version.id = 'bl-design';
@@ -91,7 +93,14 @@
       if (design) { theme.setDesign(design); markVersion(); }
     });
     markVersion();
-    headRow.appendChild(version);
+    if (og && panel) {
+      const controls = document.createElement('div');
+      controls.id = 'bl-og-controls';
+      controls.append(version, seg);
+      panel.prepend(controls);
+    } else {
+      headRow.append(seg, version);
+    }
   }
 
   // ---- clicks that work on every page ----
@@ -182,7 +191,7 @@
 
   // ---- profile page: one header card with a spec plate ----
   const user = document.querySelector('.Profile .User');
-  if (document.body.classList.contains('Profile') && user) {
+  if (document.body.classList.contains('Profile') && user && !og) {
     const card = document.createElement('div');
     card.id = 'bl-profile-head';
     const photo = document.querySelector('.PhotoWrapLarge');
@@ -217,7 +226,7 @@
 
   // ---- categories page: same rack as the thread list ----
   const catRows = [...document.querySelectorAll('li[id^="Category_"]')];
-  if (catRows.length) {
+  if (catRows.length && !og) {
     const rack = catRows[0].closest('ul');
     rack.classList.add('bl-rack', 'bl-cats');
     const head = document.createElement('div');
@@ -268,7 +277,7 @@
 
   const list = document.querySelector('ul.Discussions');
   if (!list) return;
-  list.classList.add('bl-rack');
+  if (!og) list.classList.add('bl-rack');
 
   const state = Object.assign({ sort: 'reply', hideSeen: false, hidePinned: false, seen: {}, opened: {} }, load());
   const save = () => {
@@ -318,7 +327,7 @@
   const head = document.createElement('div');
   head.id = 'bl-list-head';
   head.innerHTML = '<span>Thread</span><span>Replies</span><span>Views</span><span>Started</span>';
-  list.parentNode.insertBefore(head, list);
+  if (!og) list.parentNode.insertBefore(head, list);
 
   bar.querySelector('[data-k="sort"]').value = state.sort;
   bar.querySelector('[data-k="hideSeen"]').checked = state.hideSeen;
@@ -418,10 +427,39 @@
     content.append(replies, views, start);
   };
 
+  // OG keeps the stock row. The title opens the first post, and the date and arrow jump to the last comment.
+  const ogRow = (li) => {
+    const link = li.querySelector('.Title a');
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    const time = li.querySelector('.LastCommentDate time');
+    if (time && comments(li) > 0) {
+      const latest = lastCommentUrl(li, href);
+      const when = document.createElement('a');
+      when.className = 'bl-when';
+      when.href = latest;
+      when.title = 'Go to the last comment';
+      time.before(when);
+      when.appendChild(time);
+      const go = document.createElement('a');
+      go.className = 'bl-go';
+      go.href = latest;
+      go.title = 'Go to the last comment';
+      go.setAttribute('aria-label', 'Go to the last comment');
+      when.after(go);
+    }
+    link.setAttribute('href', href.replace(/(\/p\d+)?(#.*)?$/, '/p1'));
+  };
+
   // ---- per-row "mark seen" button + click tracking ----
   const decorate = (li) => {
     if (li.dataset.lb) return;
     li.dataset.lb = '1';
+    if (og) {
+      ogRow(li);
+      li.querySelectorAll('.Title a, .bl-when, .bl-go').forEach((a) => a.addEventListener('mousedown', () => markSeen(li)));
+      return;
+    }
     compact(li);
     const x = document.createElement('button');
     x.className = 'lb-x';
