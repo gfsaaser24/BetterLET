@@ -467,6 +467,9 @@ html.bl-on .ContentColumn input[type="submit"].Button.Primary {
   font-family: var(--bl-display);
 }
 :is(html.bl-on, html.bl-og) .Pager a, :is(html.bl-on, html.bl-og) .Pager > span { display: inline-block; min-width: 18px; margin: 0 2px; padding: 0 2px !important; text-align: center; }
+/* The pager floats, so its wrappers collapse and it lands on the next card. These give it its own row. */
+:is(html.bl-on, html.bl-og) .PagerWrap { display: flow-root; margin: 12px 0 !important; padding: 0 !important; }
+:is(html.bl-on, html.bl-og) .BeforeCommentHeading { display: flow-root; float: none; margin: 0 0 8px; }
 :is(html.bl-on, html.bl-og) .Pager a:hover { color: var(--bl-accent) !important; }
 :is(html.bl-on, html.bl-og) .Pager .Highlight { color: var(--bl-accent) !important; font-weight: 700; }
 html.bl-on .DataList, html.bl-on .MessageList, html.bl-on .Item, html.bl-on .DataTable, html.bl-on .DataTable td, html.bl-on .DataTable th {

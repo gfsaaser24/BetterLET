@@ -10,7 +10,7 @@ OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is 
 
 ## Page numbers
 
-Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color.
+Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color. They always sit on their own row, clear of the cards above and below.
 
 ## Settings gear
 
