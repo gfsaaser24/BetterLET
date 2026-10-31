@@ -1100,6 +1100,79 @@ html.bl-on.bl-v2 ul.bl-cats > li { padding: 12px 10px !important; }
   html.bl-on #Head .SiteMenu { order: 5; flex: 1 1 100%; flex-wrap: wrap; }
 }
 
+/* ---- polls: one card in a thread, one accent bar, no plugin colors ---- */
+html.bl-on .DP_AnswerForm, html.bl-on .DP_ResultsForm {
+  margin: 16px 0 0 !important;
+  padding: 14px 16px !important;
+  background: var(--bl-surface2);
+  border: 1px solid var(--bl-line) !important;
+  border-radius: var(--bl-r-md) !important;
+  color: var(--bl-ink);
+  font: 600 16px/1.35 var(--bl-display);
+}
+html.bl-on .DP_AnswerForm hr, html.bl-on .DP_ResultsForm hr { height: 0; margin: 10px 0 12px; border: 0; border-top: 1px solid var(--bl-line); background: none; }
+html.bl-on .DP_AnswerQuestions, html.bl-on .DP_ResultQuestions, html.bl-on .DP_AnswerOptions, html.bl-on .DP_ResultOptions {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+html.bl-on .DP_AnswerQuestion, html.bl-on .DP_ResultQuestion { margin: 0; padding: 0; border: 0 !important; font: 600 14px/1.4 var(--bl-text); }
+html.bl-on .DP_AnswerQuestion:not(:first-child), html.bl-on .DP_ResultQuestion:not(:first-child) { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--bl-line) !important; }
+html.bl-on .DP_VoteCount { float: right; margin: 0 0 0 12px; padding: 0; background: none !important; color: var(--bl-muted) !important; font: 400 13px/1.5 var(--bl-text); }
+html.bl-on .DP_ResultOption, html.bl-on .DP_AnswerOptions > li { list-style: none !important; margin: 10px 0 0; padding: 0; color: var(--bl-muted); font: 400 13px/1.4 var(--bl-text); }
+html.bl-on .DP_ResultOption > div { margin: 0 0 4px; color: var(--bl-ink); font-size: 14px; overflow-wrap: anywhere; }
+html.bl-on .DP_Bar[class] {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: max-content;
+  max-width: 100%;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--bl-fill);
+  border-radius: 4px;
+  color: var(--bl-on-fill);
+  font: 600 12px/22px var(--bl-text);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+html.bl-on .DP_AnswerForm .RadioLabel { display: inline-flex !important; align-items: center; gap: 8px; margin: 0 !important; padding: 0 !important; color: var(--bl-ink) !important; font: 400 14px/1.4 var(--bl-text) !important; cursor: pointer; }
+html.bl-on .DP_AnswerForm .RadioLabel input { margin: 0 !important; accent-color: var(--bl-accent); }
+html.bl-on body:not(.EditMode) .ContentColumn .DP_AnswerForm form .Buttons { justify-content: flex-start; }
+html.bl-on .DP_AnswerForm input[type="submit"].Button { background: var(--bl-fill) !important; border-color: transparent !important; color: var(--bl-on-fill) !important; -webkit-text-fill-color: var(--bl-on-fill); font-weight: 600 !important; }
+html.bl-on #DP_Tools { margin: 10px 0 0 !important; padding: 0 !important; list-style: none !important; font-size: 13px; }
+html.bl-on #DP_Tools li { list-style: none !important; margin: 0; padding: 0; }
+html.bl-on #DP_Tools a { color: var(--bl-accent) !important; }
+
+/* New thread: Attach Poll sits above its form, and the plugin's arrow images become plain buttons. */
+html.bl-on div:has(> #DP_Form) { display: flex; flex-direction: column; }
+html.bl-on div:has(> #DP_Form) > .P:has(#Form_DP_Attach) { order: 1; }
+html.bl-on div:has(> #DP_Form) > #DP_Form { order: 2; }
+html.bl-on div:has(> #DP_Form) > .Buttons { order: 3; }
+html.bl-on .ContentColumn .FormWrapper #DP_Form { padding: 14px !important; border: 1px solid var(--bl-line); border-radius: var(--bl-r-md); }
+html.bl-on #DP_Form:not([style*="none"]) { display: flex !important; flex-wrap: wrap; gap: 8px; }
+html.bl-on #DP_Form > label, html.bl-on #DP_Form > .TextBoxWrapper, html.bl-on #DP_Form > .DP_Question { flex: 1 1 100%; }
+html.bl-on #DP_Form > .DP_Question { order: 1; box-sizing: border-box; width: auto; min-width: 0; margin: 4px 0 0; padding: 0; border: 0; }
+html.bl-on #DP_Form .DP_Question label { margin-top: 8px !important; }
+html.bl-on #DP_PreviousQuestion, html.bl-on #DP_NextQuestion, html.bl-on #DP_AddOption {
+  order: 2;
+  float: none;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: auto;
+  height: 36px;
+  margin: 6px 0 0;
+  padding: 0 14px;
+  background: var(--bl-surface) !important;
+  border: 1px solid var(--bl-field-line);
+  border-radius: var(--bl-r-md);
+  color: var(--bl-ink) !important;
+  font: 500 14px/1 var(--bl-text);
+  text-indent: 0;
+}
+html.bl-on #DP_PreviousQuestion:hover, html.bl-on #DP_NextQuestion:hover, html.bl-on #DP_AddOption:hover { border-color: var(--bl-accent); color: var(--bl-accent) !important; }
+html.bl-on #DP_PreviousQuestion:empty, html.bl-on #DP_NextQuestion:empty { display: none; }
+
 /* ---- accessibility ---- */
 @media (prefers-reduced-motion: reduce) {
   html.bl-on:not(.bl-ready)::after { display: none; }
