@@ -28,6 +28,7 @@
 - Signatures and long "Thanked by" lists stay closed until clicked.
 - Each thread shows when it started and its last comment.
 - Thanks sits beside Quote as a button on every post.
+- Links to other sites open in a new tab.
 - Ctrl+Enter sends a comment or message reply.
 
 **Layout**
