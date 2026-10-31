@@ -1102,7 +1102,8 @@ html.bl-og.bl-dark {
   --bl-shadow: 0 2px 8px rgba(0, 0, 0, .6);
 }
 /* The gear floats left of the search box in the green bar. */
-html.bl-og #bl-settings { float: right; margin: -3px 8px 0 0; }
+html.bl-og #bl-settings { float: right; margin: 4px 8px 0 0; }
+html.bl-og .bl-gear { width: 24px; height: 24px; }
 html.bl-og .bl-gear { color: #fff; }
 html.bl-og .bl-gear:hover, html.bl-og .bl-gear[aria-expanded="true"] { background: rgba(0, 0, 0, .18); color: #fff; }
 html.bl-og .Reactions .ReactSprite { color: var(--bl-ink); }
@@ -1144,6 +1145,22 @@ html.bl-og.bl-dark :is(.DataTable, .PreferenceGroup) :is(td, th) { background: t
 html.bl-og .ContentColumn form li { margin-bottom: 10px; }
 html.bl-og .ContentColumn form label { margin-bottom: 3px; }
 html.bl-og .ContentColumn :is(input.InputBox, textarea, select) { padding: 6px 8px; border-radius: var(--bl-r-md); box-sizing: border-box; }
+
+/* Header icons: no pale hover box in dark, the icon itself lights up. */
+html.bl-og.bl-dark :is(.MeButton:hover, .Open .MeButton) { background: none !important; }
+html.bl-og.bl-dark :is(.MeButton:hover, .Open .MeButton) .Sprite { background: var(--bl-accent) !important; }
+
+/* Drafts: the same rows as the thread list. The site repeats the Quick Links here, so that copy goes. */
+:is(html.bl-on, html.bl-og) body.Drafts #content > .BoxDiscussionFilter { display: none; }
+html.bl-og ul.Drafts { border-top: 1px solid var(--bl-line); }
+html.bl-og ul.Drafts li.Item { position: relative; margin: 0; padding: 10px 34px 10px 10px !important; border-bottom: 1px solid var(--bl-line); }
+html.bl-og ul.Drafts .ItemContent h2 { margin: 0 0 3px; font-size: 15px; line-height: 1.35; }
+html.bl-og ul.Drafts .ItemContent h2 a { color: var(--bl-accent); font-weight: 700; }
+html.bl-og ul.Drafts .Excerpt, html.bl-og ul.Drafts .Excerpt a { color: var(--bl-muted) !important; font-size: 13px; line-height: 1.5; }
+html.bl-og ul.Drafts .Excerpt a:hover { color: var(--bl-accent) !important; }
+html.bl-og ul.Drafts .Options { position: absolute; top: 8px; right: 8px; float: none; margin: 0; }
+html.bl-og ul.Drafts .Delete { color: var(--bl-muted); font-size: 18px; line-height: 1; text-decoration: none; }
+html.bl-og ul.Drafts .Delete:hover { color: var(--bl-danger, #c0392b); }
 
 /* Small spacing and alignment on the stock rows and posts */
 html.bl-og #let-better-bar { position: static; margin: 0 0 10px; padding: 8px 10px; font-size: 12px; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }

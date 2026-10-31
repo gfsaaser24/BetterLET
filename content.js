@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.19
+// @version      1.20
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -283,7 +283,8 @@
   if (signedIn && discussionsLink) {
     const li = document.createElement('li');
     li.innerHTML = '<a href="/discussions#dashboard">Dashboard</a>';
-    discussionsLink.closest('li').after(li);
+    // The space matches the stock menu, where spaces set the gap between items.
+    discussionsLink.closest('li').after(' ', li);
   }
   addEventListener('hashchange', () => { if (location.pathname === '/discussions') location.reload(); });
   const content = document.querySelector('.ContentColumn');
