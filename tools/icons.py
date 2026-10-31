@@ -29,6 +29,11 @@ ICONS = {
     '.SpSignatures': ('signature', 'regular'),
     '.SpQuote': ('quotes', 'regular'),
     '.SpMessage': ('paper-plane-tilt', 'regular'),
+    '.bl-gear-icon': ('gear-six', 'regular'),
+    '.bl-menu button[aria-checked="true"]::after': ('check', 'bold'),
+    '.ReactQuote': ('quotes', 'regular'),
+    '.Reactions .Thank > a::before': ('heart', 'regular'),
+    '.Reactions .UnThank > a::before': ('heart', 'fill'),
     '.OptionsTitle': ('dots-three', 'bold'),
     '.bl-go': ('arrow-right', 'bold'),
     'a.Bookmark': ('bookmark-simple', 'regular'),
@@ -48,7 +53,11 @@ lines = [f'/* ICONS START: Phosphor {VERSION}. Made by tools/icons.py. Do not ed
 for selector, (name, weight) in ICONS.items():
     uri = 'data:image/svg+xml,' + urllib.parse.quote(fetch(name, weight), safe="/:=' ")
     url = 'url("' + uri + '")'
-    lines.append(f'html.bl-on {selector} {{ -webkit-mask-image: {url}; mask-image: {url}; }}')
+    both = f'html.bl-on {selector}'
+    # OG uses the same icons, but keeps the stock search button.
+    if 'SiteSearch' not in selector:
+        both += ', ' + both.replace('html.bl-on', 'html.bl-og')
+    lines.append(f'{both} {{ -webkit-mask-image: {url}; mask-image: {url}; }}')
 lines.append('/* ICONS END */')
 
 path = 'styles.css'

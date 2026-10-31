@@ -5,9 +5,6 @@
   const FONT_URL = 'https://api.fontshare.com/css?f[]=general-sans@400,500,600,700&display=swap';
   const root = document.documentElement;
   const media = matchMedia('(prefers-color-scheme: dark)');
-  // The site's own dark mode paints pale text over our themes. Keep it off: this runs before
-  // the site's script reads the setting, so its dark styles never load.
-  try { localStorage.setItem('theme', 'light'); } catch {}
   const read = () => { try { return localStorage.getItem(KEY) || 'auto'; } catch { return 'auto'; } };
   const readDesign = () => { try { return localStorage.getItem(DESIGN_KEY) || 'v1'; } catch { return 'v1'; } };
   // V2 uses LowEndBox's font. It loads only when V2 is on.
@@ -23,10 +20,15 @@
     const mode = read();
     const design = readDesign();
     root.classList.toggle('bl-v2', design === 'v2');
+    root.classList.toggle('bl-og', design === 'og');
+    const dark = mode === 'auto' ? media.matches : mode === 'dark';
+    // The site's own dark mode paints pale text over V1 and V2, so it stays off there. OG uses it.
+    // This runs before the site's script reads the setting.
+    try { localStorage.setItem('theme', design === 'og' && dark ? 'dark' : 'light'); } catch {}
     root.dataset.blDesign = design;
     if (design === 'v2') loadFont();
-    root.classList.add('bl-on');
-    root.classList.toggle('bl-dark', mode === 'auto' ? media.matches : mode === 'dark');
+    root.classList.toggle('bl-on', design !== 'og');
+    root.classList.toggle('bl-dark', dark);
     root.dataset.blTheme = mode;
   };
   apply();
@@ -37,7 +39,11 @@
   (document.head || root).appendChild(viewport);
   // Backup for the CSS timer: the page must never stay hidden.
   setTimeout(() => root.classList.add('bl-ready'), 3000);
-  media.addEventListener('change', apply);
+  // OG is the stock page, so it needs a reload to change theme or leave.
+  media.addEventListener('change', () => {
+    if (readDesign() === 'og' && read() === 'auto') location.reload();
+    else apply();
+  });
   // One crossfade of the whole page. Fading each element on its own is what lagged.
   const swap = () => {
     if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(apply);
@@ -47,12 +53,15 @@
     get: read,
     set(mode) {
       try { localStorage.setItem(KEY, mode); } catch {}
-      swap();
+      if (readDesign() === 'og') location.reload();
+      else swap();
     },
     getDesign: readDesign,
     setDesign(design) {
+      const from = readDesign();
       try { localStorage.setItem(DESIGN_KEY, design); } catch {}
-      swap();
+      if (from === 'og' || design === 'og') location.reload();
+      else swap();
     },
   };
 })();
