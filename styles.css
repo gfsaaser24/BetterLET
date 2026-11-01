@@ -868,8 +868,9 @@ html.bl-on .CommentInfo a, html.bl-on .DiscussionMeta a { color: var(--bl-muted)
 html.bl-on .ThankedByBox { margin-top: 8px; font-size: 12px; color: var(--bl-muted); }
 html.bl-on .ThankedBy { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
 html.bl-on .ThankedByBox:not(.bl-open) a { display: none; }
-html.bl-on .ItemDiscussion:not(.bl-sig-open) > .Discussion .Signature,
-html.bl-on .ItemComment:not(.bl-sig-open) .Signature { display: none !important; }
+/* Signatures show by default. The gear can collapse them, and each post then gets its own toggle. */
+html.bl-sig-closed :is(.ItemComment, .ItemDiscussion):not(.bl-sig-open) .Signature { display: none !important; }
+html:not(.bl-sig-closed) .bl-sig-toggle { display: none; }
 .bl-sig-toggle { display: block; margin-top: 6px; padding: 0; border: 0; background: none; color: var(--bl-muted); font: inherit; font-size: 12px; cursor: pointer; }
 .bl-sig-toggle:hover { color: var(--bl-accent); }
 html.bl-on .CommentForm, html.bl-on .FormWrapper, html.bl-on .FormTitleWrapper { background: transparent !important; color: var(--bl-ink) !important; }
@@ -1105,7 +1106,7 @@ html.bl-og.bl-dark {
   --bl-shadow: 0 2px 8px rgba(0, 0, 0, .6);
 }
 /* The gear floats left of the search box in the green bar. */
-html.bl-og #bl-settings { float: right; margin: 4px 8px 0 0; }
+html.bl-og #bl-settings { float: right; margin: -7px 8px 0 0; }
 html.bl-og .bl-gear { width: 24px; height: 24px; }
 html.bl-og .bl-gear { color: #fff; }
 html.bl-og .bl-gear:hover, html.bl-og .bl-gear[aria-expanded="true"] { background: rgba(0, 0, 0, .18); color: #fff; }
@@ -1179,7 +1180,6 @@ html.bl-og #lb-thread-dates { font-size: 12px; }
 html.bl-og .ThankedByBox { margin-top: 8px; font-size: 12px; color: var(--bl-muted); }
 html.bl-og .ThankedBy { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
 html.bl-og .ThankedByBox:not(.bl-open) a { display: none; }
-html.bl-og :is(.ItemComment, .ItemDiscussion):not(.bl-sig-open) .Signature { display: none !important; }
 
 /* The stock page is a fixed 1080px. These keep it inside small windows. */
 @media (max-width: 1145px) {

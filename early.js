@@ -2,10 +2,12 @@
 (() => {
   const KEY = 'letBetter.theme';
   const DESIGN_KEY = 'letBetter.design';
+  const SIG_KEY = 'letBetter.signatures';
   const FONT_URL = 'https://api.fontshare.com/css?f[]=general-sans@400,500,600,700&display=swap';
   const root = document.documentElement;
   const media = matchMedia('(prefers-color-scheme: dark)');
   const read = () => { try { return localStorage.getItem(KEY) || 'auto'; } catch { return 'auto'; } };
+  const readSig = () => { try { return localStorage.getItem(SIG_KEY) || 'expanded'; } catch { return 'expanded'; } };
   const readDesign = () => { try { return localStorage.getItem(DESIGN_KEY) || 'v1'; } catch { return 'v1'; } };
   // V2 uses LowEndBox's font. It loads only when V2 is on.
   const loadFont = () => {
@@ -21,6 +23,7 @@
     const design = readDesign();
     root.classList.toggle('bl-v2', design === 'v2');
     root.classList.toggle('bl-og', design === 'og');
+    root.classList.toggle('bl-sig-closed', readSig() === 'collapsed');
     const dark = mode === 'auto' ? media.matches : mode === 'dark';
     // The site's own dark mode paints pale text over V1 and V2, so it stays off there. OG uses it.
     // This runs before the site's script reads the setting.
@@ -55,6 +58,11 @@
       try { localStorage.setItem(KEY, mode); } catch {}
       if (readDesign() === 'og') location.reload();
       else swap();
+    },
+    getSignatures: readSig,
+    setSignatures(value) {
+      try { localStorage.setItem(SIG_KEY, value); } catch {}
+      apply();
     },
     getDesign: readDesign,
     setDesign(design) {
