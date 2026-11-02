@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.25
+// @version      1.27
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -38,6 +38,20 @@
   // OG keeps the stock page: no rail, no rebuilt pages, only the small features.
   const og = document.documentElement.classList.contains('bl-og');
 
+  // The right column closes when nothing in it shows. That covers the Ads setting and ad blockers,
+  // which hide or strip the same blocks, so nobody gets an empty column.
+  const fitPanel = () => {
+    const box = document.querySelector('#Body > .Row');
+    const side = document.querySelector('#Panel');
+    if (!box || !side || og) return;
+    const shows = (el) => {
+      if (['SCRIPT', 'STYLE', 'BR'].includes(el.tagName) || getComputedStyle(el).display === 'none') return false;
+      const media = [...el.querySelectorAll('img, iframe')];
+      return Boolean(el.textContent.trim()) || media.some((m) => m.tagName === 'IFRAME' || !m.complete || m.naturalWidth > 0);
+    };
+    box.classList.toggle('bl-no-panel', ![...side.children].some(shows));
+  };
+
   // ---- left rail: move the useful sidebar blocks away from the ads ----
   const row = document.querySelector('#Body > .Row');
   const panel = document.querySelector('#Panel');
@@ -54,8 +68,10 @@
       '.BoxDiscussionFilter', '.BoxCategories', '.BoxInThisDiscussion', '.InThisConversation', '.AddPeople']
       .forEach((sel) => panel.querySelectorAll(`:scope > ${sel}`).forEach((el) => scroll.appendChild(el)));
     row.prepend(rail);
-    const hasMore = [...panel.children].some((el) => !['SCRIPT', 'STYLE', 'BR'].includes(el.tagName));
-    if (!hasMore) row.classList.add('bl-no-panel');
+    fitPanel();
+    addEventListener('load', fitPanel);
+    // Sponsor blocks can fill in after load.
+    setTimeout(fitPanel, 3000);
 
     const foot = document.querySelector('#Foot');
     if (foot) {
@@ -81,12 +97,16 @@
         ${option('mode', 'auto', 'Auto')}${option('mode', 'light', 'Light')}${option('mode', 'dark', 'Dark')}
         <div class="bl-menu-label">Signatures</div>
         ${option('sig', 'expanded', 'Expanded')}${option('sig', 'collapsed', 'Collapsed')}
+        <div class="bl-menu-label">Ads</div>
+        ${option('ads', 'show', 'Show')}${option('ads', 'block', 'Block')}
+        <div class="bl-menu-label">BetterLET ${window.chrome?.runtime?.getManifest?.().version || ''}</div>
+        <button type="button" role="menuitem" class="bl-updates" data-link="update">Updates and changelog</button>
       </div>`;
     const gear = box.querySelector('.bl-gear');
     const menu = box.querySelector('.bl-menu');
     const mark = () => menu.querySelectorAll('button').forEach((b) => {
-      const { design, mode, sig } = b.dataset;
-      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : sig === theme.getSignatures();
+      const { design, mode, sig, ads } = b.dataset;
+      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : sig ? sig === theme.getSignatures() : ads === theme.getAds();
       b.setAttribute('aria-checked', String(on));
     });
     const toggle = (open) => {
@@ -95,10 +115,12 @@
     };
     gear.addEventListener('click', () => toggle(menu.hidden));
     menu.addEventListener('click', (e) => {
-      const { design, mode, sig } = e.target.dataset;
+      const { design, mode, sig, ads } = e.target.dataset;
       if (design) theme.setDesign(design);
       if (mode) theme.set(mode);
       if (sig) theme.setSignatures(sig);
+      if (ads) { theme.setAds(ads); fitPanel(); }
+      if (e.target.dataset.link) chrome.runtime.sendMessage({ type: 'bl-open-update' });
       mark();
     });
     document.addEventListener('click', (e) => { if (!box.contains(e.target)) toggle(false); });
@@ -107,6 +129,35 @@
     // The search box floats right on the stock page, so a float placed after it lands to its left.
     if (og) headRow.querySelector('.SiteSearch')?.after(box);
     else headRow.appendChild(box);
+  }
+
+  // ---- update alert: the background script saves the latest release, this shows it ----
+  if (window.chrome?.storage?.local) {
+    const installed = chrome.runtime.getManifest().version;
+    const isNewer = (version) => String(version).localeCompare(installed, undefined, { numeric: true }) > 0;
+    const showUpdate = ({ latest, dismissed }) => {
+      document.getElementById('bl-update')?.remove();
+      if (!latest || !isNewer(latest.version) || dismissed === latest.version) return;
+      const bar = document.createElement('div');
+      bar.id = 'bl-update';
+      bar.setAttribute('role', 'status');
+      const text = document.createElement('span');
+      text.textContent = `BetterLET ${latest.version} is ready.`;
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.textContent = 'Update now';
+      open.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'bl-open-update' }));
+      const later = document.createElement('button');
+      later.type = 'button';
+      later.className = 'bl-update-later';
+      later.textContent = 'Later';
+      later.addEventListener('click', () => chrome.storage.local.set({ dismissed: latest.version }));
+      bar.append(text, open, later);
+      document.querySelector('.ContentColumn')?.prepend(bar);
+    };
+    const paintUpdate = () => chrome.storage.local.get(['latest', 'dismissed']).then(showUpdate).catch(() => {});
+    paintUpdate();
+    chrome.storage.onChanged.addListener(paintUpdate);
   }
 
   // ---- clicks that work on every page ----
@@ -125,6 +176,14 @@
     link.target = '_blank';
     link.relList.add('noopener');
   }, true);
+
+  // The site's autosize measures the box while Preview hides it, so Edit brings it back far too tall.
+  // A focus event makes it measure again, without moving the cursor.
+  document.addEventListener('click', (e) => {
+    const box = e.target.closest?.('a.WriteButton')?.closest('form')?.querySelector('textarea');
+    if (!box) return;
+    setTimeout(() => ['focus', 'keyup'].forEach((type) => box.dispatchEvent(new Event(type))), 50);
+  });
 
   // Ctrl+Enter (Cmd+Enter on Mac) sends a comment or message reply. Event delegation also covers inline edit boxes.
   document.addEventListener('keydown', (e) => {

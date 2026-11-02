@@ -1,0 +1,11 @@
+name = "betterlet-updates"
+main = "index.js"
+compatibility_date = "2026-10-01"
+account_id = "1b9d91cd7176bde5ce433d2aa7d2da16"
+
+[triggers]
+crons = ["17 */6 * * *"]
+
+[[kv_namespaces]]
+binding = "UPDATES"
+id = "27a36715776743b99bd09c3186a15c18"
