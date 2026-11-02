@@ -11,7 +11,13 @@
     <p id="intro"></p>
     <section id="folder" hidden>
       <h2>Connect your BetterLET folder</h2>
-      <p>Chrome does not tell extensions where they are stored, so you pick the folder one time. It is the folder you chose under Load unpacked. BetterLET checks that it is the right one, and it can only touch that folder.</p>
+      <p>Chrome does not tell extensions where they are stored, so you pick the folder one time. BetterLET checks that it is the right one, and it can only touch that folder.</p>
+      <ol>
+        <li>Open <code>chrome://extensions</code> and click Details on BetterLET.</li>
+        <li>Look under Source. That is your folder.</li>
+        <li>Click Choose folder below, pick it, and click Allow.</li>
+      </ol>
+      <p class="muted">Chrome will not allow the top of Documents, Downloads, or Desktop. If BetterLET sits there, move it into its own folder and load it again. You can skip this and do it later from the gear.</p>
       <button type="button" id="pick">Choose folder</button>
     </section>
     <section id="update" hidden>
