@@ -18,7 +18,7 @@ One style in posts, messages, and previews: `--bl-surface2` fill with a 3px left
 
 ## Settings gear
 
-One gear to the left of the search box, in every design. Its menu holds Design (OG, V1, V2), Theme (Auto, Light, Dark), and Signatures (Expanded, Collapsed). A check mark shows the current choice. Clicking an item applies it.
+One gear to the left of the search box, in every design. Its menu holds Design (OG, V1, V2), Theme (Auto, Light, Dark), Signatures (Expanded, Collapsed), and Ads (Show, Block). A check mark shows the current choice. Clicking an item applies it.
 
 ## Dashboard
 
@@ -39,7 +39,7 @@ V2 is only a token and spacing layer at the end of `styles.css` under `html.bl-v
 
 ## 2. Hard rule: the ads
 
-The site lives on ads. No rule may hide, shrink, cover or restyle anything in `#Panel`. The header stops before the ad column, so it never sits over an ad.
+The site lives on ads, so they show by default. No rule may shrink, cover or restyle them. The one exception is the gear's Ads setting: Block hides the ad blocks with `html.bl-ads-off`. The header stops before the ad column, so it never sits over an ad. When nothing in `#Panel` shows, from this setting or an ad blocker, the column closes (`fitPanel` in `content.js`).
 
 ## 3. Colour
 
@@ -174,7 +174,7 @@ Text selection, caret, scrollbars, focus rings and `mark` highlights all use the
 
 ## 13. Never do
 
-- Hide or cover ads.
+- Hide or cover ads, except through the gear's Ads setting.
 - Change links, form names or action URLs.
 - Use purple, blue charcoal, cream, or gradients on text.
 - Use pills around metadata, eyebrow labels, or section numbers.
@@ -190,7 +190,7 @@ Text selection, caret, scrollbars, focus rings and `mark` highlights all use the
 - Contrast audit run on form pages with the site's dark styles forced on, as a worst case.
 - Tested with `styles.css` loaded before the site's CSS, as the real plugin does. Site rules with an ID or `!important` can beat ours, so check them.
 - No sideways scroll at 1920, 1366, 1280, 1024, 800 and 375 wide.
-- All ads visible at full size.
+- All ads visible at full size when Ads is set to Show.
 - Contrast passes in both themes.
 - All flyouts open on top and whole.
 - Reduced motion and reduced transparency work.

@@ -36,7 +36,8 @@
 - Wider layout with a left sidebar that stays in place.
 - Works on wide screens, older laptops, small windows, and phones.
 - Auto, Light, and Dark themes.
-- A gear beside the search box holds design and theme.
+- A gear beside the search box holds design, theme, signatures, and ads.
+- Ads show by default. Choose Block in the gear to hide them. Works alongside uBlock Origin and other ad blockers.
 - A Dashboard page shows your counts, threads, and bookmarks.
 - Three designs to compare: OG keeps the original layout and fonts with no sidebar, V1 is a server rack, and V2 matches LowEndBox.
 
