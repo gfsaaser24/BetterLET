@@ -12,6 +12,10 @@ OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is 
 
 Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color. They always sit on their own row, clear of the cards above and below.
 
+## Quotes
+
+One style in posts, messages, and previews: `--bl-surface2` fill with a 3px left bar. A nested quote flips to `--bl-surface`. Previews sit on `--bl-surface`, so quotes stand out there too.
+
 ## Settings gear
 
 One gear to the left of the search box, in every design. Its menu holds Design (OG, V1, V2), Theme (Auto, Light, Dark), and Signatures (Expanded, Collapsed). A check mark shows the current choice. Clicking an item applies it.
