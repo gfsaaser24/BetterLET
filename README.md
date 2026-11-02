@@ -14,39 +14,19 @@
   <img src="docs/media/before-after.gif" width="640" alt="Wipe from the stock LowEndTalk thread list to BetterLET">
 </p>
 
-## What changed
+## Features
 
-**Thread list**
-- Status lights show what you have not opened, or what has new replies.
-- Rows have three lines: title, category and author, then last comment with date and time.
-- The title opens the first post. The date and arrow jump to the last comment.
-- Sort by newest reply, newest thread, oldest thread, or most replies.
-- Hide seen threads and pinned threads. Your own threads always stay.
-- Load the next page in place, and mark all seen.
-
-**Threads**
-- Long "Thanked by" lists stay closed until clicked.
-- Keep signatures expanded or collapsed from the gear.
-- Each thread shows when it started and its last comment.
-- Thanks sits beside Quote as a button on every post.
-- Links to other sites open in a new tab.
-- Ctrl+Enter sends a comment or message reply.
-
-**Layout**
-- Wider layout with a left sidebar that stays in place.
-- Works on wide screens, older laptops, small windows, and phones.
-- Auto, Light, and Dark themes.
-- A gear beside the search box holds design, theme, signatures, and ads.
-- Ads show by default. Choose Block in the gear to hide them. Works alongside uBlock Origin and other ad blockers.
-- A Dashboard page shows your counts, threads, and bookmarks.
-- Three designs to compare: OG keeps the original layout and fonts with no sidebar, V1 is a server rack, and V2 matches LowEndBox.
-
-**Pages and details**
-- Rebuilt Categories, Profile, and all six settings pages.
-- User hover cards show roles, join date, activity, and thanks.
-- New pop-out menus and Phosphor icons.
-- Fixed search bar, plus a spinner that shows only on slow loads.
-- Mark All Viewed asks first.
+- **Three designs:** OG, V1, and V2, each with Auto, Light, and Dark themes
+- **Settings gear:** design, theme, signatures, and optional ad hiding in one menu
+- **Better thread list:** status lights, last comment details, sorting, hide seen, and load next page
+- **Better navigation:** titles open the first post, and the date jumps to the last comment
+- **Better threads:** Thanks button, Ctrl+Enter to post, clean polls, and clear quotes
+- **Dashboard:** your counts, threads, and bookmarks on one page
+- **Cleaner pages:** rebuilt Categories, Profile, Settings, and Drafts
+- **User hover cards:** roles, join date, activity, and thanks
+- **Fits every screen:** wide monitors, older laptops, and phones
+- **Works with ad blockers:** ads show by default and nothing conflicts
+- **One-click updates:** alerts, a built-in changelog, and every file checked before install
 
 ## Install
 
