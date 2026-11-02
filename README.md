@@ -36,7 +36,8 @@
 - Wider layout with a left sidebar that stays in place.
 - Works on wide screens, older laptops, small windows, and phones.
 - Auto, Light, and Dark themes.
-- A gear beside the search box holds design and theme.
+- A gear beside the search box holds design, theme, signatures, and ads.
+- Ads show by default. Choose Block in the gear to hide them. Works alongside uBlock Origin and other ad blockers.
 - A Dashboard page shows your counts, threads, and bookmarks.
 - Three designs to compare: OG keeps the original layout and fonts with no sidebar, V1 is a server rack, and V2 matches LowEndBox.
 
@@ -49,20 +50,56 @@
 
 ## Install
 
-1. Download this repo.
-2. Open `chrome://extensions` and turn on **Developer mode**.
-3. Click **Load unpacked** and pick the folder with `manifest.json`.
-4. Open [LowEndTalk](https://lowendtalk.com/categories/requests).
+1. Download the latest zip from [Releases](https://github.com/gfsaaser24/BetterLET/releases) and unzip it.
+2. Move the folder somewhere it can stay, such as `Documents\BetterLET`. Keep it there. Chrome runs the extension from this folder.
+3. Open `chrome://extensions` and turn on **Developer mode**. Leave it on.
+4. Click **Load unpacked** and pick the folder with `manifest.json`.
+5. Open [LowEndTalk](https://lowendtalk.com/categories/requests).
 
-To update, pull the latest code and click reload on the BetterLET card.
+## Updates
+
+BetterLET checks for a new version every 6 hours. When one is out, you see it in the toolbar menu, in the gear, and in a bar on the forum.
+
+### One-time setup
+
+A welcome tab opens when you install. To set up updates there:
+
+1. Click **Choose folder**.
+2. Pick the same folder you chose under Load unpacked. To find it, open `chrome://extensions`, click **Details** on BetterLET, and look under **Source**.
+3. Click **Allow** when Chrome asks to let BetterLET edit files.
+
+Chrome does not tell extensions where they are stored, so this step cannot be skipped. BetterLET can only touch the folder you pick.
+
+You can do this later: the gear has **Updates and changelog**, and the toolbar menu has **Update now**.
+
+### Each update
+
+1. Click **Update now**.
+2. Click **Allow** if Chrome asks again. It can ask after a restart.
+3. BetterLET installs the files and reloads itself. If it does not come back, click reload on its card in `chrome://extensions`.
+4. Refresh any open LowEndTalk tabs.
+
+### What to change, if anything
+
+| Your setup | What to do |
+|---|---|
+| Normal zip install | Nothing beyond the setup above. |
+| Folder is the top of Documents, Downloads, or Desktop, or inside AppData | Chrome will not allow that folder. Move BetterLET into its own folder, then load it again. |
+| You cloned the repo | Automatic updates are off, so a local git repo is never overwritten. Run `git pull` and click reload. |
+| You moved or renamed the folder | Load it again with Load unpacked, then click **Choose folder** again. |
+| "That is a copy of BetterLET" | You picked the wrong folder. Check **Source** in Details and pick that one. |
+| You would rather not use it | Skip the setup. Download the zip from the update page, replace the files in your folder, and click reload. |
+| You turned off Developer mode | Chrome may turn off the extension. Turn it back on. |
+
+Your settings are kept across updates. Files come only from this repo at the release tag, and each is checked against its SHA-256 hash before anything is written.
 
 ## Privacy
 
-BetterLET asks for no extra browser permissions. Your settings stay in your browser. V2 loads its font from Fontshare.
+Your settings stay in your browser. BetterLET checks for updates every 6 hours at its own Cloudflare Worker, which sees your IP address like any website does. Updates download from this GitHub repo. V2 loads its font from Fontshare. Browser permissions: storage and alarms.
 
 ## Development
 
-Plain JavaScript and CSS, with no build step. Read [DESIGN.md](DESIGN.md) before changing anything visual.
+Plain JavaScript and CSS, with no build step. To ship a release, raise the version in `manifest.json` and merge to `main`: the Release workflow does the rest. A release file list lives in `.github/workflows/release.yml`, so add new extension files there. See `cloud/` for the update Worker and changelog page. Read [DESIGN.md](DESIGN.md) before changing anything visual.
 
 ## License
 

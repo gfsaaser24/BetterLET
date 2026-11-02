@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BetterLET update</title>
+  <link rel="stylesheet" href="ext.css">
+</head>
+<body class="bl-page">
+  <main>
+    <header><img src="icons/icon48.png" alt="" width="32" height="32"><h1 id="title">BetterLET</h1></header>
+    <p id="intro"></p>
+    <section id="folder" hidden>
+      <h2>Connect your BetterLET folder</h2>
+      <p>Chrome does not tell extensions where they are stored, so you pick the folder one time. BetterLET checks that it is the right one, and it can only touch that folder.</p>
+      <ol>
+        <li>Open <code>chrome://extensions</code> and click Details on BetterLET.</li>
+        <li>Look under Source. That is your folder.</li>
+        <li>Click Choose folder below, pick it, and click Allow.</li>
+      </ol>
+      <p class="muted">Chrome will not allow the top of Documents, Downloads, or Desktop. If BetterLET sits there, move it into its own folder and load it again. You can skip this and do it later from the gear.</p>
+      <button type="button" id="pick">Choose folder</button>
+    </section>
+    <section id="update" hidden>
+      <h2 id="update-title"></h2>
+      <p class="muted" id="update-source"></p>
+      <button type="button" id="install">Update now</button>
+      <a id="zip" hidden>Download the zip instead</a>
+    </section>
+    <p id="status" role="status"></p>
+    <iframe id="log" title="Changelog" src="https://betterlet.emd437509.workers.dev/?embed=1"></iframe>
+  </main>
+  <script src="updater.js"></script>
+  <script src="update.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-/* BetterLET. Rules live in DESIGN.md. Nothing here may target ads in #Panel. */
+/* BetterLET. Rules live in DESIGN.md. Only the Ads setting may target ads. */
 
 html.bl-on {
   --bl-bg: #eaf0e8;
@@ -1317,6 +1317,15 @@ html.bl-og .bl-dash-badge { background: #ff0; color: #000; }
 }
 :is(html.bl-on, html.bl-og) #DP_PreviousQuestion:hover, :is(html.bl-on, html.bl-og) #DP_NextQuestion:hover, :is(html.bl-on, html.bl-og) #DP_AddOption:hover { border-color: var(--bl-accent); color: var(--bl-accent) !important; }
 :is(html.bl-on, html.bl-og) #DP_PreviousQuestion:empty, :is(html.bl-on, html.bl-og) #DP_NextQuestion:empty { display: none; }
+
+/* ---- Ads setting: off unless the user picks Block in the gear ---- */
+html.bl-ads-off #Panel :is(.let-sidebar-stack, .bsarocks, [id^="bsap_"]), html.bl-ads-off #let-footer-custom-2026 { display: none !important; }
+
+/* ---- update alert ---- */
+#bl-update { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 12px; background: var(--bl-surface); border: 1px solid var(--bl-accent); border-radius: var(--bl-r-md); color: var(--bl-ink); font: 400 13px/1.4 var(--bl-text); }
+#bl-update span { margin-right: auto; }
+#bl-update button { height: 28px; padding: 0 10px; background: var(--bl-fill); border: 0; border-radius: var(--bl-r-md); color: var(--bl-on-fill); font: 600 12px/1 var(--bl-text); cursor: pointer; }
+#bl-update .bl-update-later { background: none; color: var(--bl-muted); }
 
 /* ---- accessibility ---- */
 @media (prefers-reduced-motion: reduce) {
