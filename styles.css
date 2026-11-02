@@ -449,7 +449,7 @@ html.bl-on .ContentColumn form .Buttons .Back a, html.bl-on .ContentColumn form 
 html.bl-on .ContentColumn form .Buttons .Back a:hover { color: var(--bl-accent) !important; }
 html.bl-on body:not(.EditMode) .ContentColumn form .Buttons a.Cancel { order: 0; margin: 0 auto 0 0 !important; padding: 0 !important; background: none !important; border: 0 !important; color: var(--bl-muted) !important; }
 html.bl-on body:not(.EditMode) .ContentColumn form .Buttons a.Cancel:hover { color: var(--bl-accent) !important; }
-html.bl-on .ContentColumn .FormWrapper .Preview, html.bl-on .ContentColumn .Preview { margin: 0 0 12px !important; padding: 12px !important; background: var(--bl-surface2) !important; border: 0 !important; border-radius: var(--bl-r-md); color: var(--bl-ink) !important; }
+html.bl-on .ContentColumn .FormWrapper .Preview, html.bl-on .ContentColumn .Preview { margin: 0 0 12px !important; padding: 12px !important; background: var(--bl-surface) !important; border: 1px solid var(--bl-line) !important; border-radius: var(--bl-r-md); color: var(--bl-ink) !important; }
 
 /* The main button keeps its fill everywhere. */
 html.bl-on .ContentColumn input[type="submit"].Button.Primary {
@@ -846,8 +846,20 @@ html.bl-on .ItemDiscussion:not(li), html.bl-on li.ItemComment {
 }
 html.bl-on li.ItemComment { scroll-margin-top: calc(var(--bl-sticky) - 8px); }
 html.bl-on .Message.userContent { max-width: 76ch; color: var(--bl-ink); font-size: 15px !important; line-height: 1.6; }
-html.bl-on .Message blockquote, html.bl-on .UserQuote { background: var(--bl-surface2) !important; border: 0 !important; border-radius: var(--bl-r-md); color: var(--bl-ink) !important; }
-html.bl-on .Message pre, html.bl-on .Message code { background: var(--bl-surface2) !important; color: var(--bl-ink) !important; }
+/* Quotes look the same in posts, messages, and previews. The left bar marks them on any background,
+   and a quote inside a quote flips its fill so the two never blend. */
+html.bl-on :is(.Message, .Preview, .userContent) blockquote, html.bl-on .UserQuote {
+  box-sizing: border-box;
+  margin: 10px 0 !important;
+  padding: 10px 14px !important;
+  background: var(--bl-surface2) !important;
+  border: 0 !important;
+  border-left: 3px solid var(--bl-field-line) !important;
+  border-radius: var(--bl-r-md);
+  color: var(--bl-ink) !important;
+}
+html.bl-on :is(.Message, .Preview, .userContent) blockquote blockquote { background: var(--bl-surface) !important; }
+html.bl-on :is(.Message, .Preview) pre, html.bl-on :is(.Message, .Preview) code { background: var(--bl-surface2) !important; color: var(--bl-ink) !important; }
 html.bl-on .Author .Username { color: var(--bl-ink) !important; font-weight: 600; }
 html.bl-on .CommentInfo, html.bl-on .DiscussionMeta, html.bl-on .AuthorInfo, html.bl-on .RoleTitle { color: var(--bl-muted) !important; }
 html.bl-on .CommentInfo a, html.bl-on .DiscussionMeta a { color: var(--bl-muted) !important; }
