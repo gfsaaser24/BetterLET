@@ -1,0 +1,32 @@
+# A new version in manifest.json on main becomes a GitHub release. That release fires the webhook
+# to the update Worker, and extensions see the update on their next check.
+name: Release
+on:
+  push:
+    branches: [main]
+    paths: [manifest.json]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read version
+        id: version
+        run: echo "tag=v$(jq -r .version manifest.json)" >> "$GITHUB_OUTPUT"
+      - name: Skip if released
+        id: seen
+        run: |
+          if gh release view "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
+      - name: List files with hashes
+        if: steps.seen.outputs.skip != 'true'
+        run: |
+          files=$(ls manifest.json background.js content.js early.js popovers.js popup.html popup.js update.html update.js updater.js ext.css styles.css icons/*.png)
+          sha256sum $files | jq -R 'split("  ") | {sha256: .[0], path: .[1]}' | jq -s --arg v "$(jq -r .version manifest.json)" '{version: $v, files: .}' > release.json
+          jq -e '.files | length > 10' release.json
+      - name: Publish
+        if: steps.seen.outputs.skip != 'true'
+        run: gh release create "${{ steps.version.outputs.tag }}" release.json --target "$GITHUB_SHA" --title "BetterLET ${{ steps.version.outputs.tag }}" --generate-notes
