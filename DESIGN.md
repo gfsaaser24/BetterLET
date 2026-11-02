@@ -18,7 +18,7 @@ One style in posts, messages, and previews: `--bl-surface2` fill with a 3px left
 
 ## Updates
 
-`Release` workflow: a new version in `manifest.json` on main becomes a GitHub release with `release.json` (file list and SHA-256 hashes). The release fires a signed webhook to the `betterlet-updates` Worker, which re-reads GitHub and saves the result in KV. `background.js` checks the Worker every 6 hours. The toolbar menu, the gear, and a bar above the content show the update.
+`Release` workflow: a new version in `manifest.json` on main becomes a GitHub release with `release.json` (file list and SHA-256 hashes). The release fires a signed webhook to the `betterlet-updates` Worker, which saves the notes from the signed webhook and the file list from the release in KV. It avoids GitHub's API, which rate limits Cloudflare's addresses. `background.js` checks the Worker every 6 hours. The toolbar menu, the gear, and a bar above the content show the update.
 
 Files only ever come from the repo at the release tag, and each must match its hash. Chrome does not give extensions their folder path, so the user picks the folder once, and a marker file proves it is the loaded one. Source for the Worker and changelog page is in `cloud/`. The forum page blocks outside frames, so the changelog frame lives only in extension pages.
 
