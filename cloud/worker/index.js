@@ -1,5 +1,5 @@
 // BetterLET updates. GitHub tells this Worker when a release is published, and the extension reads from it.
-// One way only: the public routes are read-only, and the webhook only triggers a re-read from GitHub.
+// One way only: the public routes are read-only, and the webhook is signed, and files are only ever listed from the release itself.
 const REPO = 'gfsaaser24/BetterLET';
 const KEEP = 30;
 const JSON_HEADERS = {
@@ -31,29 +31,44 @@ const validFiles = (list) => Array.isArray(list) && list.length > 0 && list.ever
   && /^[0-9a-f]{64}$/.test(file.sha256 || '')
 ));
 
-// Always rebuilt from GitHub, so a missed or replayed webhook cannot leave bad data behind.
-async function sync(env) {
-  const res = await github(`https://api.github.com/repos/${REPO}/releases?per_page=${KEEP}`);
-  if (!res.ok) throw new Error(`GitHub answered ${res.status}`);
-  const releases = (await res.json())
-    .filter((r) => !r.draft && !r.prerelease)
-    .map((r) => ({
-      version: r.tag_name.replace(/^v/, ''),
-      tag: r.tag_name,
-      name: r.name || r.tag_name,
-      notes: r.body || '',
-      url: r.html_url,
-      publishedAt: r.published_at,
-    }));
-  const latest = releases[0];
-  if (!latest) return { version: null };
-  const asset = await github(`https://github.com/${REPO}/releases/download/${latest.tag}/release.json`);
-  if (!asset.ok) throw new Error(`release.json answered ${asset.status}`);
-  const manifest = await asset.json();
-  if (manifest.version !== latest.version || !validFiles(manifest.files)) throw new Error('release.json is not valid');
-  await env.UPDATES.put('latest', JSON.stringify({ ...latest, repo: REPO, files: manifest.files }));
+const asset = async (url) => {
+  const res = await github(url);
+  if (!res.ok) throw new Error(`release.json answered ${res.status}`);
+  const manifest = await res.json();
+  if (!/^\d+(\.\d+)*$/.test(manifest.version || '') || !validFiles(manifest.files)) throw new Error('release.json is not valid');
+  return manifest;
+};
+
+const older = (a, b) => String(a.version).localeCompare(String(b.version), undefined, { numeric: true });
+
+// The release text comes from the signed webhook, and the file list from the release itself.
+// GitHub's public API is not used: it rate limits Cloudflare's shared addresses.
+async function saveRelease(env, release) {
+  const entry = {
+    version: release.tag_name.replace(/^v/, ''),
+    tag: release.tag_name,
+    name: release.name || release.tag_name,
+    notes: release.body || '',
+    url: release.html_url,
+    publishedAt: release.published_at,
+  };
+  const manifest = await asset(`https://github.com/${REPO}/releases/download/${entry.tag}/release.json`);
+  if (manifest.version !== entry.version) throw new Error('release.json does not match this release');
+  const saved = (await env.UPDATES.get('releases', 'json')) || [];
+  const releases = [entry, ...saved.filter((r) => r.tag !== entry.tag)].sort((a, b) => older(b, a)).slice(0, KEEP);
   await env.UPDATES.put('releases', JSON.stringify(releases));
-  return { version: latest.version };
+  if (releases[0].tag === entry.tag) await env.UPDATES.put('latest', JSON.stringify({ ...entry, repo: REPO, files: manifest.files }));
+  return { version: entry.version };
+}
+
+// Backstop for a missed webhook. Notes are unknown here, so the changelog fills in from the next webhook.
+async function checkLatest(env) {
+  const manifest = await asset(`https://github.com/${REPO}/releases/latest/download/release.json`);
+  const latest = await env.UPDATES.get('latest', 'json');
+  if (latest?.version === manifest.version) return;
+  const tag = `v${manifest.version}`;
+  const url = `https://github.com/${REPO}/releases/tag/${tag}`;
+  await env.UPDATES.put('latest', JSON.stringify({ version: manifest.version, tag, name: tag, notes: '', url, publishedAt: new Date().toISOString(), repo: REPO, files: manifest.files }));
 }
 
 export default {
@@ -77,8 +92,10 @@ export default {
       const event = request.headers.get('x-github-event');
       if (event === 'ping') return reply({ ok: true });
       if (event !== 'release') return reply({ ignored: event });
+      const { action, release } = JSON.parse(new TextDecoder().decode(body));
+      if (!['published', 'released', 'edited'].includes(action) || release?.draft || release?.prerelease) return reply({ ignored: action });
       try {
-        return reply(await sync(env));
+        return reply(await saveRelease(env, release));
       } catch (err) {
         return reply({ error: err.message }, 502);
       }
@@ -87,6 +104,6 @@ export default {
   },
   // Backstop in case a webhook never arrives.
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(sync(env));
+    ctx.waitUntil(checkLatest(env));
   },
 };
