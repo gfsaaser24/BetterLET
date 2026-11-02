@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.26
+// @version      1.27
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -99,6 +99,8 @@
         ${option('sig', 'expanded', 'Expanded')}${option('sig', 'collapsed', 'Collapsed')}
         <div class="bl-menu-label">Ads</div>
         ${option('ads', 'show', 'Show')}${option('ads', 'block', 'Block')}
+        <div class="bl-menu-label">BetterLET ${window.chrome?.runtime?.getManifest?.().version || ''}</div>
+        <button type="button" role="menuitem" class="bl-updates" data-link="update">Updates and changelog</button>
       </div>`;
     const gear = box.querySelector('.bl-gear');
     const menu = box.querySelector('.bl-menu');
@@ -118,6 +120,7 @@
       if (mode) theme.set(mode);
       if (sig) theme.setSignatures(sig);
       if (ads) { theme.setAds(ads); fitPanel(); }
+      if (e.target.dataset.link) chrome.runtime.sendMessage({ type: 'bl-open-update' });
       mark();
     });
     document.addEventListener('click', (e) => { if (!box.contains(e.target)) toggle(false); });
@@ -126,6 +129,35 @@
     // The search box floats right on the stock page, so a float placed after it lands to its left.
     if (og) headRow.querySelector('.SiteSearch')?.after(box);
     else headRow.appendChild(box);
+  }
+
+  // ---- update alert: the background script saves the latest release, this shows it ----
+  if (window.chrome?.storage?.local) {
+    const installed = chrome.runtime.getManifest().version;
+    const isNewer = (version) => String(version).localeCompare(installed, undefined, { numeric: true }) > 0;
+    const showUpdate = ({ latest, dismissed }) => {
+      document.getElementById('bl-update')?.remove();
+      if (!latest || !isNewer(latest.version) || dismissed === latest.version) return;
+      const bar = document.createElement('div');
+      bar.id = 'bl-update';
+      bar.setAttribute('role', 'status');
+      const text = document.createElement('span');
+      text.textContent = `BetterLET ${latest.version} is ready.`;
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.textContent = 'Update now';
+      open.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'bl-open-update' }));
+      const later = document.createElement('button');
+      later.type = 'button';
+      later.className = 'bl-update-later';
+      later.textContent = 'Later';
+      later.addEventListener('click', () => chrome.storage.local.set({ dismissed: latest.version }));
+      bar.append(text, open, later);
+      document.querySelector('.ContentColumn')?.prepend(bar);
+    };
+    const paintUpdate = () => chrome.storage.local.get(['latest', 'dismissed']).then(showUpdate).catch(() => {});
+    paintUpdate();
+    chrome.storage.onChanged.addListener(paintUpdate);
   }
 
   // ---- clicks that work on every page ----

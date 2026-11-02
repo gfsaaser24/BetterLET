@@ -55,11 +55,11 @@
 3. Click **Load unpacked** and pick the folder with `manifest.json`.
 4. Open [LowEndTalk](https://lowendtalk.com/categories/requests).
 
-To update, pull the latest code and click reload on the BetterLET card.
+BetterLET shows an alert when a new version is out. Click Update now and pick your BetterLET folder the first time. If you cloned the repo, run `git pull` and click reload on the BetterLET card.
 
 ## Privacy
 
-BetterLET asks for no extra browser permissions. Your settings stay in your browser. V2 loads its font from Fontshare.
+Your settings stay in your browser. BetterLET checks for updates every 6 hours at its own Cloudflare Worker, which sees your IP address like any website does. Updates download from this GitHub repo. V2 loads its font from Fontshare. Browser permissions: storage and alarms.
 
 ## Development
 

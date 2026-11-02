@@ -1,0 +1,16 @@
+:root { color-scheme: light dark; --bg: #f7faf5; --card: #fff; --line: #dfe6dc; --ink: #14231a; --muted: #5a6b60; --accent: #1c6b3f; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0a0f0b; --card: #111813; --line: #27332b; --ink: #e4efe5; --muted: #93a697; --accent: #8fdca4; } }
+html[data-theme="light"] { color-scheme: light; --bg: #f7faf5; --card: #fff; --line: #dfe6dc; --ink: #14231a; --muted: #5a6b60; --accent: #1c6b3f; }
+html[data-theme="dark"] { color-scheme: dark; --bg: #0a0f0b; --card: #111813; --line: #27332b; --ink: #e4efe5; --muted: #93a697; --accent: #8fdca4; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 14px/1.5 system-ui, sans-serif; }
+main { max-width: 680px; margin: 0 auto; padding: 24px 16px; }
+h1 { margin: 0 0 16px; font-size: 22px; }
+.embed main { padding: 10px; }
+.embed h1 { display: none; }
+article { margin: 0 0 10px; padding: 12px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+h2 { margin: 0; font-size: 15px; }
+h3 { margin: 10px 0 2px; font-size: 13px; }
+time, .muted { color: var(--muted); font-size: 12px; }
+ul { margin: 6px 0 0; padding-left: 18px; }
+p { margin: 6px 0 0; overflow-wrap: anywhere; }
