@@ -284,7 +284,7 @@
         ${les ? `<div class="bl-menu-label">Karma flair</div>${option('flair', 'on', 'On')}${option('flair', 'bad', 'Bad karma only')}${option('flair', 'off', 'Off')}` : ''}
         <div class="bl-menu-label">People</div>
         <button type="button" role="menuitem" data-link="blocked">Blocked people</button>
-        <div class="bl-menu-label">BetterLET ${window.chrome?.runtime?.getManifest?.().version || ''}</div>
+        <div class="bl-menu-label">BetterLET ${globalThis.chrome?.runtime?.getManifest?.().version || ''}</div>
         <button type="button" role="menuitem" class="bl-updates" data-link="update">Updates and changelog</button>
       </div>`;
     const gear = box.querySelector('.bl-gear');
@@ -319,7 +319,7 @@
   }
 
   // ---- update alert: the background script saves the latest release, this shows it ----
-  if (window.chrome?.storage?.local) {
+  if (globalThis.chrome?.storage?.local) {
     const installed = chrome.runtime.getManifest().version;
     const isNewer = (version) => String(version).localeCompare(installed, undefined, { numeric: true }) > 0;
     const showUpdate = ({ latest, dismissed }) => {

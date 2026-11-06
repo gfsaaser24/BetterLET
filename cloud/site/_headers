@@ -1,4 +1,4 @@
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://betterlet-updates.emd437509.workers.dev; frame-ancestors chrome-extension:; base-uri 'none'; form-action 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://betterlet-updates.emd437509.workers.dev; frame-ancestors chrome-extension: moz-extension:; base-uri 'none'; form-action 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
