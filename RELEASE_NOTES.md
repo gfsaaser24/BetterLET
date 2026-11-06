@@ -1,1 +1,1 @@
-- Support for LowEndSpirit has been added
+- UI polish for LowEndSpirit
