@@ -3,3 +3,4 @@
 - Hover a thread title to preview the first post
 - Your threads and the threads you posted in, in the left sidebar
 - Karma in user hover cards on LowEndSpirit
+- Karma flair setting in the gear on LowEndSpirit
