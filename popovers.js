@@ -19,6 +19,21 @@
   let closeTimer = 0;
   let token = 0;
 
+  // Same slow-down key as content.js: no hover reads for 10 minutes after the site says slow down.
+  const BACKOFF_KEY = 'letBetter.backoff';
+  const politeFetch = async (url) => {
+    let until = 0;
+    try { until = +(localStorage.getItem(BACKOFF_KEY) || 0); } catch {}
+    if (Date.now() < until) throw new Error('waiting');
+    const res = await fetch(url, { credentials: 'include' });
+    const bounced = res.redirected && new URL(res.url).pathname === '/categories';
+    if (res.status === 429 || res.status === 503 || bounced) {
+      try { localStorage.setItem(BACKOFF_KEY, String(Date.now() + 10 * 60 * 1000)); } catch {}
+      throw new Error('slow down');
+    }
+    return res;
+  };
+
   const el = (tag, cls, text) => {
     const node = document.createElement(tag);
     if (cls) node.className = cls;
@@ -66,7 +81,7 @@
 
   const fetchUser = (slug) => {
     if (!users.has(slug)) {
-      users.set(slug, fetch(`/profile/${slug}`, { credentials: 'include' }).then(async (res) => {
+      users.set(slug, politeFetch(`/profile/${slug}`).then(async (res) => {
         if (!res.ok) throw new Error('missing');
         const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
         const facts = {};
@@ -150,7 +165,7 @@
   };
   const fetchThread = (id) => {
     if (!threads.has(id)) {
-      threads.set(id, fetch(`/discussion/${id}/p1`, { credentials: 'include' }).then(async (res) => {
+      threads.set(id, politeFetch(`/discussion/${id}/p1`).then(async (res) => {
         if (!res.ok) throw new Error('missing');
         const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
         const op = doc.querySelector('div.ItemDiscussion');

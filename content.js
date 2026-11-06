@@ -36,6 +36,23 @@
   const saveStarted = () => { try { localStorage.setItem(DKEY, JSON.stringify(started)); } catch {} };
   const firstPostTime = (doc) => Date.parse(doc.querySelector('.DateCreated time')?.getAttribute('datetime') || '') || 0;
 
+  // ---- polite page reads ----
+  // When the site says slow down (429 or 503, or LowEndSpirit bouncing a request to /categories),
+  // every background read stops for 10 minutes. popovers.js reads the same key.
+  const BACKOFF_KEY = 'letBetter.backoff';
+  const backingOff = () => { try { return Date.now() < +(localStorage.getItem(BACKOFF_KEY) || 0); } catch { return false; } };
+  const politeFetch = async (url, { background = true } = {}) => {
+    if (background && backingOff()) throw new Error('BetterLET: waiting, the site asked to slow down');
+    const res = await fetch(url, { credentials: 'include' });
+    const asked = new URL(url, location.href).pathname;
+    const bounced = res.redirected && new URL(res.url).pathname === '/categories' && asked !== '/categories';
+    if (res.status === 429 || res.status === 503 || bounced) {
+      try { localStorage.setItem(BACKOFF_KEY, String(Date.now() + 10 * 60 * 1000)); } catch {}
+      throw new Error('BetterLET: the site asked to slow down');
+    }
+    return res;
+  };
+
   // OG keeps the stock page: no rail, no rebuilt pages, only the small features.
   const og = document.documentElement.classList.contains('bl-og');
 
@@ -96,6 +113,62 @@
     }
   }
 
+  // ---- left rail categories: LowEndSpirit's sidebar has none, so build one from /categories ----
+  // Same classes as LowEndTalk's own categories box, so the rail styles apply. Cached for a day.
+  const railScrollBox = document.getElementById('bl-rail-scroll');
+  if (railScrollBox && !railScrollBox.querySelector('.BoxCategories')) {
+    const CATS_KEY = 'letBetter.cats';
+    const box = document.createElement('div');
+    box.className = 'Box BoxCategories bl-built-cats';
+    const head = document.createElement('h4');
+    head.textContent = 'Categories';
+    const ul = document.createElement('ul');
+    ul.className = 'PanelInfo PanelCategories';
+    box.append(head, ul);
+    railScrollBox.appendChild(box);
+    const here = location.pathname.match(/^\/categories\/([^/]+)/)?.[1] || '';
+    const paintCats = (cats) => {
+      ul.replaceChildren();
+      cats.forEach((c) => {
+        const li = document.createElement('li');
+        li.className = `ClearFix Depth${c.depth}${c.slug === here ? ' Active' : ''}`;
+        const a = document.createElement('a');
+        a.className = 'ItemLink';
+        a.href = `/categories/${c.slug}`;
+        if (c.count) {
+          const aside = document.createElement('span');
+          aside.className = 'Aside';
+          const count = document.createElement('span');
+          count.className = 'Count';
+          count.textContent = c.count;
+          aside.appendChild(count);
+          a.appendChild(aside);
+        }
+        a.append(c.name);
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      if (!cats.length) box.remove();
+    };
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(CATS_KEY)); } catch {}
+    if (cached && Date.now() - cached.at < 86400000) paintCats(cached.cats);
+    else {
+      politeFetch('/categories').then((r) => r.text()).then((html) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const cats = [...doc.querySelectorAll('ul.CategoryList > li[id^="Category_"]')].map((li) => {
+          const link = li.querySelector('.TitleWrap a.Title, .TitleWrap a');
+          const slug = (link?.getAttribute('href') || '').match(/\/categories\/([^/?#]+)/)?.[1];
+          // The site's own stylesheet hides these two from members.
+          if (!slug || /^(main-site-posts|help)$/i.test(slug)) return null;
+          return { slug, name: link.textContent.trim(), depth: /\bDepth2\b/.test(li.className) ? 2 : 1, count: li.querySelector('.DiscussionCount .Number')?.textContent.trim() || '' };
+        }).filter(Boolean);
+        if (cats.length) try { localStorage.setItem(CATS_KEY, JSON.stringify({ at: Date.now(), cats })); } catch {}
+        paintCats(cats);
+      }).catch(() => box.remove());
+    }
+  }
+
   // ---- left rail lists: threads you started and threads you posted in, read from your profile ----
   // Signed in only. Cached for 5 minutes per forum, so page views do not refetch them.
   const meSlug = (() => {
@@ -107,7 +180,8 @@
     return '';
   })();
   const railScroll = document.getElementById('bl-rail-scroll');
-  if (railScroll && meSlug) {
+  const signedInRail = document.querySelector('.MeBox .Username, .MeBox a[href^="/profile/"], .MeBox a[href*="/profile/"]');
+  if (railScroll && signedInRail) {
     const RAIL_KEY = 'letBetter.rail';
     const RAIL_TTL = 5 * 60 * 1000;
     const mk = (tag, cls, text) => {
@@ -128,8 +202,9 @@
       railScroll.appendChild(box);
       return ul;
     };
-    const mineUl = section('My threads', `/profile/discussions/${meSlug}`);
-    const postedUl = section('Posted in', `/profile/comments/${meSlug}`);
+    // Without a name these pages show the signed-in member. The name from the header is only a fallback.
+    const mineUl = section('My threads', '/profile/discussions');
+    const postedUl = section('Posted in', '/profile/comments');
     const paint = (ul, items, empty) => {
       ul.replaceChildren();
       if (!items.length) ul.appendChild(mk('li', 'bl-rail-empty', empty));
@@ -144,10 +219,14 @@
         ul.appendChild(li);
       });
     };
-    const pageOf = (url) => fetch(url, { credentials: 'include' }).then((r) => {
-      if (!r.ok) throw new Error(String(r.status));
+    const pageOf = (url) => politeFetch(url).then((r) => {
+      if (!r.ok || r.url.includes('/entry/signin')) throw new Error(String(r.status));
       return r.text();
     }).then((html) => new DOMParser().parseFromString(html, 'text/html'));
+    const ownPage = (kind) => pageOf(`/profile/${kind}`).catch((err) => {
+      if (!meSlug) throw err;
+      return pageOf(`/profile/${kind}/${meSlug}`);
+    });
     const readMine = (doc) => [...doc.querySelectorAll('li.ItemDiscussion')].map((li) => {
       const a = li.querySelector('.Title a');
       return a && {
@@ -171,15 +250,15 @@
     };
     let cache = null;
     try { cache = JSON.parse(localStorage.getItem(RAIL_KEY)); } catch {}
-    if (cache && cache.slug === meSlug && Date.now() - cache.at < RAIL_TTL) {
+    if (cache && cache.slug === (meSlug || 'me') && Date.now() - cache.at < RAIL_TTL) {
       paint(mineUl, cache.mine, 'No threads yet.');
       paint(postedUl, cache.posted, 'No comments yet.');
     } else {
       (async () => {
-        const fresh = { slug: meSlug, at: Date.now(), mine: [], posted: [] };
-        try { fresh.mine = readMine(await pageOf(`/profile/discussions/${meSlug}`)); paint(mineUl, fresh.mine, 'No threads yet.'); }
+        const fresh = { slug: meSlug || 'me', at: Date.now(), mine: [], posted: [] };
+        try { fresh.mine = readMine(await ownPage('discussions')); paint(mineUl, fresh.mine, 'No threads yet.'); }
         catch { paint(mineUl, [], 'Could not load this list.'); fresh.at = 0; }
-        try { fresh.posted = readPosted(await pageOf(`/profile/comments/${meSlug}`)); paint(postedUl, fresh.posted, 'No comments yet.'); }
+        try { fresh.posted = readPosted(await ownPage('comments')); paint(postedUl, fresh.posted, 'No comments yet.'); }
         catch { paint(postedUl, [], 'Could not load this list.'); fresh.at = 0; }
         try { localStorage.setItem(RAIL_KEY, JSON.stringify(fresh)); } catch {}
       })();
@@ -346,7 +425,7 @@
     const anchor = document.querySelector('.MessageList, .DataList.Comments, #Content h1');
     anchor?.parentNode.insertBefore(box, anchor);
     if (!started[threadId]) {
-      fetch(`/discussion/${threadId}`, { credentials: 'include' }).then((r) => r.text()).then((html) => {
+      politeFetch(`/discussion/${threadId}`).then((r) => r.text()).then((html) => {
         const t = firstPostTime(new DOMParser().parseFromString(html, 'text/html'));
         if (t) { started[threadId] = t; saveStarted(); paint(); }
       }).catch(() => {});
@@ -517,7 +596,7 @@
     stat('My threads', countOf('/discussions/mine'), '/discussions/mine');
     stat('Drafts', countOf('/drafts'), '/drafts');
     const thanks = stat('Thanks received', '…', '/profile');
-    const pageOf = (url) => fetch(url, { credentials: 'include' }).then((r) => r.text()).then((html) => new DOMParser().parseFromString(html, 'text/html'));
+    const pageOf = (url) => politeFetch(url).then((r) => r.text()).then((html) => new DOMParser().parseFromString(html, 'text/html'));
     if (profile) {
       pageOf(profile).then((doc) => {
         thanks.firstChild.textContent = doc.querySelector('dd.ReceivedThankCount')?.textContent.trim() || '0';
@@ -815,23 +894,26 @@
   };
 
   // Start dates aren't in the list, so fetch page 1 of threads you scroll past.
-  // Two at a time, slow, cached forever, so the site doesn't rate-limit you.
+  // Slow and cached forever, so the site doesn't rate-limit you. LowEndSpirit allows less: one at a time, a longer gap.
   const queue = [];
   let running = 0;
+  const LANES = les ? 1 : 2;
+  const GAP = les ? 1500 : 400;
   const pump = () => {
-    while (running < 2 && queue.length) {
+    if (backingOff()) return;
+    while (running < LANES && queue.length) {
       const li = queue.shift();
       const id = idOf(li);
       if (started[id]) { paintDates(li); continue; }
       running++;
-      fetch(`/discussion/${id}`, { credentials: 'include' })
+      politeFetch(`/discussion/${id}`)
         .then((r) => r.text())
         .then((html) => {
           const t = firstPostTime(new DOMParser().parseFromString(html, 'text/html'));
           if (t) { started[id] = t; saveStarted(); }
         })
         .catch(() => {})
-        .finally(() => { paintDates(li); setTimeout(() => { running--; pump(); }, 400); });
+        .finally(() => { paintDates(li); setTimeout(() => { running--; pump(); }, GAP); });
     }
   };
   const watcher = new IntersectionObserver((entries) => {
@@ -880,10 +962,10 @@
       if (!hide) shown++;
     });
     bar.querySelector('.lb-count').textContent = `${shown} of ${items.length} shown`;
-    // The finder pulls in up to 4 more pages when one page holds few matches.
-    if ((state.show === 'deals' || state.show === 'gifts') && shown < 15 && fills < 4 && nextUrl && !loading) {
+    // The finder pulls in a few more pages when one page holds few matches: 4 on LowEndTalk, 2 on LowEndSpirit.
+    if ((state.show === 'deals' || state.show === 'gifts') && shown < 15 && fills < (les ? 2 : 4) && nextUrl && !loading && !backingOff()) {
       fills++;
-      setTimeout(loadMore, 300);
+      setTimeout(loadMore, 1500);
     }
   };
 
@@ -896,7 +978,8 @@
     moreBtn.disabled = true;
     moreBtn.textContent = 'Loading…';
     try {
-      const html = await (await fetch(nextUrl, { credentials: 'include' })).text();
+      // A click always loads; only automatic reads wait out a slow-down.
+      const html = await (await politeFetch(nextUrl, { background: false })).text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const have = new Set([...list.children].map((li) => li.id));
       doc.querySelectorAll('ul.Discussions li.ItemDiscussion').forEach((li) => {
