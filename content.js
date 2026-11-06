@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.28
+// @version      1.29
 // @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @grant        none
@@ -38,8 +38,8 @@
   // OG keeps the stock page: no rail, no rebuilt pages, only the small features.
   const og = document.documentElement.classList.contains('bl-og');
 
-  // The right column closes when nothing in it shows. That covers the Ads setting and ad blockers,
-  // which hide or strip the same blocks, so nobody gets an empty column.
+  // The right column closes when nothing in it shows, such as when an ad blocker hides or strips
+  // the ad blocks, so nobody gets an empty column.
   const fitPanel = () => {
     const box = document.querySelector('#Body > .Row');
     const side = document.querySelector('#Panel');
@@ -97,16 +97,14 @@
         ${option('mode', 'auto', 'Auto')}${option('mode', 'light', 'Light')}${option('mode', 'dark', 'Dark')}
         <div class="bl-menu-label">Signatures</div>
         ${option('sig', 'expanded', 'Expanded')}${option('sig', 'collapsed', 'Collapsed')}
-        <div class="bl-menu-label">Ads</div>
-        ${option('ads', 'show', 'Show')}${option('ads', 'block', 'Block')}
         <div class="bl-menu-label">BetterLET ${window.chrome?.runtime?.getManifest?.().version || ''}</div>
         <button type="button" role="menuitem" class="bl-updates" data-link="update">Updates and changelog</button>
       </div>`;
     const gear = box.querySelector('.bl-gear');
     const menu = box.querySelector('.bl-menu');
     const mark = () => menu.querySelectorAll('button').forEach((b) => {
-      const { design, mode, sig, ads } = b.dataset;
-      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : sig ? sig === theme.getSignatures() : ads === theme.getAds();
+      const { design, mode, sig } = b.dataset;
+      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : sig === theme.getSignatures();
       b.setAttribute('aria-checked', String(on));
     });
     const toggle = (open) => {
@@ -115,11 +113,10 @@
     };
     gear.addEventListener('click', () => toggle(menu.hidden));
     menu.addEventListener('click', (e) => {
-      const { design, mode, sig, ads } = e.target.dataset;
+      const { design, mode, sig } = e.target.dataset;
       if (design) theme.setDesign(design);
       if (mode) theme.set(mode);
       if (sig) theme.setSignatures(sig);
-      if (ads) { theme.setAds(ads); fitPanel(); }
       if (e.target.dataset.link) chrome.runtime.sendMessage({ type: 'bl-open-update' });
       mark();
     });
