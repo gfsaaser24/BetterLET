@@ -5,8 +5,8 @@
 <h1 align="center">BetterLET</h1>
 
 <p align="center">
-  <strong>LowEndTalk, rebuilt in your browser.</strong><br>
-  A Chrome extension that gives the forum a real layout, real scanning, and two real themes.<br><br>
+  <strong>LowEndTalk and LowEndSpirit, rebuilt in your browser.</strong><br>
+  A Chrome extension that gives both forums a real layout, real scanning, and two real themes.<br><br>
   Works in all chromium based browsers.
 </p>
 
@@ -16,14 +16,18 @@
 
 ## Features
 
+- **Two forums:** LowEndTalk and LowEndSpirit, with the same features on both
 - **Three designs:** OG, V1, and V2, each with Auto, Light, and Dark themes
 - **Settings gear:** design, theme, and signatures in one menu
 - **Better thread list:** status lights, last comment details, sorting, hide seen, and load next page
 - **Better navigation:** titles open the first post, and the date jumps to the last comment
+- **Deal and giveaway finder:** show only deals, only giveaways, or no deals, with tags on each thread
+- **Thread previews:** hover a title to read the first post
+- **Your threads in the sidebar:** threads you started and threads you posted in
 - **Better threads:** Thanks button, Ctrl+Enter to post, clean polls, and clear quotes
 - **Dashboard:** your counts, threads, and bookmarks on one page
 - **Cleaner pages:** rebuilt Categories, Profile, Settings, and Drafts
-- **User hover cards:** roles, join date, activity, and thanks
+- **User hover cards:** roles, join date, activity, thanks, and karma on LowEndSpirit
 - **Fits every screen:** wide monitors, older laptops, and phones
 - **Respects the ads:** ads always show, and nothing conflicts with your own ad blocker
 - **One-click updates:** alerts, a built-in changelog, and every file checked before install
@@ -34,7 +38,7 @@
 2. Move the folder somewhere it can stay, such as `Documents\BetterLET`. Keep it there. Chrome runs the extension from this folder.
 3. Open `chrome://extensions` and turn on **Developer mode**. Leave it on.
 4. Click **Load unpacked** and pick the folder with `manifest.json`.
-5. Open [LowEndTalk](https://lowendtalk.com/categories/requests).
+5. Open [LowEndTalk](https://lowendtalk.com/categories/requests) or [LowEndSpirit](https://lowendspirit.com/discussions).
 
 ## Updates
 
@@ -57,7 +61,7 @@ You can do this later: the gear has **Updates and changelog**, and the toolbar m
 1. Click **Update now**.
 2. Click **Allow** if Chrome asks again. It can ask after a restart.
 3. BetterLET installs the files and reloads itself. If it does not come back, click reload on its card in `chrome://extensions`.
-4. Refresh any open LowEndTalk tabs.
+4. Refresh any open LowEndTalk or LowEndSpirit tabs.
 
 ### What to change, if anything
 

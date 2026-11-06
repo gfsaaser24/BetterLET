@@ -8,6 +8,28 @@ A third choice on the same switch. It is the stock page: stock layout, stock pag
 
 OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is in `styles.css` under `html.bl-og`. Dark is the site's own dark mode, so changing theme or leaving OG reloads the page. Its gear sits in the green bar, left of the search box and level with it.
 
+## Two forums
+
+BetterLET runs on LowEndTalk and LowEndSpirit. `early.js` sets `html.bl-site-let` or `html.bl-site-les`. Both run Vanilla, so the inside markup (thread list, threads, composer, profiles) is the same and every shared rule and feature works on both.
+
+The page frame is not the same. LowEndTalk has `#Head`, `#Body > .Row` with `#Panel`, and `#Foot`. LowEndSpirit runs the Keystone theme: `#MainHeader`, then `main.MainContent` and `aside.Panel` in a `.Frame-row`, then `.Frame-footer`. `content.js` finds each part per site in one `frame` object. On LowEndSpirit in V1 and V2 the main column also gets `.ContentColumn`, and the row and sidebar get `.bl-les-row` and `.bl-les-panel`. The LowEndSpirit frame has its own section in `styles.css`. Never change a LowEndTalk frame rule to fit LowEndSpirit.
+
+LowEndSpirit specifics: the header stays a green brand bar, because the logo image has the site green baked in. The right column is 300px, because the site's image grid is two 150px squares. The gear sits in the header, left of the sign-in links or member menu. The site's fixed header has z-index 2, so we raise it to `--bl-z-head`, or the toolbar covers the gear menu. The sidebar has no categories box, so V1 and V2 build one in the left rail from `/categories` (same classes as LowEndTalk's box, cached a day in `letBetter.cats`). The gear is the only theme and flair control. The site's theme menu (five themes, swapped without a reload) and its karma flair slider are hidden in every design. `early.js` removes site theme files on load and keeps watching the head for the whole visit. OG adds the site's own `dark.css`, last in the head, when our theme is dark. Body classes are kept in step: `theme-dark` for site plugins, and `les-karma-negative-only` or `les-karma-off` for the flair mode.
+
+Karma flair is CSS on the site's side: rows and posts carry `les-karma-glow-1` to `-11` (good) or `les-karma-grey-1` to `-5` (low), and body classes pick the mode. So the member's server setting does not matter. The gear's Karma flair (On, Bad karma only, Off, saved in `letBetter.flair`) sets the body class and `html.bl-flair-*`. V1 and V2 draw their own flair: a 3px left bar and a soft tint in the site's level color, and low karma fades by the site's own rules. The site's pixel corners, runner and skulls show in OG only. Any new extension file must also go in the `files=` list in `.github/workflows/release.yml`, or updates will miss it.
+
+## Page reads
+
+Every read of another page goes through `politeFetch` (content.js and popovers.js). A 429 or 503, or LowEndSpirit bouncing a request to `/categories`, stops all background reads for 10 minutes (`letBetter.backoff`). A click on Load next page still loads. LowEndSpirit allows fewer requests than LowEndTalk: start dates load one at a time with a 1.5s gap, and the finder auto-loads at most 2 pages. Test against the live forums sparingly; the test browser shares the user's IP.
+
+## Finder, previews, rail lists
+
+**Finder.** The toolbar's Show menu: All, Deals, Giveaways, No deals, saved in `letBetter.v1`. A thread's kind comes from its category first (offer and giveaway categories of both forums), then from words in its title. Requests, help and similar categories never count as deals. Kinds show as small outline tags: accent for Deal, danger tone for Giveaway. With Deals or Giveaways on, the list loads up to 4 more pages (2 on LowEndSpirit) when fewer than 15 threads match.
+
+**Thread previews.** Hovering a thread title in a list, the rail, the dashboard or the offers panel opens the hover card wide (440px) with the first post as plain text: no quotes, spoilers or signatures, about 650 characters. Links inside posts get no preview. Page 1 is fetched once per thread per page view.
+
+**Rail lists.** V1 and V2, signed in: My threads (`/profile/discussions`) and Posted in (`/profile/comments`, one row per thread, linking to your latest comment there). Without a name, both pages show the signed-in member; the name from the header is only a fallback. Neither forum has a participated page. Both lists are cached 5 minutes in `letBetter.rail`, per forum. OG has no rail, so no lists.
+
 ## Page numbers
 
 Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color. They always sit on their own row, clear of the cards above and below.

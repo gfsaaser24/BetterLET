@@ -1,1 +1,1 @@
-- UI fixes
+- Support for LowEndSpirit has been added
