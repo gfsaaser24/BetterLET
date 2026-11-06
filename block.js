@@ -91,6 +91,7 @@
       op.before(note);
     } else if (!opBlocked) note?.remove();
     applyMessages(root);
+    applyNotices();
     paintButtons();
   };
 
@@ -130,6 +131,37 @@
       thread.before(note);
     } else if (!allBlocked) note?.remove();
   };
+
+  // ---- notifications ----
+  // The bell menu, the notifications and activity pages, and the pop-ups in the corner. An item goes when the
+  // person who did it (the first profile link that is not you) is blocked. Items with no person stay.
+  const actorOf = (item) => {
+    for (const a of item.querySelectorAll('a[href*="/profile/"]')) {
+      const s = slugFrom(a.href);
+      if (s && keyOf(s) !== me) return s;
+    }
+    return '';
+  };
+  const isNotice = (li) => Boolean(li.closest('.Activities') || li.querySelector('.ItemContent.Activity, .Activity')
+    || /notification/i.test(li.closest('.ToggleFlyout')?.getAttribute('rel') || ''));
+  const applyNotices = () => {
+    document.querySelectorAll('.Flyout li.Item:not(.Title):not(.Center), ul.Activities > li, .DataList.Activities > li').forEach((li) => {
+      if (convoUrl(li) || !isNotice(li)) return;
+      li.classList.toggle('bl-blocked', has(actorOf(li)));
+    });
+    document.querySelectorAll('.InformWrapper').forEach((w) => w.classList.toggle('bl-blocked', has(actorOf(w))));
+  };
+  // Pop-ups and the bell menu are added after load. A MutationObserver runs before the next paint,
+  // so a blocked person's pop-up is hidden before it shows. This starts before the rest of the page work.
+  const NOTICE_SEL = '.InformWrapper, .InformMessage, .Activities, .Flyout li.Item, .Flyout .PopList';
+  new MutationObserver((records) => {
+    for (const r of records) {
+      for (const n of r.addedNodes) {
+        if (n.nodeType === 1 && (n.matches(NOTICE_SEL) || n.querySelector(NOTICE_SEL))) { applyNotices(); applyMessages(); return; }
+      }
+    }
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  applyNotices();
 
   // Unread messages from blocked people are opened in the background, which marks them read on the forum,
   // and the inbox badge drops right away. Only when the badge shows unread; at most every 10 minutes.
