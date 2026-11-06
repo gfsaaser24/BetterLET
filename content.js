@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.30
+// @version      1.31
 // @description  A cleaner LowEndTalk and LowEndSpirit: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @match        https://lowendspirit.com/*
@@ -737,6 +737,8 @@
   head.id = 'bl-list-head';
   head.innerHTML = '<span>Thread</span><span>Replies</span><span>Views</span><span>Started</span>';
   if (!og) list.parentNode.insertBefore(head, list);
+  const countEl = bar.querySelector('.lb-count');
+  if (!og) head.firstElementChild.appendChild(countEl);
 
   bar.querySelector('[data-k="sort"]').value = state.sort;
   bar.querySelector('[data-k="show"]').value = state.show;
@@ -878,8 +880,9 @@
     compact(li);
     const x = document.createElement('button');
     x.className = 'lb-x';
+    x.type = 'button';
     x.title = 'Mark seen';
-    x.textContent = '✕';
+    x.setAttribute('aria-label', 'Mark seen');
     x.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); markSeen(li); render(); });
     li.querySelector('.Options')?.appendChild(x);
     li.querySelectorAll('.Title a, .bl-when, .bl-go').forEach((a) => a.addEventListener('mousedown', () => markSeen(li)));
@@ -963,7 +966,7 @@
       li.classList.toggle('lb-hide', hide);
       if (!hide) shown++;
     });
-    bar.querySelector('.lb-count').textContent = `${shown} of ${items.length} shown`;
+    countEl.textContent = `${shown} of ${items.length} shown`;
     // The finder pulls in a few more pages when one page holds few matches: 4 on LowEndTalk, 2 on LowEndSpirit.
     if ((state.show === 'deals' || state.show === 'gifts') && shown < 15 && fills < (les ? 2 : 4) && nextUrl && !loading && !backingOff()) {
       fills++;
