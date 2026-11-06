@@ -6,12 +6,7 @@
       "type": "block"
     },
     "condition": {
-      "regexFilter": "^https://(www\\.)?lowendspirit\\.com/panel/state",
-      "resourceTypes": [
-        "ping",
-        "xmlhttprequest",
-        "other"
-      ]
+      "regexFilter": "^https://(www\\.)?lowendspirit\\.com/panel/state"
     }
   }
 ]
