@@ -166,6 +166,8 @@ html.bl-on #Head .Row { position: relative; z-index: var(--bl-z-head); }
 .bl-gear-icon { display: block; width: 20px; height: 20px; background: currentColor; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 .bl-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: var(--bl-z-flyout); box-sizing: border-box; width: 160px; padding: 6px; background: var(--bl-surface); border: 1px solid var(--bl-line); border-radius: var(--bl-r-lg); box-shadow: var(--bl-shadow); text-align: left; }
 .bl-menu[hidden] { display: none; }
+.bl-menu { min-width: 200px; transform-origin: top right; animation: bl-pop-in .18s var(--bl-ease); }
+.bl-menu button { white-space: nowrap; text-align: left; }
 .bl-menu-label { padding: 6px 8px 4px; color: var(--bl-muted); font: 600 11px/1.2 var(--bl-text); }
 .bl-menu button { display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; width: 100%; height: 30px; padding: 0 8px; background: none; border: 0; border-radius: var(--bl-r-md); color: var(--bl-ink); font: 400 13px/1 var(--bl-text); cursor: pointer; }
 .bl-menu button:hover { background: var(--bl-surface2); }
@@ -173,7 +175,7 @@ html.bl-on #Head .Row { position: relative; z-index: var(--bl-z-head); }
 .bl-menu button[aria-checked="true"]::after { content: ""; width: 14px; height: 14px; background: var(--bl-accent); -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 
 /* ---- icons: site sprites become Phosphor masks tinted by the theme ---- */
-html.bl-on .Sprite, html.bl-on .Sprite16, html.bl-on a.Bookmark, html.bl-on .OptionsTitle, html.bl-on .SiteSearch input[type="submit"] {
+html.bl-on .Sprite, html.bl-on .Sprite16, html.bl-on a.Bookmark, html.bl-on .OptionsTitle, html.bl-on .SiteSearch input[type="submit"], html.bl-on .SearchBox input[type="submit"] {
   background: var(--bl-muted) !important;
   -webkit-mask: center / contain no-repeat;
   mask: center / contain no-repeat;
@@ -183,8 +185,8 @@ html.bl-on a.Bookmark, html.bl-on .OptionsTitle { width: 18px !important; height
 html.bl-on a.Bookmark.Bookmarked, html.bl-on .Bookmarked a.Bookmark { background: var(--bl-accent) !important; }
 html.bl-on a:hover > .Sprite, html.bl-on a.Bookmark:hover, html.bl-on .Button-Options:hover .OptionsTitle { background: var(--bl-ink) !important; }
 html.bl-on .FilterMenu .Active .Sprite { background: var(--bl-accent) !important; }
-html.bl-on .SiteSearch form > div { position: relative !important; }
-html.bl-on .SiteSearch input[type="submit"].Button, html.bl-on #Head .SiteSearch input#Form_Go {
+html.bl-on :is(.SiteSearch, .SearchBox) form > div { position: relative !important; }
+html.bl-on .SiteSearch input[type="submit"].Button, html.bl-on #Head .SiteSearch input#Form_Go, html.bl-on .SearchBox input[type="submit"].Button {
   background: var(--bl-muted) !important;
   position: absolute !important;
   top: 50% !important;
@@ -203,7 +205,7 @@ html.bl-on .SiteSearch input[type="submit"].Button, html.bl-on #Head .SiteSearch
   line-height: 16px !important;
   cursor: pointer;
 }
-html.bl-on .SiteSearch input.InputBox { padding-right: 30px !important; }
+html.bl-on :is(.SiteSearch, .SearchBox) input.InputBox { padding-right: 30px !important; }
 html.bl-on .Alert {
   background: var(--bl-fill) !important;
   border: 0 !important;
@@ -239,7 +241,7 @@ html.bl-on .OptionsTitle, html.bl-og .OptionsTitle { -webkit-mask-image: url("da
 html.bl-on .bl-go, html.bl-og .bl-go { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M224.49%2C136.49l-72%2C72a12%2C12%2C0%2C0%2C1-17-17L187%2C140H40a12%2C12%2C0%2C0%2C1%2C0-24H187L135.51%2C64.48a12%2C12%2C0%2C0%2C1%2C17-17l72%2C72A12%2C12%2C0%2C0%2C1%2C224.49%2C136.49Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M224.49%2C136.49l-72%2C72a12%2C12%2C0%2C0%2C1-17-17L187%2C140H40a12%2C12%2C0%2C0%2C1%2C0-24H187L135.51%2C64.48a12%2C12%2C0%2C0%2C1%2C17-17l72%2C72A12%2C12%2C0%2C0%2C1%2C224.49%2C136.49Z%22/%3E%3C/svg%3E"); }
 html.bl-on a.Bookmark, html.bl-og a.Bookmark { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M184%2C32H72A16%2C16%2C0%2C0%2C0%2C56%2C48V224a8%2C8%2C0%2C0%2C0%2C12.24%2C6.78L128%2C193.43l59.77%2C37.35A8%2C8%2C0%2C0%2C0%2C200%2C224V48A16%2C16%2C0%2C0%2C0%2C184%2C32Zm0%2C177.57-51.77-32.35a8%2C8%2C0%2C0%2C0-8.48%2C0L72%2C209.57V48H184Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M184%2C32H72A16%2C16%2C0%2C0%2C0%2C56%2C48V224a8%2C8%2C0%2C0%2C0%2C12.24%2C6.78L128%2C193.43l59.77%2C37.35A8%2C8%2C0%2C0%2C0%2C200%2C224V48A16%2C16%2C0%2C0%2C0%2C184%2C32Zm0%2C177.57-51.77-32.35a8%2C8%2C0%2C0%2C0-8.48%2C0L72%2C209.57V48H184Z%22/%3E%3C/svg%3E"); }
 html.bl-on a.Bookmark.Bookmarked, html.bl-on .Bookmarked a.Bookmark, html.bl-og a.Bookmark.Bookmarked, html.bl-og .Bookmarked a.Bookmark { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M184%2C32H72A16%2C16%2C0%2C0%2C0%2C56%2C48V224a8%2C8%2C0%2C0%2C0%2C12.24%2C6.78L128%2C193.43l59.77%2C37.35A8%2C8%2C0%2C0%2C0%2C200%2C224V48A16%2C16%2C0%2C0%2C0%2C184%2C32Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M184%2C32H72A16%2C16%2C0%2C0%2C0%2C56%2C48V224a8%2C8%2C0%2C0%2C0%2C12.24%2C6.78L128%2C193.43l59.77%2C37.35A8%2C8%2C0%2C0%2C0%2C200%2C224V48A16%2C16%2C0%2C0%2C0%2C184%2C32Z%22/%3E%3C/svg%3E"); }
-html.bl-on .SiteSearch input[type="submit"] { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M229.66%2C218.34l-50.07-50.06a88.11%2C88.11%2C0%2C1%2C0-11.31%2C11.31l50.06%2C50.07a8%2C8%2C0%2C0%2C0%2C11.32-11.32ZM40%2C112a72%2C72%2C0%2C1%2C1%2C72%2C72A72.08%2C72.08%2C0%2C0%2C1%2C40%2C112Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M229.66%2C218.34l-50.07-50.06a88.11%2C88.11%2C0%2C1%2C0-11.31%2C11.31l50.06%2C50.07a8%2C8%2C0%2C0%2C0%2C11.32-11.32ZM40%2C112a72%2C72%2C0%2C1%2C1%2C72%2C72A72.08%2C72.08%2C0%2C0%2C1%2C40%2C112Z%22/%3E%3C/svg%3E"); }
+html.bl-on :is(.SiteSearch, .SearchBox) input[type="submit"] { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M229.66%2C218.34l-50.07-50.06a88.11%2C88.11%2C0%2C1%2C0-11.31%2C11.31l50.06%2C50.07a8%2C8%2C0%2C0%2C0%2C11.32-11.32ZM40%2C112a72%2C72%2C0%2C1%2C1%2C72%2C72A72.08%2C72.08%2C0%2C0%2C1%2C40%2C112Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M229.66%2C218.34l-50.07-50.06a88.11%2C88.11%2C0%2C1%2C0-11.31%2C11.31l50.06%2C50.07a8%2C8%2C0%2C0%2C0%2C11.32-11.32ZM40%2C112a72%2C72%2C0%2C1%2C1%2C72%2C72A72.08%2C72.08%2C0%2C0%2C1%2C40%2C112Z%22/%3E%3C/svg%3E"); }
 /* ICONS END */
 
 /* ---- footer ---- */
@@ -597,6 +599,7 @@ html.bl-on .Flyout hr { margin: 4px 6px !important; border: 0 !important; border
 }
 #let-better-bar button:disabled { opacity: .45; cursor: default; }
 #let-better-bar .lb-count { margin-left: auto; color: var(--bl-muted); font-family: var(--bl-display); }
+#bl-list-head .lb-count { margin-left: 10px; color: var(--bl-muted); font-weight: 400; }
 
 /* ---- the rack ---- */
 #bl-list-head, html.bl-on li.ItemDiscussion .ItemContent {
@@ -682,9 +685,10 @@ html.bl-og .bl-kind { vertical-align: 1px; }
 .bl-go { display: inline-block; width: 13px; height: 13px; margin-left: 5px; background: currentColor; vertical-align: -2px; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; transition: transform .24s var(--bl-ease); }
 .bl-go:hover { background: var(--bl-accent); transform: translateX(2px); }
 li.bl-unread .bl-lastline { color: var(--bl-ink); font-weight: 700; }
-.lb-x { padding: 0; border: 0; background: none; color: var(--bl-muted); font-size: 12px; cursor: pointer; opacity: 0; }
+.lb-x { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--bl-r-md); background: none; color: var(--bl-muted); cursor: pointer; opacity: 0; transition: opacity .15s var(--bl-ease), background-color .15s var(--bl-ease); }
+.lb-x::before { content: ""; width: 14px; height: 14px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z%22/%3E%3C/svg%3E") center / contain no-repeat; }
 li.ItemDiscussion:hover .lb-x, .lb-x:focus-visible { opacity: 1; }
-.lb-x:hover { color: var(--bl-ink); }
+.lb-x:hover { background: var(--bl-surface2); color: var(--bl-ink); }
 
 /* ---- categories page ---- */
 html.bl-on .HomepageTitle { margin: 4px 0 2px !important; }
@@ -1349,8 +1353,9 @@ html.bl-og .bl-dash-badge { background: #ff0; color: #000; }
 #bl-update .bl-update-later { background: none; color: var(--bl-muted); }
 
 /* ---- LowEndSpirit: same tokens and inside styles, Keystone page frame. The LowEndTalk frame rules above do not match it. ---- */
-/* The header stays a brand bar. The logo image has the site green baked in, so light mode uses that green and dark mode shows the logo as a rounded badge. */
-html.bl-on.bl-site-les { --bl-sticky: 60px; --bl-les-head: #62a86f; --bl-les-head-ink: #fff; }
+/* The header stays a brand bar. The logo image has the site green baked in, so it shows as a rounded badge.
+   The bar is the accent green in light (white text 6.6:1; the site's own #62a86f gives only 2.9:1) and the surface in dark. */
+html.bl-on.bl-site-les { --bl-sticky: 60px; --bl-les-head: #1c6b3f; --bl-les-head-ink: #fff; }
 html.bl-on.bl-site-les.bl-dark { --bl-les-head: #111813; --bl-les-head-ink: var(--bl-ink); }
 html.bl-on.bl-site-les #page { transition: opacity .18s ease-out; }
 html.bl-on.bl-site-les:not(.bl-ready) #page { opacity: 0; animation: bl-reveal 0s 3s forwards; }
@@ -1359,14 +1364,14 @@ html.bl-on.bl-site-les .Frame-header { background: var(--bl-les-head) !important
 html.bl-on.bl-site-les #MainHeader { background: transparent !important; color: var(--bl-les-head-ink) !important; }
 html.bl-on.bl-site-les #MainHeader :is(.Navigation-link, .SignInLinks a, .MeBox a, .Header-right a) { color: var(--bl-les-head-ink) !important; font-family: var(--bl-text) !important; }
 html.bl-on.bl-site-les #MainHeader .Navigation-link:hover { opacity: .8; }
-html.bl-on.bl-site-les.bl-dark #MainHeader .Header-logo img { border-radius: 6px; }
+html.bl-on.bl-site-les #MainHeader .Header-logo img { border-radius: 6px; }
 html.bl-on.bl-site-les #MainHeader .SignInLinks a { background: transparent !important; border-color: color-mix(in srgb, var(--bl-les-head-ink) 45%, transparent) !important; }
 /* The site gives its fixed header z-index 2, under our toolbar and rail. Lift it so the gear menu and member menus open on top. */
 html.bl-site-les .Frame-header { z-index: var(--bl-z-head, 40) !important; }
 /* Gear: on the header bar, left of the sign-in links or the member menu. */
 html.bl-site-les #MainHeader .Header-right { display: flex; align-items: center; gap: 6px; }
 html.bl-site-les #bl-settings { order: 0; margin: 0 4px 0 0; }
-html.bl-site-les #MainHeader .bl-gear { color: color-mix(in srgb, var(--bl-les-head-ink, #fff) 85%, transparent); }
+html.bl-site-les #MainHeader .bl-gear { width: 38px; height: 38px; color: color-mix(in srgb, var(--bl-les-head-ink, #fff) 85%, transparent); }
 html.bl-site-les #MainHeader .bl-gear:hover, html.bl-site-les #MainHeader .bl-gear[aria-expanded="true"] { background: rgba(255, 255, 255, .14); color: var(--bl-les-head-ink, #fff); }
 html.bl-og.bl-site-les #MainHeader .bl-gear { color: #fff; }
 html.bl-site-les .bl-menu { text-align: left; }
@@ -1374,15 +1379,14 @@ html.bl-site-les .bl-menu { text-align: left; }
 html.bl-site-les :is(.KarmaMeter-btn, .ThemeSwitcher-extras-wrap, .ThemeSwitcher-mobile-extras) { display: none !important; }
 html.bl-site-les .bl-menu { max-height: calc(100vh - 70px); overflow-y: auto; }
 
-/* Karma flair in V1 and V2, our look: a colored left bar and a soft tint in the site's level color.
+/* Karma flair in V1 and V2, our look: a soft tint in the site's level color, fading out by mid-row.
    Low karma fades through the site's own rules. The site's pixel corners, runner and skulls stay in OG only. */
 html.bl-on.bl-site-les :is([class*="les-karma-glow-"], [class*="les-karma-grey-"])::before,
 html.bl-on.bl-site-les :is([class*="les-karma-glow-"], [class*="les-karma-grey-"])::after { content: none !important; display: none !important; }
 html.bl-on.bl-site-les.bl-flair-on :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion)[class*="les-karma-glow-"] {
-  background-image: linear-gradient(90deg, rgb(var(--bl-k) / .16), rgb(var(--bl-k) / 0) 45%) !important;
-  box-shadow: inset 3px 0 0 rgb(var(--bl-k)) !important;
+  background-image: linear-gradient(90deg, rgb(var(--bl-k) / .14), rgb(var(--bl-k) / 0) 50%) !important;
 }
-html.bl-on.bl-site-les.bl-flair-on.bl-dark :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion)[class*="les-karma-glow-"] { background-image: linear-gradient(90deg, rgb(var(--bl-k) / .22), rgb(var(--bl-k) / 0) 45%) !important; }
+html.bl-on.bl-site-les.bl-flair-on.bl-dark :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion)[class*="les-karma-glow-"] { background-image: linear-gradient(90deg, rgb(var(--bl-k) / .2), rgb(var(--bl-k) / 0) 50%) !important; }
 html.bl-site-les .les-karma-glow-1 { --bl-k: 0 80 220; }
 html.bl-site-les .les-karma-glow-2 { --bl-k: 0 150 255; }
 html.bl-site-les .les-karma-glow-3 { --bl-k: 0 190 230; }
@@ -1429,6 +1433,40 @@ html.bl-on.bl-site-les .DataList li.ItemDiscussion.ItemDiscussion:hover { backgr
 html.bl-on.bl-site-les .DataList .Item.Read .Title { font-weight: inherit !important; }
 html.bl-on.bl-site-les :is(.Tag, .HasNew, .Tag-Announcement) { background: var(--bl-surface2) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; font-weight: 600 !important; }
 
+/* Rail headings line up with the text under them. */
+html.bl-site-les #bl-rail .GuestBox h4 { margin: 0 0 6px !important; padding: 0 !important; }
+html.bl-site-les #bl-rail .GuestBox p { margin: 0 0 8px; }
+/* Category tree: one hairline guide for sub-categories instead of the site's tree glyph. */
+html.bl-site-les .bl-built-cats li::before, html.bl-site-les .bl-built-cats li > a::after { content: none !important; display: none !important; }
+html.bl-site-les .bl-built-cats li.Depth2 > a { position: relative; }
+html.bl-site-les .bl-built-cats li.Depth2 > a::before { content: "" !important; position: absolute; top: 3px; bottom: 3px; left: 10px; width: 1px; background: var(--bl-line); }
+
+/* Search: 38px, level with the page's first row of buttons; placeholder at muted contrast. */
+html.bl-on.bl-site-les .bl-les-panel .SearchBox input.InputBox { box-sizing: border-box; height: 38px !important; }
+/* Keystone draws its own magnifier as an icon-font glyph; ours replaces it. */
+html.bl-on.bl-site-les .SearchBox form > div::after { content: none !important; display: none !important; }
+html.bl-on.bl-site-les .SearchBox input::placeholder { color: var(--bl-muted) !important; -webkit-text-fill-color: var(--bl-muted); opacity: 1; }
+
+/* Offers panel: the site fades its headings and counts below 4.5:1. */
+html.bl-on.bl-site-les .bl-les-panel :is(.LesOffersPanel-heading, .LesOffersPanel-value) { opacity: 1 !important; color: var(--bl-muted) !important; }
+/* Links in posts use our accent, not the site's light green (2.7:1). */
+html.bl-on.bl-site-les :is(.Message, .userContent) a:not(.Button) { color: var(--bl-accent) !important; }
+
+/* Post votes: the site's text triangles become drawn carets in our control style. */
+html.bl-on.bl-site-les .karma-widget { gap: 4px; margin-left: 0; }
+html.bl-on.bl-site-les .karma-btn { width: 28px; height: 28px; padding: 0; border: 1px solid var(--bl-line) !important; border-radius: var(--bl-r-md); background: var(--bl-surface2) !important; color: var(--bl-muted) !important; font-size: 0 !important; cursor: pointer; transition: background-color .15s var(--bl-ease), color .15s var(--bl-ease); }
+html.bl-on.bl-site-les .karma-btn::before { content: ""; width: 14px; height: 14px; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
+html.bl-on.bl-site-les .karma-up::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M213.66,165.66a8,8,0,0,1-11.32,0L128,91.31,53.66,165.66a8,8,0,0,1-11.32-11.32l80-80a8,8,0,0,1,11.32,0l80,80A8,8,0,0,1,213.66,165.66Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M213.66,165.66a8,8,0,0,1-11.32,0L128,91.31,53.66,165.66a8,8,0,0,1-11.32-11.32l80-80a8,8,0,0,1,11.32,0l80,80A8,8,0,0,1,213.66,165.66Z%22/%3E%3C/svg%3E"); }
+html.bl-on.bl-site-les .karma-down::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z%22/%3E%3C/svg%3E"); }
+html.bl-on.bl-site-les .karma-btn:hover { background: var(--bl-surface) !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les .karma-btn:active { transform: scale(.94); }
+html.bl-on.bl-site-les .karma-btn.karma-active.karma-up { border-color: var(--bl-accent) !important; color: var(--bl-accent) !important; }
+html.bl-on.bl-site-les .karma-btn.karma-active.karma-down { border-color: var(--bl-danger) !important; color: var(--bl-danger) !important; }
+html.bl-on.bl-site-les .karma-score { min-width: 22px; color: var(--bl-ink); font: 600 13px/1 var(--bl-display); font-variant-numeric: tabular-nums; text-align: center; }
+
+/* V2: a white page on mint, like LowEndTalk's V2 frame. */
+html.bl-on.bl-v2.bl-site-les .Frame-content > .Container { background: var(--bl-surface); box-shadow: 0 0 0 1px var(--bl-line); }
+
 html.bl-on.bl-site-les :is(.Frame-footer, .Footer) { background: var(--bl-surface) !important; color: var(--bl-muted) !important; }
 html.bl-on.bl-site-les .Frame-footer { margin-top: 24px; border-top: 1px solid var(--bl-line); }
 html.bl-on.bl-site-les .Footer a { color: var(--bl-ink) !important; }
@@ -1455,7 +1493,7 @@ html.bl-ads-off #Panel :is(.let-sidebar-stack, .bsarocks, [id^="bsap_"]), html.b
 /* ---- accessibility ---- */
 @media (prefers-reduced-motion: reduce) {
   html.bl-on:not(.bl-ready)::after { display: none; }
-  html.bl-on .Flyout { animation: none; }
+  html.bl-on .Flyout, .bl-menu { animation: none; }
   #bl-pop, #bl-pop.bl-above { transform: none; }
   html.bl-on *, html.bl-on *::before { transition: none !important; }
   html.bl-on li.ItemDiscussion:hover .bl-main, html.bl-on li.ItemDiscussion:hover .bl-led, html.bl-on li.ItemDiscussion:active { transform: none; }
