@@ -182,6 +182,21 @@
     setTimeout(() => ['focus', 'keyup'].forEach((type) => box.dispatchEvent(new Event(type))), 50);
   });
 
+  // Ctrl+Shift+M hides or shows the ads. It has no menu item on purpose.
+  document.addEventListener('keydown', (e) => {
+    if (!e.ctrlKey || !e.shiftKey || e.altKey || e.code !== 'KeyM' || e.repeat || !window.__letBetterTheme?.toggleAds) return;
+    e.preventDefault();
+    const hidden = window.__letBetterTheme.toggleAds();
+    fitPanel();
+    document.getElementById('bl-toast')?.remove();
+    const toast = document.createElement('div');
+    toast.id = 'bl-toast';
+    toast.setAttribute('role', 'status');
+    toast.textContent = hidden ? 'Ads hidden' : 'Ads shown';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 1600);
+  }, true);
+
   // Ctrl+Enter (Cmd+Enter on Mac) sends a comment or message reply. Event delegation also covers inline edit boxes.
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' || !(e.ctrlKey || e.metaKey) || e.repeat || e.isComposing) return;

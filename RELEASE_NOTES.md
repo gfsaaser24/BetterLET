@@ -1,2 +1,1 @@
-- Ads now always show, at the request of the LowEndTalk team. The Ads setting is gone from the gear.
-- BetterLET still works alongside your own ad blocker.
+- UI fixes

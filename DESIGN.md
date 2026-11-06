@@ -45,7 +45,7 @@ V2 is only a token and spacing layer at the end of `styles.css` under `html.bl-v
 
 ## 2. Hard rule: the ads
 
-The site lives on ads, and the owner asked that BetterLET never hide them. No rule may hide, shrink, cover or restyle them. The header stops before the ad column, so it never sits over an ad. When a separate ad blocker hides or strips them, the empty column closes (`fitPanel` in `content.js`).
+The site lives on ads, and the owner asked that BetterLET never hide them. No rule may hide, shrink, cover or restyle them. The header stops before the ad column, so it never sits over an ad. When a separate ad blocker hides or strips them, the empty column closes (`fitPanel` in `content.js`). Ctrl+Shift+M hides or shows the ad blocks for that browser (`html.bl-ads-off`). It has no menu item and is not in the README.
 
 ## 3. Colour
 
