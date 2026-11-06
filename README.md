@@ -49,7 +49,7 @@
 
 Firefox removes temporary add-ons when it restarts, so you load it again after each restart. A copy signed by Mozilla would install for good. Needs Firefox 142 or newer.
 
-To update in Firefox, unzip the new release over the same folder and click **Reload** on BetterLET in `about:debugging`. The one-click updater below is Chrome only, because Firefox has no folder picker.
+To update in Firefox, download the new release zip, copy the files inside its `BetterLET-<version>` folder over your BetterLET folder, and click **Reload** on BetterLET in `about:debugging`. The one-click updater below is Chrome only, because Firefox has no folder picker.
 
 ## Updates
 
