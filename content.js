@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.31
+// @version      1.32
 // @description  A cleaner LowEndTalk and LowEndSpirit: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
 // @match        https://lowendspirit.com/*
@@ -282,6 +282,8 @@
         <div class="bl-menu-label">Signatures</div>
         ${option('sig', 'expanded', 'Expanded')}${option('sig', 'collapsed', 'Collapsed')}
         ${les ? `<div class="bl-menu-label">Karma flair</div>${option('flair', 'on', 'On')}${option('flair', 'bad', 'Bad karma only')}${option('flair', 'off', 'Off')}` : ''}
+        <div class="bl-menu-label">People</div>
+        <button type="button" role="menuitem" data-link="blocked">Blocked people</button>
         <div class="bl-menu-label">BetterLET ${window.chrome?.runtime?.getManifest?.().version || ''}</div>
         <button type="button" role="menuitem" class="bl-updates" data-link="update">Updates and changelog</button>
       </div>`;
@@ -303,7 +305,8 @@
       if (mode) theme.set(mode);
       if (sig) theme.setSignatures(sig);
       if (flair) theme.setFlair(flair);
-      if (e.target.dataset.link) chrome.runtime.sendMessage({ type: 'bl-open-update' });
+      if (e.target.dataset.link === 'update') chrome.runtime.sendMessage({ type: 'bl-open-update' });
+      if (e.target.dataset.link === 'blocked') { toggle(false); window.__letBetterBlock?.manage(); }
       mark();
     });
     document.addEventListener('click', (e) => { if (!box.contains(e.target)) toggle(false); });
@@ -811,9 +814,14 @@
     const ms = replyTime(li);
     if (comments(li) > 0 && ms) {
       const latest = lastCommentUrl(li, link?.getAttribute('href') || '');
-      line.append('Last comment by ');
+      line.append('Last comment');
       const by = li.querySelector('.LastCommentBy a');
-      if (by) line.appendChild(by.cloneNode(true));
+      if (by) {
+        const span = document.createElement('span');
+        span.className = 'bl-by';
+        span.append(' by ', by.cloneNode(true));
+        line.appendChild(span);
+      }
       line.append(' on ');
       const when = document.createElement('a');
       when.className = 'bl-when';
@@ -962,7 +970,7 @@
       li.classList.toggle('lb-seen', seen);
       li.classList.toggle('bl-unread', !seen && comments(li) > 0);
       // Your own threads never hide with Hide seen.
-      const hide = (state.hideSeen && seen && !isMine(li)) || (state.hidePinned && isPinned(li)) || !shows(li);
+      const hide = (state.hideSeen && seen && !isMine(li)) || (state.hidePinned && isPinned(li)) || !shows(li) || Boolean(window.__letBetterBlock?.hidesRow(li));
       li.classList.toggle('lb-hide', hide);
       if (!hide) shown++;
     });
@@ -1000,6 +1008,9 @@
     render();
   };
   moreBtn.addEventListener('click', loadMore);
+
+  // Blocking or unblocking someone updates the list and its count.
+  addEventListener('bl-blocklist-change', () => glide(render));
 
   // A thread opened in another tab updates this list too.
   addEventListener('storage', (e) => {

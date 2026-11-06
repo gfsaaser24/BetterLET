@@ -1346,6 +1346,37 @@ html.bl-og .bl-dash-badge { background: #ff0; color: #000; }
 :is(html.bl-on, html.bl-og) #DP_PreviousQuestion:hover, :is(html.bl-on, html.bl-og) #DP_NextQuestion:hover, :is(html.bl-on, html.bl-og) #DP_AddOption:hover { border-color: var(--bl-accent); color: var(--bl-accent) !important; }
 :is(html.bl-on, html.bl-og) #DP_PreviousQuestion:empty, :is(html.bl-on, html.bl-og) #DP_NextQuestion:empty { display: none; }
 
+/* ---- block list: hidden people, the dialog, and the buttons. Every design, both forums. ---- */
+.bl-blocked { display: none !important; }
+.bl-lastline.bl-blocked-by .bl-by, li.ItemDiscussion .LastCommentBy.bl-blocked-by { display: none !important; }
+.bl-block-btn { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin: 0 0 0 4px; padding: 0; border: 0; border-radius: var(--bl-r-md, 6px); background: none; color: var(--bl-muted, #63656e); vertical-align: middle; cursor: pointer; opacity: 0; transition: opacity .15s var(--bl-ease, ease), background-color .15s var(--bl-ease, ease); }
+.bl-block-btn .bl-block-icon { width: 14px; height: 14px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.56,87.56,0,0,1-20.41,56.28L71.72,60.4A88,88,0,0,1,216,128ZM40,128A87.56,87.56,0,0,1,60.41,71.72L184.28,195.6A88,88,0,0,1,40,128Z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22 fill=%22currentColor%22%3E%3Cpath d=%22M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.56,87.56,0,0,1-20.41,56.28L71.72,60.4A88,88,0,0,1,216,128ZM40,128A87.56,87.56,0,0,1,60.41,71.72L184.28,195.6A88,88,0,0,1,40,128Z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ItemComment, div.ItemDiscussion):hover .bl-block-btn, .bl-block-btn:focus-visible { opacity: 1; }
+.bl-block-btn:hover { background: var(--bl-surface2, #f3f3f3); color: var(--bl-danger, #a3341f); }
+.bl-btn { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 14px; border: 1px solid var(--bl-line, #dcdcdc); border-radius: var(--bl-r-md, 6px); background: var(--bl-surface2, #f3f3f3); color: var(--bl-ink, #000); font: 500 13px/1 var(--bl-text, system-ui, sans-serif); cursor: pointer; transition: background-color .15s var(--bl-ease, ease); }
+.bl-btn:hover { background: var(--bl-surface, #fff); }
+.bl-btn:active { transform: scale(.98); }
+.bl-btn-small { height: 28px; padding: 0 12px; font-size: 12px; }
+.bl-btn-primary { border-color: transparent; background: var(--bl-fill, #358244); color: var(--bl-on-fill, #fff); }
+.bl-btn-primary:hover { background: var(--bl-fill, #358244); filter: brightness(1.08); }
+.bl-btn-danger { border-color: transparent; background: var(--bl-danger, #a3341f); color: #fff; }
+.bl-btn-danger:hover { background: var(--bl-danger, #a3341f); filter: brightness(1.08); }
+html.bl-dark .bl-btn-danger { color: #1a0b07; }
+.bl-profile-block { margin: 8px 0 0; }
+.bl-pop-actions { display: flex; justify-content: flex-end; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bl-line, #dcdcdc); }
+.bl-blocked-note { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; padding: 10px 12px; background: var(--bl-surface2, #f3f3f3); border: 1px solid var(--bl-line, #dcdcdc); border-radius: var(--bl-r-lg, 8px); color: var(--bl-muted, #63656e); font: 13px/1.4 var(--bl-text, system-ui, sans-serif); }
+#bl-dialog { box-sizing: border-box; width: min(420px, calc(100vw - 32px)); max-height: min(80vh, 560px); padding: 20px; border: 1px solid var(--bl-line, #dcdcdc); border-radius: var(--bl-r-lg, 8px); background: var(--bl-surface, #fff); color: var(--bl-ink, #000); box-shadow: 0 24px 60px rgba(0, 0, 0, .28); font: 14px/1.5 var(--bl-text, system-ui, sans-serif); }
+#bl-dialog[open] { display: flex; flex-direction: column; animation: bl-pop-in .2s var(--bl-ease, ease); }
+#bl-dialog::backdrop { background: rgba(10, 15, 11, .5); }
+#bl-dialog h2 { margin: 0 0 6px; color: var(--bl-ink, #000); font: 600 18px/1.25 var(--bl-display, system-ui, sans-serif); letter-spacing: -.01em; }
+#bl-dialog p { margin: 0 0 16px; color: var(--bl-muted, #63656e); }
+.bl-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: auto; }
+.bl-dialog-list { margin: 0 -4px 16px; overflow-y: auto; }
+.bl-dialog-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 4px; border-bottom: 1px solid var(--bl-line, #dcdcdc); }
+.bl-dialog-row:last-child { border-bottom: 0; }
+.bl-dialog-row a { overflow: hidden; color: var(--bl-ink, #000) !important; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+#bl-dialog p.bl-dialog-empty { margin: 0; }
+
 /* ---- update alert ---- */
 #bl-update { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 12px; background: var(--bl-surface); border: 1px solid var(--bl-accent); border-radius: var(--bl-r-md); color: var(--bl-ink); font: 400 13px/1.4 var(--bl-text); }
 #bl-update span { margin-right: auto; }
@@ -1493,7 +1524,7 @@ html.bl-ads-off #Panel :is(.let-sidebar-stack, .bsarocks, [id^="bsap_"]), html.b
 /* ---- accessibility ---- */
 @media (prefers-reduced-motion: reduce) {
   html.bl-on:not(.bl-ready)::after { display: none; }
-  html.bl-on .Flyout, .bl-menu { animation: none; }
+  html.bl-on .Flyout, .bl-menu, #bl-dialog[open] { animation: none; }
   #bl-pop, #bl-pop.bl-above { transform: none; }
   html.bl-on *, html.bl-on *::before { transition: none !important; }
   html.bl-on li.ItemDiscussion:hover .bl-main, html.bl-on li.ItemDiscussion:hover .bl-led, html.bl-on li.ItemDiscussion:active { transform: none; }
