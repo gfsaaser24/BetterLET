@@ -1,1 +1,5 @@
 - BetterLET now works on LowEndSpirit too, with all three designs and the same features
+- Deal and giveaway finder in the toolbar
+- Hover a thread title to preview the first post
+- Your threads and the threads you posted in, in the left sidebar
+- Karma in user hover cards on LowEndSpirit

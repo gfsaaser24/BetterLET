@@ -16,6 +16,14 @@ The page frame is not the same. LowEndTalk has `#Head`, `#Body > .Row` with `#Pa
 
 LowEndSpirit specifics: the header stays a green brand bar, because the logo image has the site green baked in. The right column is 300px, because the site's image grid is two 150px squares. The gear sits in the header, left of the sign-in links or member menu. Dark in OG is the site's own `ThemeChooser/design/dark.css`. Our theme setting wins over a member's saved site theme: V1 and V2 remove the site theme file, and OG adds the dark file last in the head. Any new extension file must also go in the `files=` list in `.github/workflows/release.yml`, or updates will miss it.
 
+## Finder, previews, rail lists
+
+**Finder.** The toolbar's Show menu: All, Deals, Giveaways, No deals, saved in `letBetter.v1`. A thread's kind comes from its category first (offer and giveaway categories of both forums), then from words in its title. Requests, help and similar categories never count as deals. Kinds show as small outline tags: accent for Deal, danger tone for Giveaway. With Deals or Giveaways on, the list loads up to 4 more pages when fewer than 15 threads match.
+
+**Thread previews.** Hovering a thread title in a list, the rail, the dashboard or the offers panel opens the hover card wide (440px) with the first post as plain text: no quotes, spoilers or signatures, about 650 characters. Links inside posts get no preview. Page 1 is fetched once per thread per page view.
+
+**Rail lists.** V1 and V2, signed in: My threads (`/profile/discussions/<you>`) and Posted in (`/profile/comments/<you>`, one row per thread, linking to your latest comment there). Neither forum has a participated page. Both lists are cached 5 minutes in `letBetter.rail`, per forum. OG has no rail, so no lists.
+
 ## Page numbers
 
 Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color. They always sit on their own row, clear of the cards above and below.

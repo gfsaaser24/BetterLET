@@ -96,6 +96,96 @@
     }
   }
 
+  // ---- left rail lists: threads you started and threads you posted in, read from your profile ----
+  // Signed in only. Cached for 5 minutes per forum, so page views do not refetch them.
+  const meSlug = (() => {
+    const skip = /^(edit|notifications|preferences|password|picture|signature|activity|comments|discussions|quotes|connections|invitations|tokens)$/i;
+    for (const a of document.querySelectorAll('.MeBox a[href*="/profile/"]')) {
+      const m = new URL(a.href, location.href).pathname.match(/^\/profile\/([^/]+)$/);
+      if (m && !skip.test(m[1])) return m[1];
+    }
+    return '';
+  })();
+  const railScroll = document.getElementById('bl-rail-scroll');
+  if (railScroll && meSlug) {
+    const RAIL_KEY = 'letBetter.rail';
+    const RAIL_TTL = 5 * 60 * 1000;
+    const mk = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    const section = (title, all) => {
+      const box = mk('section', 'bl-rail-list');
+      const head = mk('h4');
+      const link = mk('a', '', title);
+      link.href = all;
+      head.appendChild(link);
+      const ul = mk('ul');
+      ul.appendChild(mk('li', 'bl-rail-empty', 'Loading…'));
+      box.append(head, ul);
+      railScroll.appendChild(box);
+      return ul;
+    };
+    const mineUl = section('My threads', `/profile/discussions/${meSlug}`);
+    const postedUl = section('Posted in', `/profile/comments/${meSlug}`);
+    const paint = (ul, items, empty) => {
+      ul.replaceChildren();
+      if (!items.length) ul.appendChild(mk('li', 'bl-rail-empty', empty));
+      items.slice(0, 8).forEach((t) => {
+        const li = mk('li', t.fresh ? 'bl-rail-new' : '');
+        const a = mk('a', 'bl-rail-t', t.title);
+        a.href = t.href;
+        if (t.tip) a.title = t.tip;
+        li.appendChild(a);
+        const meta = [t.fresh, t.n !== undefined ? `${t.n} replies` : '', t.ms ? ago(t.ms) : ''].filter(Boolean).join(' · ');
+        if (meta) li.appendChild(mk('span', 'bl-rail-meta', meta));
+        ul.appendChild(li);
+      });
+    };
+    const pageOf = (url) => fetch(url, { credentials: 'include' }).then((r) => {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.text();
+    }).then((html) => new DOMParser().parseFromString(html, 'text/html'));
+    const readMine = (doc) => [...doc.querySelectorAll('li.ItemDiscussion')].map((li) => {
+      const a = li.querySelector('.Title a');
+      return a && {
+        title: a.textContent.trim(),
+        href: (a.getAttribute('href') || '').replace(/(\/p\d+)?(#.*)?$/, '/p1'),
+        n: (li.querySelector('.CommentCount .Number')?.textContent || '0').trim(),
+        fresh: li.querySelector('.HasNew')?.textContent.trim() || '',
+        ms: Date.parse(li.querySelector('.LastCommentDate time')?.getAttribute('datetime') || '') || 0,
+      };
+    }).filter(Boolean);
+    // The comments page lists each comment with its thread. One row per thread, newest first.
+    const readPosted = (doc) => {
+      const seen = new Set();
+      return [...doc.querySelectorAll('.DataList li[id^="Comment_"]')].map((li) => {
+        const a = li.querySelector('.Meta b a, .Meta a[href*="/discussion/comment/"]');
+        const title = a?.textContent.trim();
+        if (!title || seen.has(title)) return null;
+        seen.add(title);
+        return { title, href: a.getAttribute('href'), tip: 'Go to your latest comment in this thread', ms: Date.parse(li.querySelector('time')?.getAttribute('datetime') || '') || 0 };
+      }).filter(Boolean);
+    };
+    let cache = null;
+    try { cache = JSON.parse(localStorage.getItem(RAIL_KEY)); } catch {}
+    if (cache && cache.slug === meSlug && Date.now() - cache.at < RAIL_TTL) {
+      paint(mineUl, cache.mine, 'No threads yet.');
+      paint(postedUl, cache.posted, 'No comments yet.');
+    } else {
+      (async () => {
+        const fresh = { slug: meSlug, at: Date.now(), mine: [], posted: [] };
+        try { fresh.mine = readMine(await pageOf(`/profile/discussions/${meSlug}`)); paint(mineUl, fresh.mine, 'No threads yet.'); }
+        catch { paint(mineUl, [], 'Could not load this list.'); fresh.at = 0; }
+        try { fresh.posted = readPosted(await pageOf(`/profile/comments/${meSlug}`)); paint(postedUl, fresh.posted, 'No comments yet.'); }
+        catch { paint(postedUl, [], 'Could not load this list.'); fresh.at = 0; }
+        try { localStorage.setItem(RAIL_KEY, JSON.stringify(fresh)); } catch {}
+      })();
+    }
+  }
+
   // ---- settings: one gear beside the search box, with design and theme inside ----
   const headRow = frame.head;
   if (headRow && window.__letBetterTheme) {
@@ -476,7 +566,7 @@
   if (!list) return;
   if (!og) list.classList.add('bl-rack');
 
-  const state = Object.assign({ sort: 'reply', hideSeen: false, hidePinned: false, seen: {}, opened: {} }, load());
+  const state = Object.assign({ sort: 'reply', show: 'all', hideSeen: false, hidePinned: false, seen: {}, opened: {} }, load());
   const save = () => {
     state.opened = { ...load().opened, ...state.opened };
     saveState(state);
@@ -493,6 +583,33 @@
 
   const isMine = (li) => li.classList.contains('Mine');
 
+  // ---- deal and giveaway finder ----
+  // Category first, then words in the title. Both forums' offer and giveaway categories are listed.
+  const DEAL_CATS = /^(offers|shared-hosting-offers|must-see-deals-?|vps|dedicated-server|shared-hosting|services)$/;
+  const GIFT_CATS = /^(giveaways-freebies|free-offers-and-stuff)$/;
+  const NOT_DEALS = /^(requests|help|meta|outages|reviews|security|technical)$/;
+  const GIFT_WORDS = /\bgive\s?-?aways?\b|\bgiving away\b|\braffles?\b|\bcontests?\b|\bfreebies?\b|\bfree (vps|server|credits?|hosting|months?)\b/i;
+  const DEAL_WORDS = /[$€£]\s?\d|\d\s?(usd|eur|gbp)\b|\/\s?(mo|month|yr|year)\b|\d+\s?% ?off\b|\bsale\b|\bdiscounts?\b|black friday|cyber monday|\bcoupons?\b|\bpromo\b|\bdeals?\b/i;
+  const catOf = (li) => (li.querySelector('.Meta-Discussion .Category, .MItem.Category')?.className.match(/\bCategory-([\w-]+)/) || [])[1]?.toLowerCase() || '';
+  const kindOf = (li) => {
+    if (li.dataset.blKind !== undefined) return li.dataset.blKind;
+    const cat = catOf(li);
+    const title = li.querySelector('.Title')?.textContent || '';
+    const kind = GIFT_CATS.test(cat) || GIFT_WORDS.test(title) ? 'gift'
+      : DEAL_CATS.test(cat) || (!NOT_DEALS.test(cat) && DEAL_WORDS.test(title)) ? 'deal' : '';
+    li.dataset.blKind = kind;
+    return kind;
+  };
+  const kindTag = (li) => {
+    const kind = kindOf(li);
+    if (!kind) return null;
+    const tag = document.createElement('span');
+    tag.className = `bl-kind bl-kind-${kind}`;
+    tag.textContent = kind === 'gift' ? 'Giveaway' : 'Deal';
+    return tag;
+  };
+  const shows = (li) => ({ deals: kindOf(li) === 'deal', gifts: kindOf(li) === 'gift', nodeals: kindOf(li) !== 'deal' }[state.show] ?? true);
+
   // Seen = you opened it (or marked it) and no new replies since. The forum's read flag does not count.
   const isSeen = (li) => {
     const id = idOf(li);
@@ -501,6 +618,12 @@
     return rec !== undefined && comments(li) <= rec;
   };
   const markSeen = (li) => { state.opened[idOf(li)] = Date.now(); save(); };
+
+  // Page loading state, shared by the button and the finder.
+  const nextOf = (doc) => { const h = doc.querySelector('.Pager a.Next')?.getAttribute('href'); return h ? new URL(h, location.href).href : null; };
+  let nextUrl = nextOf(document);
+  let loading = false;
+  let fills = 0;
 
   // ---- toolbar ----
   const bar = document.createElement('div');
@@ -512,6 +635,14 @@
         <option value="created">Newest thread</option>
         <option value="oldest">Oldest thread</option>
         <option value="comments">Most replies</option>
+      </select>
+    </label>
+    <label>Show
+      <select data-k="show">
+        <option value="all">All</option>
+        <option value="deals">Deals</option>
+        <option value="gifts">Giveaways</option>
+        <option value="nodeals">No deals</option>
       </select>
     </label>
     <label><input type="checkbox" data-k="hideSeen"> Hide seen</label>
@@ -527,6 +658,7 @@
   if (!og) list.parentNode.insertBefore(head, list);
 
   bar.querySelector('[data-k="sort"]').value = state.sort;
+  bar.querySelector('[data-k="show"]').value = state.show;
   bar.querySelector('[data-k="hideSeen"]').checked = state.hideSeen;
   bar.querySelector('[data-k="hidePinned"]').checked = state.hidePinned;
 
@@ -534,6 +666,7 @@
     const k = e.target.dataset.k;
     if (!k) return;
     state[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    if (k === 'show') fills = 0;
     save();
     glide(render);
   });
@@ -570,6 +703,8 @@
       name.className = 'bl-cat';
       sub.appendChild(name);
     }
+    const tag = kindTag(li);
+    if (tag) sub.appendChild(tag);
     const author = li.querySelector('.DiscussionAuthor a');
     if (author) sub.appendChild(author.cloneNode(true));
     if (isPinned(li)) {
@@ -646,6 +781,8 @@
       when.after(go);
     }
     link.setAttribute('href', href.replace(/(\/p\d+)?(#.*)?$/, '/p1'));
+    const tag = kindTag(li);
+    if (tag) link.after(' ', tag);
   };
 
   // ---- per-row "mark seen" button + click tracking ----
@@ -738,20 +875,24 @@
       li.classList.toggle('lb-seen', seen);
       li.classList.toggle('bl-unread', !seen && comments(li) > 0);
       // Your own threads never hide with Hide seen.
-      const hide = (state.hideSeen && seen && !isMine(li)) || (state.hidePinned && isPinned(li));
+      const hide = (state.hideSeen && seen && !isMine(li)) || (state.hidePinned && isPinned(li)) || !shows(li);
       li.classList.toggle('lb-hide', hide);
       if (!hide) shown++;
     });
     bar.querySelector('.lb-count').textContent = `${shown} of ${items.length} shown`;
+    // The finder pulls in up to 4 more pages when one page holds few matches.
+    if ((state.show === 'deals' || state.show === 'gifts') && shown < 15 && fills < 4 && nextUrl && !loading) {
+      fills++;
+      setTimeout(loadMore, 300);
+    }
   };
 
   // ---- load more pages ----
-  const nextOf = (doc) => { const h = doc.querySelector('.Pager a.Next')?.getAttribute('href'); return h ? new URL(h, location.href).href : null; };
-  let nextUrl = nextOf(document);
   const moreBtn = bar.querySelector('[data-a="more"]');
   if (!nextUrl) moreBtn.disabled = true;
-  moreBtn.addEventListener('click', async () => {
-    if (!nextUrl) return;
+  const loadMore = async () => {
+    if (!nextUrl || loading) return;
+    loading = true;
     moreBtn.disabled = true;
     moreBtn.textContent = 'Loading…';
     try {
@@ -767,8 +908,10 @@
     }
     moreBtn.textContent = 'Load next page';
     moreBtn.disabled = !nextUrl;
+    loading = false;
     render();
-  });
+  };
+  moreBtn.addEventListener('click', loadMore);
 
   // A thread opened in another tab updates this list too.
   addEventListener('storage', (e) => {

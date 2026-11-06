@@ -21,10 +21,13 @@
 - **Settings gear:** design, theme, and signatures in one menu
 - **Better thread list:** status lights, last comment details, sorting, hide seen, and load next page
 - **Better navigation:** titles open the first post, and the date jumps to the last comment
+- **Deal and giveaway finder:** show only deals, only giveaways, or no deals, with tags on each thread
+- **Thread previews:** hover a title to read the first post
+- **Your threads in the sidebar:** threads you started and threads you posted in
 - **Better threads:** Thanks button, Ctrl+Enter to post, clean polls, and clear quotes
 - **Dashboard:** your counts, threads, and bookmarks on one page
 - **Cleaner pages:** rebuilt Categories, Profile, Settings, and Drafts
-- **User hover cards:** roles, join date, activity, and thanks
+- **User hover cards:** roles, join date, activity, thanks, and karma on LowEndSpirit
 - **Fits every screen:** wide monitors, older laptops, and phones
 - **Respects the ads:** ads always show, and nothing conflicts with your own ad blocker
 - **One-click updates:** alerts, a built-in changelog, and every file checked before install
