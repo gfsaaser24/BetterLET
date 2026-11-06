@@ -323,6 +323,19 @@ html.bl-on #Panel { grid-column: 3; grid-row: 1; float: none !important; width: 
 #bl-rail .Box h4 { margin: 6px 0 6px !important; padding: 0 12px !important; background: none !important; border: 0 !important; color: var(--bl-muted) !important; font: 500 12px/1.3 var(--bl-display) !important; pointer-events: none; }
 #bl-rail .Box h4::before, #bl-rail .Box h4::after { display: none !important; }
 #bl-rail .Aside { float: right; }
+/* Rail lists: My threads and Posted in. */
+.bl-rail-list { padding: 4px 0; background: var(--bl-surface); border: 1px solid var(--bl-line); border-radius: var(--bl-r-lg); }
+.bl-rail-list h4 { margin: 4px 0 2px; padding: 0 12px; font: 500 12px/1.3 var(--bl-display); }
+.bl-rail-list h4 a { color: var(--bl-muted) !important; text-decoration: none; }
+.bl-rail-list h4 a:hover { color: var(--bl-ink) !important; }
+.bl-rail-list ul { margin: 0; padding: 0 4px; list-style: none; }
+.bl-rail-list li { margin: 0; padding: 4px 8px; border-radius: var(--bl-r-md); list-style: none; }
+.bl-rail-list li:hover { background: var(--bl-surface2); }
+.bl-rail-t { display: -webkit-box; overflow: hidden; color: var(--bl-ink) !important; font-size: 13px; line-height: 1.3; text-decoration: none; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.bl-rail-new .bl-rail-t { font-weight: 600; }
+.bl-rail-meta { display: block; color: var(--bl-muted); font-size: 11px; }
+.bl-rail-new .bl-rail-meta { color: var(--bl-accent); }
+.bl-rail-empty { color: var(--bl-muted); font-size: 12px; }
 #bl-rail .Count, #bl-rail .Count .Number { background: none !important; border: 0 !important; color: var(--bl-muted) !important; font: 400 12px/1.5 var(--bl-display); }
 
 /* ---- general surfaces ---- */
@@ -543,6 +556,12 @@ html.bl-on .Flyout hr { margin: 4px 6px !important; border: 0 !important; border
 #bl-pop .bl-pop-note { margin-top: 8px; color: var(--bl-muted); font-size: 12px; }
 #bl-pop p.bl-pop-body.bl-pop-note { margin: 0; }
 .bl-skel { height: 12px; margin-bottom: 8px; border-radius: 4px; background: var(--bl-surface2); }
+/* Thread preview: wider, the first post as plain text. */
+#bl-pop.bl-pop-wide { width: min(440px, calc(100vw - 24px)); }
+.bl-pop-thread .bl-pop-title { display: block; color: var(--bl-ink); font: 600 15px/1.3 var(--bl-display); overflow-wrap: anywhere; }
+.bl-pop-thread .bl-pop-by { display: block; margin-top: 2px; color: var(--bl-muted); font-size: 12px; }
+.bl-pop-thread .bl-pop-text { max-height: 260px; margin-top: 8px; overflow: hidden; overflow-wrap: anywhere; -webkit-mask-image: linear-gradient(#000 85%, transparent); mask-image: linear-gradient(#000 85%, transparent); }
+#bl-pop .bl-pop-thread .bl-pop-text p { margin: 0 0 6px; }
 .bl-skel-short { width: 60%; }
 
 /* ---- toolbar: the rack's top plate ---- */
@@ -649,6 +668,11 @@ html.bl-on li.ItemDiscussion.lb-seen .IndexPhoto { opacity: .6; }
 .bl-sub a { color: inherit !important; }
 .bl-cat { font-weight: 600; }
 .bl-new { color: var(--bl-accent); font-weight: 600; }
+/* Finder tags: one outline style, the accent for deals and the danger tone for giveaways so the two read apart. */
+.bl-kind { padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font: 600 11px/1.5 var(--bl-text); letter-spacing: .02em; }
+.bl-kind-deal { color: var(--bl-accent); }
+.bl-kind-gift { color: var(--bl-danger); }
+html.bl-og .bl-kind { vertical-align: 1px; }
 .bl-cell { color: var(--bl-muted); font: 400 12.5px/1.25 var(--bl-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bl-cell b { color: var(--bl-ink); font-weight: 600; font-size: 14px; }
 .bl-cell a { color: inherit !important; }
