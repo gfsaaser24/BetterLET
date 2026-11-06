@@ -1,1 +1,1 @@
-- UI polish for LowEndSpirit
+- Addition of "itzsenu mode" where you can block annoying people and never see anything they say or do
