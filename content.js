@@ -281,14 +281,15 @@
         ${option('mode', 'auto', 'Auto')}${option('mode', 'light', 'Light')}${option('mode', 'dark', 'Dark')}
         <div class="bl-menu-label">Signatures</div>
         ${option('sig', 'expanded', 'Expanded')}${option('sig', 'collapsed', 'Collapsed')}
+        ${les ? `<div class="bl-menu-label">Karma flair</div>${option('flair', 'on', 'On')}${option('flair', 'bad', 'Bad karma only')}${option('flair', 'off', 'Off')}` : ''}
         <div class="bl-menu-label">BetterLET ${window.chrome?.runtime?.getManifest?.().version || ''}</div>
         <button type="button" role="menuitem" class="bl-updates" data-link="update">Updates and changelog</button>
       </div>`;
     const gear = box.querySelector('.bl-gear');
     const menu = box.querySelector('.bl-menu');
     const mark = () => menu.querySelectorAll('button').forEach((b) => {
-      const { design, mode, sig } = b.dataset;
-      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : sig === theme.getSignatures();
+      const { design, mode, sig, flair } = b.dataset;
+      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : flair ? flair === theme.getFlair?.() : sig === theme.getSignatures();
       b.setAttribute('aria-checked', String(on));
     });
     const toggle = (open) => {
@@ -297,10 +298,11 @@
     };
     gear.addEventListener('click', () => toggle(menu.hidden));
     menu.addEventListener('click', (e) => {
-      const { design, mode, sig } = e.target.dataset;
+      const { design, mode, sig, flair } = e.target.dataset;
       if (design) theme.setDesign(design);
       if (mode) theme.set(mode);
       if (sig) theme.setSignatures(sig);
+      if (flair) theme.setFlair(flair);
       if (e.target.dataset.link) chrome.runtime.sendMessage({ type: 'bl-open-update' });
       mark();
     });
@@ -340,20 +342,6 @@
     const paintUpdate = () => chrome.storage.local.get(['latest', 'dismissed']).then(showUpdate).catch(() => {});
     paintUpdate();
     chrome.storage.onChanged.addListener(paintUpdate);
-  }
-
-  // ---- LowEndSpirit theme menu: a pick there sets our theme ----
-  // Light and vBulletin Light mean Light. Dark, Grey and vBulletin Dark mean Dark. The site still saves the pick.
-  // In OG the site shows its own theme, so only our saved setting changes.
-  if (les) {
-    document.addEventListener('click', (e) => {
-      const pick = e.target.closest?.('a.js-theme-switch');
-      if (!pick || !window.__letBetterTheme) return;
-      const key = (pick.getAttribute('href') || '').match(/themeChoose\/([^/?#]+)/)?.[1] || '';
-      const mode = /dark|grey/i.test(key) ? 'dark' : 'light';
-      if (og) { try { localStorage.setItem('letBetter.theme', mode); } catch {} }
-      else window.__letBetterTheme.set(mode);
-    }, true);
   }
 
   // ---- clicks that work on every page ----

@@ -13,7 +13,7 @@
   const LES_DARK = '/plugins/ThemeChooser/design/dark.css';
   let lesWatch = null;
   let lesBodyWatch = null;
-  let lesBodyDark = false;
+  let lesBody = { theme: [], flair: [] };
   const media = matchMedia('(prefers-color-scheme: dark)');
   const read = () => { try { return localStorage.getItem(KEY) || 'auto'; } catch { return 'auto'; } };
   const readSig = () => { try { return localStorage.getItem(SIG_KEY) || 'expanded'; } catch { return 'expanded'; } };
@@ -33,41 +33,41 @@
     link.href = FONT_URL;
     (document.head || root).appendChild(link);
   };
-  // LowEndSpirit themes. V1 and V2: site theme files never apply, also ones the site's theme menu adds later
-  // without a reload. OG is the stock site: a theme the member picked there stays, and our dark file is only used
-  // when they picked none. Karma colors follow our light or dark in every design.
+  // LowEndSpirit themes and karma flair. The gear is the only control: the site's theme menu and flair slider
+  // are hidden, and its theme files never apply, also ones added later without a reload. OG gets the site's own
+  // dark file when our theme is dark. Flair is pure CSS keyed off body classes, so we set those ourselves.
+  const FLAIR_KEY = 'letBetter.flair';
+  const readFlair = () => { try { return localStorage.getItem(FLAIR_KEY) || 'on'; } catch { return 'on'; } };
+  const FLAIR_BODY = { on: [], bad: ['les-karma-negative-only'], off: ['les-karma-off'] };
   const lesTheme = (design, dark) => {
-    const og = design === 'og';
     const siteThemes = () => [...document.querySelectorAll('link[rel="stylesheet"]')].filter((l) => l.id !== 'bl-les-dark' && LES_THEME.test(l.getAttribute('href') || ''));
     root.classList.toggle('les-karma-dark', dark);
     root.classList.toggle('les-karma-explicit-light', !dark);
+    const flair = readFlair();
+    ['on', 'bad', 'off'].forEach((f) => root.classList.toggle(`bl-flair-${f}`, f === flair));
+    siteThemes().forEach((l) => l.remove());
     let link = document.getElementById('bl-les-dark');
-    if (og) {
-      lesWatch?.disconnect();
-      lesWatch = null;
-      if (dark && !link) {
+    if (design === 'og' && dark) {
+      if (!link) {
         link = document.createElement('link');
         link.id = 'bl-les-dark';
         link.rel = 'stylesheet';
         link.href = LES_DARK;
         (document.head || root).appendChild(link);
         // The site's light rules have the same weight, so the dark file must come last in the head.
-        const settle = () => { if (siteThemes().length) link.remove(); else if (link.isConnected) document.head.appendChild(link); };
-        if (document.readyState === 'loading') addEventListener('DOMContentLoaded', settle, { once: true });
-        else settle();
-      } else if (!dark) link?.remove();
-      return;
-    }
-    link?.remove();
-    siteThemes().forEach((l) => l.remove());
-    // Site plugins style a few items by body.theme-*. Keep it matching our theme, also after the site's menu sets it.
-    lesBodyDark = dark;
+        const last = () => { if (link.isConnected) document.head.appendChild(link); };
+        if (document.readyState === 'loading') addEventListener('DOMContentLoaded', last, { once: true });
+        else last();
+      }
+    } else link?.remove();
+    // Body classes: theme-* for site plugins, les-karma-* for the flair mode. Kept in step, also if the site sets them.
+    lesBody = { theme: dark ? ['theme-dark'] : [], flair: FLAIR_BODY[flair] || [] };
     const syncBody = () => {
       const body = document.body;
       if (!body) return;
-      const want = lesBodyDark ? ['theme-dark'] : [];
-      const have = [...body.classList].filter((c) => c.startsWith('theme-') && c !== 'theme-');
-      if (have.join() === want.join()) return;
+      const want = [...lesBody.theme, ...lesBody.flair];
+      const have = [...body.classList].filter((c) => (c.startsWith('theme-') && c !== 'theme-') || /^les-karma-(off|reduced|negative-only)$/.test(c));
+      if ([...have].sort().join() === [...want].sort().join()) return;
       have.forEach((c) => body.classList.remove(c));
       want.forEach((c) => body.classList.add(c));
     };
@@ -81,7 +81,7 @@
     if (document.body) watchBody();
     else addEventListener('DOMContentLoaded', watchBody, { once: true });
     if (!lesWatch) {
-      const strip = (node) => { if (node.tagName === 'LINK' && LES_THEME.test(node.getAttribute('href') || '')) node.remove(); };
+      const strip = (node) => { if (node.tagName === 'LINK' && node.id !== 'bl-les-dark' && LES_THEME.test(node.getAttribute('href') || '')) node.remove(); };
       lesWatch = new MutationObserver((records) => records.forEach((r) => r.addedNodes.forEach(strip)));
       lesWatch.observe(root, { childList: true, subtree: true });
       // After load only the head is watched, which is where the theme menu adds its file.
@@ -131,6 +131,11 @@
       try { localStorage.setItem(KEY, mode); } catch {}
       if (readDesign() === 'og') location.reload();
       else swap();
+    },
+    getFlair: () => (les ? readFlair() : ''),
+    setFlair(value) {
+      try { localStorage.setItem('letBetter.flair', value); } catch {}
+      apply();
     },
     getSignatures: readSig,
     setSignatures(value) {
