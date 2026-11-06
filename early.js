@@ -157,3 +157,30 @@
     },
   };
 })();
+
+// Corner pop-ups from blocked people: hidden by CSS from the first paint. block.js loads later and handles
+// the rest. The style is rebuilt when the block list changes, in this tab or another.
+(() => {
+  const KEY = 'letBetter.blocked';
+  const names = () => { try { return Object.keys(JSON.parse(localStorage.getItem(KEY)) || {}); } catch { return []; } };
+  const str = (s) => `"${String(s).replace(/["\\]/g, '\\$&')}"`;
+  const build = () => {
+    const parts = [];
+    for (const n of names()) {
+      for (const v of new Set([n, encodeURIComponent(n)])) {
+        parts.push(`a[href$=${str(`/profile/${v}`)} i]`, `a[href*="/profile/" i][href$=${str(`/${v}`)} i]`);
+      }
+    }
+    let style = document.getElementById('bl-block-early');
+    if (!parts.length) { style?.remove(); return; }
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'bl-block-early';
+      (document.head || document.documentElement).appendChild(style);
+    }
+    style.textContent = `.InformWrapper:has(${parts.join(', ')}) { display: none !important; }`;
+  };
+  build();
+  addEventListener('bl-blocklist-change', build);
+  addEventListener('storage', (e) => { if (e.key === KEY) build(); });
+})();
