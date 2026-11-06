@@ -323,6 +323,19 @@ html.bl-on #Panel { grid-column: 3; grid-row: 1; float: none !important; width: 
 #bl-rail .Box h4 { margin: 6px 0 6px !important; padding: 0 12px !important; background: none !important; border: 0 !important; color: var(--bl-muted) !important; font: 500 12px/1.3 var(--bl-display) !important; pointer-events: none; }
 #bl-rail .Box h4::before, #bl-rail .Box h4::after { display: none !important; }
 #bl-rail .Aside { float: right; }
+/* Rail lists: My threads and Posted in. */
+.bl-rail-list { padding: 4px 0; background: var(--bl-surface); border: 1px solid var(--bl-line); border-radius: var(--bl-r-lg); }
+.bl-rail-list h4 { margin: 4px 0 2px; padding: 0 12px; font: 500 12px/1.3 var(--bl-display); }
+.bl-rail-list h4 a { color: var(--bl-muted) !important; text-decoration: none; }
+.bl-rail-list h4 a:hover { color: var(--bl-ink) !important; }
+.bl-rail-list ul { margin: 0; padding: 0 4px; list-style: none; }
+.bl-rail-list li { margin: 0; padding: 4px 8px; border-radius: var(--bl-r-md); list-style: none; }
+.bl-rail-list li:hover { background: var(--bl-surface2); }
+.bl-rail-t { display: -webkit-box; overflow: hidden; color: var(--bl-ink) !important; font-size: 13px; line-height: 1.3; text-decoration: none; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.bl-rail-new .bl-rail-t { font-weight: 600; }
+.bl-rail-meta { display: block; color: var(--bl-muted); font-size: 11px; }
+.bl-rail-new .bl-rail-meta { color: var(--bl-accent); }
+.bl-rail-empty { color: var(--bl-muted); font-size: 12px; }
 #bl-rail .Count, #bl-rail .Count .Number { background: none !important; border: 0 !important; color: var(--bl-muted) !important; font: 400 12px/1.5 var(--bl-display); }
 
 /* ---- general surfaces ---- */
@@ -543,6 +556,12 @@ html.bl-on .Flyout hr { margin: 4px 6px !important; border: 0 !important; border
 #bl-pop .bl-pop-note { margin-top: 8px; color: var(--bl-muted); font-size: 12px; }
 #bl-pop p.bl-pop-body.bl-pop-note { margin: 0; }
 .bl-skel { height: 12px; margin-bottom: 8px; border-radius: 4px; background: var(--bl-surface2); }
+/* Thread preview: wider, the first post as plain text. */
+#bl-pop.bl-pop-wide { width: min(440px, calc(100vw - 24px)); }
+.bl-pop-thread .bl-pop-title { display: block; color: var(--bl-ink); font: 600 15px/1.3 var(--bl-display); overflow-wrap: anywhere; }
+.bl-pop-thread .bl-pop-by { display: block; margin-top: 2px; color: var(--bl-muted); font-size: 12px; }
+.bl-pop-thread .bl-pop-text { max-height: 260px; margin-top: 8px; overflow: hidden; overflow-wrap: anywhere; -webkit-mask-image: linear-gradient(#000 85%, transparent); mask-image: linear-gradient(#000 85%, transparent); }
+#bl-pop .bl-pop-thread .bl-pop-text p { margin: 0 0 6px; }
 .bl-skel-short { width: 60%; }
 
 /* ---- toolbar: the rack's top plate ---- */
@@ -649,6 +668,11 @@ html.bl-on li.ItemDiscussion.lb-seen .IndexPhoto { opacity: .6; }
 .bl-sub a { color: inherit !important; }
 .bl-cat { font-weight: 600; }
 .bl-new { color: var(--bl-accent); font-weight: 600; }
+/* Finder tags: one outline style, the accent for deals and the danger tone for giveaways so the two read apart. */
+.bl-kind { padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font: 600 11px/1.5 var(--bl-text); letter-spacing: .02em; }
+.bl-kind-deal { color: var(--bl-accent); }
+.bl-kind-gift { color: var(--bl-danger); }
+html.bl-og .bl-kind { vertical-align: 1px; }
 .bl-cell { color: var(--bl-muted); font: 400 12.5px/1.25 var(--bl-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bl-cell b { color: var(--bl-ink); font-weight: 600; font-size: 14px; }
 .bl-cell a { color: inherit !important; }
@@ -1324,7 +1348,107 @@ html.bl-og .bl-dash-badge { background: #ff0; color: #000; }
 #bl-update button { height: 28px; padding: 0 10px; background: var(--bl-fill); border: 0; border-radius: var(--bl-r-md); color: var(--bl-on-fill); font: 600 12px/1 var(--bl-text); cursor: pointer; }
 #bl-update .bl-update-later { background: none; color: var(--bl-muted); }
 
+/* ---- LowEndSpirit: same tokens and inside styles, Keystone page frame. The LowEndTalk frame rules above do not match it. ---- */
+/* The header stays a brand bar. The logo image has the site green baked in, so light mode uses that green and dark mode shows the logo as a rounded badge. */
+html.bl-on.bl-site-les { --bl-sticky: 60px; --bl-les-head: #62a86f; --bl-les-head-ink: #fff; }
+html.bl-on.bl-site-les.bl-dark { --bl-les-head: #111813; --bl-les-head-ink: var(--bl-ink); }
+html.bl-on.bl-site-les #page { transition: opacity .18s ease-out; }
+html.bl-on.bl-site-les:not(.bl-ready) #page { opacity: 0; animation: bl-reveal 0s 3s forwards; }
+html.bl-on.bl-site-les :is(.Frame, .Frame-top, .Frame-body, .Frame-content, .Frame-contentWrap, .Frame-details) { background: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les .Frame-header { background: var(--bl-les-head) !important; box-shadow: 0 1px 0 var(--bl-line); }
+html.bl-on.bl-site-les #MainHeader { background: transparent !important; color: var(--bl-les-head-ink) !important; }
+html.bl-on.bl-site-les #MainHeader :is(.Navigation-link, .SignInLinks a, .MeBox a, .Header-right a) { color: var(--bl-les-head-ink) !important; font-family: var(--bl-text) !important; }
+html.bl-on.bl-site-les #MainHeader .Navigation-link:hover { opacity: .8; }
+html.bl-on.bl-site-les.bl-dark #MainHeader .Header-logo img { border-radius: 6px; }
+html.bl-on.bl-site-les #MainHeader .SignInLinks a { background: transparent !important; border-color: color-mix(in srgb, var(--bl-les-head-ink) 45%, transparent) !important; }
+/* The site gives its fixed header z-index 2, under our toolbar and rail. Lift it so the gear menu and member menus open on top. */
+html.bl-site-les .Frame-header { z-index: var(--bl-z-head, 40) !important; }
+/* Gear: on the header bar, left of the sign-in links or the member menu. */
+html.bl-site-les #MainHeader .Header-right { display: flex; align-items: center; gap: 6px; }
+html.bl-site-les #bl-settings { order: 0; margin: 0 4px 0 0; }
+html.bl-site-les #MainHeader .bl-gear { color: color-mix(in srgb, var(--bl-les-head-ink, #fff) 85%, transparent); }
+html.bl-site-les #MainHeader .bl-gear:hover, html.bl-site-les #MainHeader .bl-gear[aria-expanded="true"] { background: rgba(255, 255, 255, .14); color: var(--bl-les-head-ink, #fff); }
+html.bl-og.bl-site-les #MainHeader .bl-gear { color: #fff; }
+html.bl-site-les .bl-menu { text-align: left; }
+/* The gear is the only theme and flair control on LowEndSpirit, in every design. */
+html.bl-site-les :is(.KarmaMeter-btn, .ThemeSwitcher-extras-wrap, .ThemeSwitcher-mobile-extras) { display: none !important; }
+html.bl-site-les .bl-menu { max-height: calc(100vh - 70px); overflow-y: auto; }
+
+/* Karma flair in V1 and V2, our look: a colored left bar and a soft tint in the site's level color.
+   Low karma fades through the site's own rules. The site's pixel corners, runner and skulls stay in OG only. */
+html.bl-on.bl-site-les :is([class*="les-karma-glow-"], [class*="les-karma-grey-"])::before,
+html.bl-on.bl-site-les :is([class*="les-karma-glow-"], [class*="les-karma-grey-"])::after { content: none !important; display: none !important; }
+html.bl-on.bl-site-les.bl-flair-on :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion)[class*="les-karma-glow-"] {
+  background-image: linear-gradient(90deg, rgb(var(--bl-k) / .16), rgb(var(--bl-k) / 0) 45%) !important;
+  box-shadow: inset 3px 0 0 rgb(var(--bl-k)) !important;
+}
+html.bl-on.bl-site-les.bl-flair-on.bl-dark :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion)[class*="les-karma-glow-"] { background-image: linear-gradient(90deg, rgb(var(--bl-k) / .22), rgb(var(--bl-k) / 0) 45%) !important; }
+html.bl-site-les .les-karma-glow-1 { --bl-k: 0 80 220; }
+html.bl-site-les .les-karma-glow-2 { --bl-k: 0 150 255; }
+html.bl-site-les .les-karma-glow-3 { --bl-k: 0 190 230; }
+html.bl-site-les .les-karma-glow-4 { --bl-k: 0 180 80; }
+html.bl-site-les .les-karma-glow-5 { --bl-k: 80 190 0; }
+html.bl-site-les .les-karma-glow-6 { --bl-k: 210 180 0; }
+html.bl-site-les .les-karma-glow-7 { --bl-k: 255 140 0; }
+html.bl-site-les .les-karma-glow-8 { --bl-k: 255 60 0; }
+html.bl-site-les .les-karma-glow-9 { --bl-k: 235 10 10; }
+html.bl-site-les .les-karma-glow-10 { --bl-k: 200 0 80; }
+html.bl-site-les .les-karma-glow-11 { --bl-k: 160 60 255; }
+html.bl-on.bl-site-les.bl-flair-on :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion).les-karma-glow-11 {
+  background-image: linear-gradient(90deg, rgba(255, 0, 0, .14), rgba(255, 200, 0, .12) 12%, rgba(0, 200, 120, .12) 24%, rgba(0, 160, 255, .12) 36%, rgba(160, 60, 255, 0) 50%) !important;
+}
+/* Menus that open from the header (alerts, inbox, bookmarks, member menu, theme grid) sit inside the bar,
+   so the bar's white text rule would reach them. They use surface colors instead, in both themes. */
+html.bl-on.bl-site-les #MainHeader :is(.Flyout, .MenuItems, .FlyoutMenu, .ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .dropdown-menu) { background: var(--bl-surface) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les #MainHeader :is(.Flyout, .MenuItems, .FlyoutMenu, .ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .dropdown-menu) :is(a, button) { color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les #MainHeader .Flyout .PopList .Item.Center a { color: var(--bl-accent) !important; }
+/* The site's own pop-ups anywhere on the page. */
+html.bl-on.bl-site-les :is(.ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .token-input-dropdown, .ui-menu, .SelectFlyout, .richEditorFlyout, .editor-dropdown .Flyout) { background: var(--bl-surface) !important; border-color: var(--bl-line) !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les :is(.ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .token-input-dropdown, .ui-menu, .SelectFlyout, .richEditorFlyout) :is(a, button, li, span) { background-color: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les :is(.ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .token-input-dropdown, .ui-menu, .SelectFlyout) :is(a, button, li):hover, html.bl-on.bl-site-les :is(.token-input-selected-dropdown-item, .ui-state-active, .ui-state-focus, .ThemeSwitcher-extras-option--active) { background-color: var(--bl-surface2) !important; color: var(--bl-ink) !important; }
+
+/* Three columns, as on LowEndTalk: rail, content, offers and ads. The right column is 300px: the site's image grid is two 150px squares. */
+html.bl-on.bl-site-les .Frame-content > .Container { max-width: 1720px; padding-right: 20px; padding-left: 20px; }
+/* Keystone pulls this wrapper out past the container padding. Ours sets its own padding, so the wrapper sits flat. */
+html.bl-on.bl-site-les .Frame-contentWrap { box-sizing: border-box; width: auto !important; margin-right: 0 !important; margin-left: 0 !important; padding-right: 0 !important; padding-left: 0 !important; }
+html.bl-on .bl-les-row { display: grid !important; grid-template-columns: 224px minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+html.bl-on .bl-les-row.bl-no-panel { grid-template-columns: 224px minmax(0, 1fr); }
+html.bl-on .bl-les-row.bl-no-panel > .bl-les-panel { display: none; }
+html.bl-on .bl-les-row > .ContentColumn { grid-column: 2; grid-row: 1; width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+html.bl-on .bl-les-panel { grid-column: 3; grid-row: 1; box-sizing: border-box; width: 300px !important; margin: 0 !important; padding: 0 !important; background: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on .bl-les-panel :is(.Box, .LesOffersPanel, .LesOffersPanel-section) { background: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on .bl-les-panel :is(h4, .LesOffersPanel-heading) { color: var(--bl-muted) !important; font-family: var(--bl-display) !important; }
+html.bl-on .bl-les-panel a { color: var(--bl-accent) !important; }
+html.bl-on.bl-site-les .BreadcrumbsBox { background: transparent !important; }
+/* The welcome box is also a .Box, and the rail clears .Box padding. */
+html.bl-site-les #bl-rail .GuestBox.Box { padding: 8px 10px !important; background: var(--bl-surface) !important; }
+
+/* Site styles that fade read rows, paint tags yellow, and float the category badge. */
+html.bl-on.bl-site-les .DataList li.ItemDiscussion.ItemDiscussion { opacity: 1 !important; background: var(--bl-surface) !important; }
+html.bl-on.bl-site-les .DataList li.ItemDiscussion.ItemDiscussion:hover { background: var(--bl-surface2) !important; }
+html.bl-on.bl-site-les .DataList .Item.Read .Title { font-weight: inherit !important; }
+html.bl-on.bl-site-les :is(.Tag, .HasNew, .Tag-Announcement) { background: var(--bl-surface2) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; font-weight: 600 !important; }
+
+html.bl-on.bl-site-les :is(.Frame-footer, .Footer) { background: var(--bl-surface) !important; color: var(--bl-muted) !important; }
+html.bl-on.bl-site-les .Frame-footer { margin-top: 24px; border-top: 1px solid var(--bl-line); }
+html.bl-on.bl-site-les .Footer a { color: var(--bl-ink) !important; }
+
+@media (max-width: 1100px) {
+  html.bl-on .bl-les-row { grid-template-columns: 180px minmax(0, 1fr) 300px; gap: 16px; }
+  html.bl-on .bl-les-row.bl-no-panel { grid-template-columns: 180px minmax(0, 1fr); }
+  html.bl-on.bl-site-les .Frame-content > .Container { padding-right: 16px; padding-left: 16px; }
+}
+@media (max-width: 860px) {
+  html.bl-on .bl-les-row, html.bl-on .bl-les-row.bl-no-panel { grid-template-columns: minmax(0, 1fr); }
+  html.bl-on .bl-les-row > :is(#bl-rail, .ContentColumn, .bl-les-panel) { grid-column: 1; grid-row: auto; }
+  html.bl-on .bl-les-row > #bl-rail { position: static; max-height: none; }
+  html.bl-on .bl-les-panel { order: 2; width: auto !important; }
+  html.bl-on.bl-site-les .Frame-content > .Container { padding-right: 8px; padding-left: 8px; }
+}
+
 /* ---- ads: hidden only by Ctrl+Shift+M ---- */
+/* LowEndSpirit offers panel: the section with no heading. */
+html.bl-ads-off .LesOffersPanel-section:not(:has(> .LesOffersPanel-heading)) { display: none !important; }
 html.bl-ads-off #Panel :is(.let-sidebar-stack, .bsarocks, [id^="bsap_"]), html.bl-ads-off #let-footer-custom-2026 { display: none !important; }
 #bl-toast { position: fixed; bottom: 20px; left: 50%; z-index: 9999; padding: 8px 14px; background: #14231a; border-radius: 6px; color: #fff; font: 600 13px/1 system-ui, sans-serif; transform: translateX(-50%); pointer-events: none; }
 

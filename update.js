@@ -55,7 +55,7 @@
     $('title').textContent = `BetterLET ${current}`;
     $('folder').hidden = Boolean(dir);
     $('update').hidden = !waiting;
-    if (query.has('done')) $('intro').textContent = 'Update installed. Refresh any open LowEndTalk tabs to use it.';
+    if (query.has('done')) $('intro').textContent = 'Update installed. Refresh any open LowEndTalk or LowEndSpirit tabs to use it.';
     else if (query.has('welcome')) $('intro').textContent = 'Welcome. Connect your folder once, and updates install with one click.';
     else if (!waiting) $('intro').textContent = latest ? 'You have the latest version.' : 'No release has been published yet.';
     else $('intro').textContent = '';

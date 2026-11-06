@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.29
-// @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
+// @version      1.30
+// @description  A cleaner LowEndTalk and LowEndSpirit: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
+// @match        https://lowendspirit.com/*
 // @grant        none
 // ==/UserScript==
 
@@ -35,14 +36,46 @@
   const saveStarted = () => { try { localStorage.setItem(DKEY, JSON.stringify(started)); } catch {} };
   const firstPostTime = (doc) => Date.parse(doc.querySelector('.DateCreated time')?.getAttribute('datetime') || '') || 0;
 
+  // ---- polite page reads ----
+  // When the site says slow down (429 or 503, or LowEndSpirit bouncing a request to /categories),
+  // every background read stops for 10 minutes. popovers.js reads the same key.
+  const BACKOFF_KEY = 'letBetter.backoff';
+  const backingOff = () => { try { return Date.now() < +(localStorage.getItem(BACKOFF_KEY) || 0); } catch { return false; } };
+  const politeFetch = async (url, { background = true } = {}) => {
+    if (background && backingOff()) throw new Error('BetterLET: waiting, the site asked to slow down');
+    const res = await fetch(url, { credentials: 'include' });
+    const asked = new URL(url, location.href).pathname;
+    const bounced = res.redirected && new URL(res.url).pathname === '/categories' && asked !== '/categories';
+    if (res.status === 429 || res.status === 503 || bounced) {
+      try { localStorage.setItem(BACKOFF_KEY, String(Date.now() + 10 * 60 * 1000)); } catch {}
+      throw new Error('BetterLET: the site asked to slow down');
+    }
+    return res;
+  };
+
   // OG keeps the stock page: no rail, no rebuilt pages, only the small features.
   const og = document.documentElement.classList.contains('bl-og');
+
+  // ---- two forums: the inside markup is the same, the page frame is not ----
+  // LowEndTalk: #Head, #Body > .Row (#Panel), #Foot. LowEndSpirit: #MainHeader, main.MainContent and aside.Panel in a .Frame-row, .Frame-footer.
+  const les = document.documentElement.classList.contains('bl-site-les');
+  const siteName = les ? 'LowEndSpirit' : 'LowEndTalk';
+  const mainColumn = les ? document.querySelector('main.MainContent') : document.querySelector('.ContentColumn');
+  // The shared styles target .ContentColumn, so LowEndSpirit's main column gets that class too.
+  if (les && mainColumn && !og) mainColumn.classList.add('ContentColumn');
+  const frame = les
+    ? { row: mainColumn?.closest('.Frame-row'), panel: document.querySelector('aside.Panel'), foot: document.querySelector('.Frame-footer'), head: document.querySelector('#MainHeader .Header-right') }
+    : { row: document.querySelector('#Body > .Row'), panel: document.querySelector('#Panel'), foot: document.querySelector('#Foot'), head: document.querySelector('#Head .Row') };
+  if (les && !og) {
+    frame.row?.classList.add('bl-les-row');
+    frame.panel?.classList.add('bl-les-panel');
+  }
 
   // The right column closes when nothing in it shows, such as when an ad blocker hides or strips
   // the ad blocks, so nobody gets an empty column.
   const fitPanel = () => {
-    const box = document.querySelector('#Body > .Row');
-    const side = document.querySelector('#Panel');
+    const box = frame.row;
+    const side = frame.panel;
     if (!box || !side || og) return;
     const shows = (el) => {
       if (['SCRIPT', 'STYLE', 'BR'].includes(el.tagName) || getComputedStyle(el).display === 'none') return false;
@@ -53,8 +86,7 @@
   };
 
   // ---- left rail: move the useful sidebar blocks away from the ads ----
-  const row = document.querySelector('#Body > .Row');
-  const panel = document.querySelector('#Panel');
+  const { row, panel } = frame;
   if (row && panel && !og) {
     const rail = document.createElement('div');
     rail.id = 'bl-rail';
@@ -73,7 +105,7 @@
     // Sponsor blocks can fill in after load.
     setTimeout(fitPanel, 3000);
 
-    const foot = document.querySelector('#Foot');
+    const { foot } = frame;
     if (foot) {
       const fit = () => row.style.setProperty('--bl-foot-h', `${foot.offsetHeight + 24}px`);
       fit();
@@ -81,8 +113,160 @@
     }
   }
 
+  // ---- left rail categories: LowEndSpirit's sidebar has none, so build one from /categories ----
+  // Same classes as LowEndTalk's own categories box, so the rail styles apply. Cached for a day.
+  const railScrollBox = document.getElementById('bl-rail-scroll');
+  if (railScrollBox && !railScrollBox.querySelector('.BoxCategories')) {
+    const CATS_KEY = 'letBetter.cats';
+    const box = document.createElement('div');
+    box.className = 'Box BoxCategories bl-built-cats';
+    const head = document.createElement('h4');
+    head.textContent = 'Categories';
+    const ul = document.createElement('ul');
+    ul.className = 'PanelInfo PanelCategories';
+    box.append(head, ul);
+    railScrollBox.appendChild(box);
+    const here = location.pathname.match(/^\/categories\/([^/]+)/)?.[1] || '';
+    const paintCats = (cats) => {
+      ul.replaceChildren();
+      cats.forEach((c) => {
+        const li = document.createElement('li');
+        li.className = `ClearFix Depth${c.depth}${c.slug === here ? ' Active' : ''}`;
+        const a = document.createElement('a');
+        a.className = 'ItemLink';
+        a.href = `/categories/${c.slug}`;
+        if (c.count) {
+          const aside = document.createElement('span');
+          aside.className = 'Aside';
+          const count = document.createElement('span');
+          count.className = 'Count';
+          count.textContent = c.count;
+          aside.appendChild(count);
+          a.appendChild(aside);
+        }
+        a.append(c.name);
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      if (!cats.length) box.remove();
+    };
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(CATS_KEY)); } catch {}
+    if (cached && Date.now() - cached.at < 86400000) paintCats(cached.cats);
+    else {
+      politeFetch('/categories').then((r) => r.text()).then((html) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const cats = [...doc.querySelectorAll('ul.CategoryList > li[id^="Category_"]')].map((li) => {
+          const link = li.querySelector('.TitleWrap a.Title, .TitleWrap a');
+          const slug = (link?.getAttribute('href') || '').match(/\/categories\/([^/?#]+)/)?.[1];
+          // The site's own stylesheet hides these two from members.
+          if (!slug || /^(main-site-posts|help)$/i.test(slug)) return null;
+          return { slug, name: link.textContent.trim(), depth: /\bDepth2\b/.test(li.className) ? 2 : 1, count: li.querySelector('.DiscussionCount .Number')?.textContent.trim() || '' };
+        }).filter(Boolean);
+        if (cats.length) try { localStorage.setItem(CATS_KEY, JSON.stringify({ at: Date.now(), cats })); } catch {}
+        paintCats(cats);
+      }).catch(() => box.remove());
+    }
+  }
+
+  // ---- left rail lists: threads you started and threads you posted in, read from your profile ----
+  // Signed in only. Cached for 5 minutes per forum, so page views do not refetch them.
+  const meSlug = (() => {
+    const skip = /^(edit|notifications|preferences|password|picture|signature|activity|comments|discussions|quotes|connections|invitations|tokens)$/i;
+    for (const a of document.querySelectorAll('.MeBox a[href*="/profile/"]')) {
+      const m = new URL(a.href, location.href).pathname.match(/^\/profile\/([^/]+)$/);
+      if (m && !skip.test(m[1])) return m[1];
+    }
+    return '';
+  })();
+  const railScroll = document.getElementById('bl-rail-scroll');
+  const signedInRail = document.querySelector('.MeBox .Username, .MeBox a[href^="/profile/"], .MeBox a[href*="/profile/"]');
+  if (railScroll && signedInRail) {
+    const RAIL_KEY = 'letBetter.rail';
+    const RAIL_TTL = 5 * 60 * 1000;
+    const mk = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    const section = (title, all) => {
+      const box = mk('section', 'bl-rail-list');
+      const head = mk('h4');
+      const link = mk('a', '', title);
+      link.href = all;
+      head.appendChild(link);
+      const ul = mk('ul');
+      ul.appendChild(mk('li', 'bl-rail-empty', 'Loading…'));
+      box.append(head, ul);
+      railScroll.appendChild(box);
+      return ul;
+    };
+    // Without a name these pages show the signed-in member. The name from the header is only a fallback.
+    const mineUl = section('My threads', '/profile/discussions');
+    const postedUl = section('Posted in', '/profile/comments');
+    const paint = (ul, items, empty) => {
+      ul.replaceChildren();
+      if (!items.length) ul.appendChild(mk('li', 'bl-rail-empty', empty));
+      items.slice(0, 8).forEach((t) => {
+        const li = mk('li', t.fresh ? 'bl-rail-new' : '');
+        const a = mk('a', 'bl-rail-t', t.title);
+        a.href = t.href;
+        if (t.tip) a.title = t.tip;
+        li.appendChild(a);
+        const meta = [t.fresh, t.n !== undefined ? `${t.n} replies` : '', t.ms ? ago(t.ms) : ''].filter(Boolean).join(' · ');
+        if (meta) li.appendChild(mk('span', 'bl-rail-meta', meta));
+        ul.appendChild(li);
+      });
+    };
+    const pageOf = (url) => politeFetch(url).then((r) => {
+      if (!r.ok || r.url.includes('/entry/signin')) throw new Error(String(r.status));
+      return r.text();
+    }).then((html) => new DOMParser().parseFromString(html, 'text/html'));
+    const ownPage = (kind) => pageOf(`/profile/${kind}`).catch((err) => {
+      if (!meSlug) throw err;
+      return pageOf(`/profile/${kind}/${meSlug}`);
+    });
+    const readMine = (doc) => [...doc.querySelectorAll('li.ItemDiscussion')].map((li) => {
+      const a = li.querySelector('.Title a');
+      return a && {
+        title: a.textContent.trim(),
+        href: (a.getAttribute('href') || '').replace(/(\/p\d+)?(#.*)?$/, '/p1'),
+        n: (li.querySelector('.CommentCount .Number')?.textContent || '0').trim(),
+        fresh: li.querySelector('.HasNew')?.textContent.trim() || '',
+        ms: Date.parse(li.querySelector('.LastCommentDate time')?.getAttribute('datetime') || '') || 0,
+      };
+    }).filter(Boolean);
+    // The comments page lists each comment with its thread. One row per thread, newest first.
+    const readPosted = (doc) => {
+      const seen = new Set();
+      return [...doc.querySelectorAll('.DataList li[id^="Comment_"]')].map((li) => {
+        const a = li.querySelector('.Meta b a, .Meta a[href*="/discussion/comment/"]');
+        const title = a?.textContent.trim();
+        if (!title || seen.has(title)) return null;
+        seen.add(title);
+        return { title, href: a.getAttribute('href'), tip: 'Go to your latest comment in this thread', ms: Date.parse(li.querySelector('time')?.getAttribute('datetime') || '') || 0 };
+      }).filter(Boolean);
+    };
+    let cache = null;
+    try { cache = JSON.parse(localStorage.getItem(RAIL_KEY)); } catch {}
+    if (cache && cache.slug === (meSlug || 'me') && Date.now() - cache.at < RAIL_TTL) {
+      paint(mineUl, cache.mine, 'No threads yet.');
+      paint(postedUl, cache.posted, 'No comments yet.');
+    } else {
+      (async () => {
+        const fresh = { slug: meSlug || 'me', at: Date.now(), mine: [], posted: [] };
+        try { fresh.mine = readMine(await ownPage('discussions')); paint(mineUl, fresh.mine, 'No threads yet.'); }
+        catch { paint(mineUl, [], 'Could not load this list.'); fresh.at = 0; }
+        try { fresh.posted = readPosted(await ownPage('comments')); paint(postedUl, fresh.posted, 'No comments yet.'); }
+        catch { paint(postedUl, [], 'Could not load this list.'); fresh.at = 0; }
+        try { localStorage.setItem(RAIL_KEY, JSON.stringify(fresh)); } catch {}
+      })();
+    }
+  }
+
   // ---- settings: one gear beside the search box, with design and theme inside ----
-  const headRow = document.querySelector('#Head .Row');
+  const headRow = frame.head;
   if (headRow && window.__letBetterTheme) {
     const theme = window.__letBetterTheme;
     const box = document.createElement('div');
@@ -97,14 +281,15 @@
         ${option('mode', 'auto', 'Auto')}${option('mode', 'light', 'Light')}${option('mode', 'dark', 'Dark')}
         <div class="bl-menu-label">Signatures</div>
         ${option('sig', 'expanded', 'Expanded')}${option('sig', 'collapsed', 'Collapsed')}
+        ${les ? `<div class="bl-menu-label">Karma flair</div>${option('flair', 'on', 'On')}${option('flair', 'bad', 'Bad karma only')}${option('flair', 'off', 'Off')}` : ''}
         <div class="bl-menu-label">BetterLET ${window.chrome?.runtime?.getManifest?.().version || ''}</div>
         <button type="button" role="menuitem" class="bl-updates" data-link="update">Updates and changelog</button>
       </div>`;
     const gear = box.querySelector('.bl-gear');
     const menu = box.querySelector('.bl-menu');
     const mark = () => menu.querySelectorAll('button').forEach((b) => {
-      const { design, mode, sig } = b.dataset;
-      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : sig === theme.getSignatures();
+      const { design, mode, sig, flair } = b.dataset;
+      const on = design ? design === theme.getDesign() : mode ? mode === theme.get() : flair ? flair === theme.getFlair?.() : sig === theme.getSignatures();
       b.setAttribute('aria-checked', String(on));
     });
     const toggle = (open) => {
@@ -113,10 +298,11 @@
     };
     gear.addEventListener('click', () => toggle(menu.hidden));
     menu.addEventListener('click', (e) => {
-      const { design, mode, sig } = e.target.dataset;
+      const { design, mode, sig, flair } = e.target.dataset;
       if (design) theme.setDesign(design);
       if (mode) theme.set(mode);
       if (sig) theme.setSignatures(sig);
+      if (flair) theme.setFlair(flair);
       if (e.target.dataset.link) chrome.runtime.sendMessage({ type: 'bl-open-update' });
       mark();
     });
@@ -124,7 +310,8 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggle(false); });
     mark();
     // The search box floats right on the stock page, so a float placed after it lands to its left.
-    if (og) headRow.querySelector('.SiteSearch')?.after(box);
+    if (les) headRow.prepend(box);
+    else if (og) headRow.querySelector('.SiteSearch')?.after(box);
     else headRow.appendChild(box);
   }
 
@@ -150,7 +337,7 @@
       later.textContent = 'Later';
       later.addEventListener('click', () => chrome.storage.local.set({ dismissed: latest.version }));
       bar.append(text, open, later);
-      document.querySelector('.ContentColumn')?.prepend(bar);
+      mainColumn?.prepend(bar);
     };
     const paintUpdate = () => chrome.storage.local.get(['latest', 'dismissed']).then(showUpdate).catch(() => {});
     paintUpdate();
@@ -240,7 +427,7 @@
     const anchor = document.querySelector('.MessageList, .DataList.Comments, #Content h1');
     anchor?.parentNode.insertBefore(box, anchor);
     if (!started[threadId]) {
-      fetch(`/discussion/${threadId}`, { credentials: 'include' }).then((r) => r.text()).then((html) => {
+      politeFetch(`/discussion/${threadId}`).then((r) => r.text()).then((html) => {
         const t = firstPostTime(new DOMParser().parseFromString(html, 'text/html'));
         if (t) { started[threadId] = t; saveStarted(); paint(); }
       }).catch(() => {});
@@ -363,17 +550,23 @@
   // ---- dashboard: your numbers and threads on one page, at /discussions#dashboard ----
   const signedIn = document.querySelector('.MeBox .Username, .MeBox a[href^="/profile/"]');
   const discussionsLink = document.querySelector('#Head .SiteMenu a[href="/discussions"]');
-  if (signedIn && discussionsLink) {
+  const lesNav = les && document.querySelector('#MainHeader .Header-desktopNav');
+  if (signedIn && lesNav) {
+    const item = document.createElement('div');
+    item.className = 'Navigation-linkContainer';
+    item.innerHTML = '<a href="/discussions#dashboard" class="Navigation-link">Dashboard</a>';
+    lesNav.prepend(item);
+  } else if (signedIn && discussionsLink) {
     const li = document.createElement('li');
     li.innerHTML = '<a href="/discussions#dashboard">Dashboard</a>';
     // The space matches the stock menu, where spaces set the gap between items.
     discussionsLink.closest('li').after(' ', li);
   }
   addEventListener('hashchange', () => { if (location.pathname === '/discussions') location.reload(); });
-  const content = document.querySelector('.ContentColumn');
+  const content = mainColumn;
   if (location.pathname === '/discussions' && location.hash === '#dashboard' && content) {
     document.documentElement.classList.add('bl-dash-on');
-    document.title = 'Dashboard — LowEndTalk';
+    document.title = `Dashboard — ${siteName}`;
     const dash = document.createElement('div');
     dash.id = 'bl-dash';
     content.prepend(dash);
@@ -405,7 +598,7 @@
     stat('My threads', countOf('/discussions/mine'), '/discussions/mine');
     stat('Drafts', countOf('/drafts'), '/drafts');
     const thanks = stat('Thanks received', '…', '/profile');
-    const pageOf = (url) => fetch(url, { credentials: 'include' }).then((r) => r.text()).then((html) => new DOMParser().parseFromString(html, 'text/html'));
+    const pageOf = (url) => politeFetch(url).then((r) => r.text()).then((html) => new DOMParser().parseFromString(html, 'text/html'));
     if (profile) {
       pageOf(profile).then((doc) => {
         thanks.firstChild.textContent = doc.querySelector('dd.ReceivedThankCount')?.textContent.trim() || '0';
@@ -454,7 +647,7 @@
   if (!list) return;
   if (!og) list.classList.add('bl-rack');
 
-  const state = Object.assign({ sort: 'reply', hideSeen: false, hidePinned: false, seen: {}, opened: {} }, load());
+  const state = Object.assign({ sort: 'reply', show: 'all', hideSeen: false, hidePinned: false, seen: {}, opened: {} }, load());
   const save = () => {
     state.opened = { ...load().opened, ...state.opened };
     saveState(state);
@@ -471,6 +664,33 @@
 
   const isMine = (li) => li.classList.contains('Mine');
 
+  // ---- deal and giveaway finder ----
+  // Category first, then words in the title. Both forums' offer and giveaway categories are listed.
+  const DEAL_CATS = /^(offers|shared-hosting-offers|must-see-deals-?|vps|dedicated-server|shared-hosting|services)$/;
+  const GIFT_CATS = /^(giveaways-freebies|free-offers-and-stuff)$/;
+  const NOT_DEALS = /^(requests|help|meta|outages|reviews|security|technical)$/;
+  const GIFT_WORDS = /\bgive\s?-?aways?\b|\bgiving away\b|\braffles?\b|\bcontests?\b|\bfreebies?\b|\bfree (vps|server|credits?|hosting|months?)\b/i;
+  const DEAL_WORDS = /[$€£]\s?\d|\d\s?(usd|eur|gbp)\b|\/\s?(mo|month|yr|year)\b|\d+\s?% ?off\b|\bsale\b|\bdiscounts?\b|black friday|cyber monday|\bcoupons?\b|\bpromo\b|\bdeals?\b/i;
+  const catOf = (li) => (li.querySelector('.Meta-Discussion .Category, .MItem.Category')?.className.match(/\bCategory-([\w-]+)/) || [])[1]?.toLowerCase() || '';
+  const kindOf = (li) => {
+    if (li.dataset.blKind !== undefined) return li.dataset.blKind;
+    const cat = catOf(li);
+    const title = li.querySelector('.Title')?.textContent || '';
+    const kind = GIFT_CATS.test(cat) || GIFT_WORDS.test(title) ? 'gift'
+      : DEAL_CATS.test(cat) || (!NOT_DEALS.test(cat) && DEAL_WORDS.test(title)) ? 'deal' : '';
+    li.dataset.blKind = kind;
+    return kind;
+  };
+  const kindTag = (li) => {
+    const kind = kindOf(li);
+    if (!kind) return null;
+    const tag = document.createElement('span');
+    tag.className = `bl-kind bl-kind-${kind}`;
+    tag.textContent = kind === 'gift' ? 'Giveaway' : 'Deal';
+    return tag;
+  };
+  const shows = (li) => ({ deals: kindOf(li) === 'deal', gifts: kindOf(li) === 'gift', nodeals: kindOf(li) !== 'deal' }[state.show] ?? true);
+
   // Seen = you opened it (or marked it) and no new replies since. The forum's read flag does not count.
   const isSeen = (li) => {
     const id = idOf(li);
@@ -479,6 +699,12 @@
     return rec !== undefined && comments(li) <= rec;
   };
   const markSeen = (li) => { state.opened[idOf(li)] = Date.now(); save(); };
+
+  // Page loading state, shared by the button and the finder.
+  const nextOf = (doc) => { const h = doc.querySelector('.Pager a.Next')?.getAttribute('href'); return h ? new URL(h, location.href).href : null; };
+  let nextUrl = nextOf(document);
+  let loading = false;
+  let fills = 0;
 
   // ---- toolbar ----
   const bar = document.createElement('div');
@@ -490,6 +716,14 @@
         <option value="created">Newest thread</option>
         <option value="oldest">Oldest thread</option>
         <option value="comments">Most replies</option>
+      </select>
+    </label>
+    <label>Show
+      <select data-k="show">
+        <option value="all">All</option>
+        <option value="deals">Deals</option>
+        <option value="gifts">Giveaways</option>
+        <option value="nodeals">No deals</option>
       </select>
     </label>
     <label><input type="checkbox" data-k="hideSeen"> Hide seen</label>
@@ -505,6 +739,7 @@
   if (!og) list.parentNode.insertBefore(head, list);
 
   bar.querySelector('[data-k="sort"]').value = state.sort;
+  bar.querySelector('[data-k="show"]').value = state.show;
   bar.querySelector('[data-k="hideSeen"]').checked = state.hideSeen;
   bar.querySelector('[data-k="hidePinned"]').checked = state.hidePinned;
 
@@ -512,6 +747,7 @@
     const k = e.target.dataset.k;
     if (!k) return;
     state[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    if (k === 'show') fills = 0;
     save();
     glide(render);
   });
@@ -548,6 +784,8 @@
       name.className = 'bl-cat';
       sub.appendChild(name);
     }
+    const tag = kindTag(li);
+    if (tag) sub.appendChild(tag);
     const author = li.querySelector('.DiscussionAuthor a');
     if (author) sub.appendChild(author.cloneNode(true));
     if (isPinned(li)) {
@@ -624,6 +862,8 @@
       when.after(go);
     }
     link.setAttribute('href', href.replace(/(\/p\d+)?(#.*)?$/, '/p1'));
+    const tag = kindTag(li);
+    if (tag) link.after(' ', tag);
   };
 
   // ---- per-row "mark seen" button + click tracking ----
@@ -656,23 +896,26 @@
   };
 
   // Start dates aren't in the list, so fetch page 1 of threads you scroll past.
-  // Two at a time, slow, cached forever, so the site doesn't rate-limit you.
+  // Slow and cached forever, so the site doesn't rate-limit you. LowEndSpirit allows less: one at a time, a longer gap.
   const queue = [];
   let running = 0;
+  const LANES = les ? 1 : 2;
+  const GAP = les ? 1500 : 400;
   const pump = () => {
-    while (running < 2 && queue.length) {
+    if (backingOff()) return;
+    while (running < LANES && queue.length) {
       const li = queue.shift();
       const id = idOf(li);
       if (started[id]) { paintDates(li); continue; }
       running++;
-      fetch(`/discussion/${id}`, { credentials: 'include' })
+      politeFetch(`/discussion/${id}`)
         .then((r) => r.text())
         .then((html) => {
           const t = firstPostTime(new DOMParser().parseFromString(html, 'text/html'));
           if (t) { started[id] = t; saveStarted(); }
         })
         .catch(() => {})
-        .finally(() => { paintDates(li); setTimeout(() => { running--; pump(); }, 400); });
+        .finally(() => { paintDates(li); setTimeout(() => { running--; pump(); }, GAP); });
     }
   };
   const watcher = new IntersectionObserver((entries) => {
@@ -716,24 +959,29 @@
       li.classList.toggle('lb-seen', seen);
       li.classList.toggle('bl-unread', !seen && comments(li) > 0);
       // Your own threads never hide with Hide seen.
-      const hide = (state.hideSeen && seen && !isMine(li)) || (state.hidePinned && isPinned(li));
+      const hide = (state.hideSeen && seen && !isMine(li)) || (state.hidePinned && isPinned(li)) || !shows(li);
       li.classList.toggle('lb-hide', hide);
       if (!hide) shown++;
     });
     bar.querySelector('.lb-count').textContent = `${shown} of ${items.length} shown`;
+    // The finder pulls in a few more pages when one page holds few matches: 4 on LowEndTalk, 2 on LowEndSpirit.
+    if ((state.show === 'deals' || state.show === 'gifts') && shown < 15 && fills < (les ? 2 : 4) && nextUrl && !loading && !backingOff()) {
+      fills++;
+      setTimeout(loadMore, 1500);
+    }
   };
 
   // ---- load more pages ----
-  const nextOf = (doc) => { const h = doc.querySelector('.Pager a.Next')?.getAttribute('href'); return h ? new URL(h, location.href).href : null; };
-  let nextUrl = nextOf(document);
   const moreBtn = bar.querySelector('[data-a="more"]');
   if (!nextUrl) moreBtn.disabled = true;
-  moreBtn.addEventListener('click', async () => {
-    if (!nextUrl) return;
+  const loadMore = async () => {
+    if (!nextUrl || loading) return;
+    loading = true;
     moreBtn.disabled = true;
     moreBtn.textContent = 'Loading…';
     try {
-      const html = await (await fetch(nextUrl, { credentials: 'include' })).text();
+      // A click always loads; only automatic reads wait out a slow-down.
+      const html = await (await politeFetch(nextUrl, { background: false })).text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const have = new Set([...list.children].map((li) => li.id));
       doc.querySelectorAll('ul.Discussions li.ItemDiscussion').forEach((li) => {
@@ -745,8 +993,10 @@
     }
     moreBtn.textContent = 'Load next page';
     moreBtn.disabled = !nextUrl;
+    loading = false;
     render();
-  });
+  };
+  moreBtn.addEventListener('click', loadMore);
 
   // A thread opened in another tab updates this list too.
   addEventListener('storage', (e) => {
