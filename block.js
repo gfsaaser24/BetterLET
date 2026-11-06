@@ -64,6 +64,11 @@
     root.querySelectorAll('.ItemComment').forEach((item) => item.classList.toggle('bl-blocked', has(authorOfPost(item))));
     // Their posts quoted by others, nested quotes included.
     root.querySelectorAll('blockquote.UserQuote, blockquote.Quote').forEach((q) => q.classList.toggle('bl-blocked', has(authorOfQuote(q))));
+    // "In this Discussion" in the sidebar (and the rail, where V1/V2 move it).
+    document.querySelectorAll('.InThisDiscussion li, .BoxInThisDiscussion li').forEach((li) => {
+      const a = li.querySelector('a[href*="/profile/"]');
+      li.classList.toggle('bl-blocked', Boolean(a) && has(slugFrom(a.href) || a.textContent));
+    });
     // "Last comment by" them: the name goes, the date stays (V1/V2 line and the stock OG meta).
     root.querySelectorAll('.bl-lastline, li.ItemDiscussion .LastCommentBy').forEach((line) => {
       const by = line.querySelector('a[href*="/profile/"]');
