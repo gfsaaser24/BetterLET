@@ -5,6 +5,13 @@
   const SIG_KEY = 'letBetter.signatures';
   const FONT_URL = 'https://api.fontshare.com/css?f[]=general-sans@400,500,600,700&display=swap';
   const root = document.documentElement;
+  // Two forums: LowEndTalk and LowEndSpirit. They share the inside markup, not the page frame.
+  const les = /(^|\.)lowendspirit\.com$/.test(location.hostname);
+  root.classList.add(les ? 'bl-site-les' : 'bl-site-let');
+  // LowEndSpirit dark theme: the site's own file. Members can also pick it in their account.
+  const LES_THEME = /\/plugins\/ThemeChooser\/design\/(?!shared\.css)[^/?]+\.css/;
+  const LES_DARK = '/plugins/ThemeChooser/design/dark.css';
+  let lesWatch = null;
   const media = matchMedia('(prefers-color-scheme: dark)');
   const read = () => { try { return localStorage.getItem(KEY) || 'auto'; } catch { return 'auto'; } };
   const readSig = () => { try { return localStorage.getItem(SIG_KEY) || 'expanded'; } catch { return 'expanded'; } };
@@ -24,6 +31,30 @@
     link.href = FONT_URL;
     (document.head || root).appendChild(link);
   };
+  // LowEndSpirit: our theme setting wins over the member's saved site theme.
+  const lesTheme = (dark) => {
+    const strip = (node) => {
+      if (node.tagName === 'LINK' && LES_THEME.test(node.getAttribute('href') || '') && node.id !== 'bl-les-dark') node.remove();
+    };
+    document.querySelectorAll('link[rel="stylesheet"]').forEach(strip);
+    // Theme links that come later in the head are removed as they arrive.
+    if (!lesWatch) {
+      lesWatch = new MutationObserver((records) => records.forEach((r) => r.addedNodes.forEach(strip)));
+      lesWatch.observe(root, { childList: true, subtree: true });
+      addEventListener('DOMContentLoaded', () => lesWatch.disconnect(), { once: true });
+    }
+    root.classList.toggle('les-karma-dark', dark);
+    let link = document.getElementById('bl-les-dark');
+    if (dark && !link) {
+      link = document.createElement('link');
+      link.id = 'bl-les-dark';
+      link.rel = 'stylesheet';
+      link.href = LES_DARK;
+      (document.head || root).appendChild(link);
+      // The site's light rules have the same weight, so the dark file must come last in the head.
+      addEventListener('DOMContentLoaded', () => { if (link.isConnected) document.head.appendChild(link); }, { once: true });
+    } else if (!dark) link?.remove();
+  };
   const apply = () => {
     const mode = read();
     const design = readDesign();
@@ -33,7 +64,8 @@
     const dark = mode === 'auto' ? media.matches : mode === 'dark';
     // The site's own dark mode paints pale text over V1 and V2, so it stays off there. OG uses it.
     // This runs before the site's script reads the setting.
-    try { localStorage.setItem('theme', design === 'og' && dark ? 'dark' : 'light'); } catch {}
+    if (les) lesTheme(design === 'og' && dark);
+    else try { localStorage.setItem('theme', design === 'og' && dark ? 'dark' : 'light'); } catch {}
     root.dataset.blDesign = design;
     if (design === 'v2') loadFont();
     root.classList.toggle('bl-on', design !== 'og');

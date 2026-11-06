@@ -1,1 +1,1 @@
-- UI fixes
+- BetterLET now works on LowEndSpirit too, with all three designs and the same features

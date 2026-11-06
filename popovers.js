@@ -29,7 +29,7 @@
   const place = () => {
     if (!anchor) return;
     const r = anchor.getClientRects()[0] || anchor.getBoundingClientRect();
-    const panel = document.querySelector('#Panel');
+    const panel = document.querySelector('#Panel, aside.Panel');
     const limit = panel?.offsetWidth && panel.getBoundingClientRect().left > innerWidth / 2 ? panel.getBoundingClientRect().left - 12 : innerWidth - 12;
     const w = pop.offsetWidth;
     const h = pop.offsetHeight;
@@ -59,7 +59,7 @@
   const users = new Map();
   const nameFrom = (a) => {
     if (a.closest('#bl-pop, .MeBox, .BoxProfileFilter, .SideMenu, #bl-profile-head')) return null;
-    const m = (a.getAttribute('href') || '').match(/^(?:https:\/\/lowendtalk\.com)?\/profile\/([^/?#]+)$/);
+    const m = (a.getAttribute('href') || '').match(/^(?:https:\/\/(?:lowendtalk|lowendspirit)\.com)?\/profile\/([^/?#]+)$/);
     return m && !RESERVED.has(m[1].toLowerCase()) ? m[1] : null;
   };
 

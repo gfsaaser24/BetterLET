@@ -8,6 +8,14 @@ A third choice on the same switch. It is the stock page: stock layout, stock pag
 
 OG does not set `html.bl-on`, so no V1 or V2 layout applies. Its small layer is in `styles.css` under `html.bl-og`. Dark is the site's own dark mode, so changing theme or leaving OG reloads the page. Its gear sits in the green bar, left of the search box and level with it.
 
+## Two forums
+
+BetterLET runs on LowEndTalk and LowEndSpirit. `early.js` sets `html.bl-site-let` or `html.bl-site-les`. Both run Vanilla, so the inside markup (thread list, threads, composer, profiles) is the same and every shared rule and feature works on both.
+
+The page frame is not the same. LowEndTalk has `#Head`, `#Body > .Row` with `#Panel`, and `#Foot`. LowEndSpirit runs the Keystone theme: `#MainHeader`, then `main.MainContent` and `aside.Panel` in a `.Frame-row`, then `.Frame-footer`. `content.js` finds each part per site in one `frame` object. On LowEndSpirit in V1 and V2 the main column also gets `.ContentColumn`, and the row and sidebar get `.bl-les-row` and `.bl-les-panel`. The LowEndSpirit frame has its own section in `styles.css`. Never change a LowEndTalk frame rule to fit LowEndSpirit.
+
+LowEndSpirit specifics: the header stays a green brand bar, because the logo image has the site green baked in. The right column is 300px, because the site's image grid is two 150px squares. The gear sits in the header, left of the sign-in links or member menu. Dark in OG is the site's own `ThemeChooser/design/dark.css`. Our theme setting wins over a member's saved site theme: V1 and V2 remove the site theme file, and OG adds the dark file last in the head. Any new extension file must also go in the `files=` list in `.github/workflows/release.yml`, or updates will miss it.
+
 ## Page numbers
 
 Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color. They always sit on their own row, clear of the cards above and below.
