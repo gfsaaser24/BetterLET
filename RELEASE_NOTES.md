@@ -1,1 +1,3 @@
-- Addition of User Blocking, so you can block people and never see anything they say or do
+- User Blocking now also covers notifications: blocked people never show in the bell menu, the notifications page or the pop-ups in the corner
+- The "In this Discussion" list now hides blocked people too
+- Groundwork for Firefox support
