@@ -1,5 +1,6 @@
 # A new version in manifest.json on main becomes a GitHub release. That release fires the webhook
 # to the update Worker, and extensions see the update on their next check.
+# Only raise the version for changes users will notice. RELEASE_NOTES.md is what users read.
 name: Release
 on:
   push:
@@ -29,4 +30,4 @@ jobs:
           jq -e '.files | length > 10' release.json
       - name: Publish
         if: steps.seen.outputs.skip != 'true'
-        run: gh release create "${{ steps.version.outputs.tag }}" release.json --target "$GITHUB_SHA" --title "BetterLET ${{ steps.version.outputs.tag }}" --generate-notes
+        run: gh release create "${{ steps.version.outputs.tag }}" release.json --target "$GITHUB_SHA" --title "BetterLET ${{ steps.version.outputs.tag }}" --notes-file RELEASE_NOTES.md

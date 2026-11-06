@@ -17,7 +17,7 @@
 ## Features
 
 - **Three designs:** OG, V1, and V2, each with Auto, Light, and Dark themes
-- **Settings gear:** design, theme, signatures, and optional ad hiding in one menu
+- **Settings gear:** design, theme, and signatures in one menu
 - **Better thread list:** status lights, last comment details, sorting, hide seen, and load next page
 - **Better navigation:** titles open the first post, and the date jumps to the last comment
 - **Better threads:** Thanks button, Ctrl+Enter to post, clean polls, and clear quotes
@@ -25,7 +25,7 @@
 - **Cleaner pages:** rebuilt Categories, Profile, Settings, and Drafts
 - **User hover cards:** roles, join date, activity, and thanks
 - **Fits every screen:** wide monitors, older laptops, and phones
-- **Works with ad blockers:** ads show by default and nothing conflicts
+- **Respects the ads:** ads always show, and nothing conflicts with your own ad blocker
 - **One-click updates:** alerts, a built-in changelog, and every file checked before install
 
 ## Install
@@ -79,7 +79,7 @@ Your settings stay in your browser. BetterLET checks for updates every 6 hours a
 
 ## Development
 
-Plain JavaScript and CSS, with no build step. To ship a release, raise the version in `manifest.json` and merge to `main`: the Release workflow does the rest. A release file list lives in `.github/workflows/release.yml`, so add new extension files there. See `cloud/` for the update Worker and changelog page. Read [DESIGN.md](DESIGN.md) before changing anything visual.
+Plain JavaScript and CSS, with no build step. To ship a release, write the user-facing changes in `RELEASE_NOTES.md`, raise the version in `manifest.json`, and merge to `main`: the Release workflow does the rest. Internal changes do not get a release. A release file list lives in `.github/workflows/release.yml`, so add new extension files there. See `cloud/` for the update Worker and changelog page. Read [DESIGN.md](DESIGN.md) before changing anything visual.
 
 ## License
 
