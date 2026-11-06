@@ -1370,6 +1370,33 @@ html.bl-site-les #MainHeader .bl-gear { color: color-mix(in srgb, var(--bl-les-h
 html.bl-site-les #MainHeader .bl-gear:hover, html.bl-site-les #MainHeader .bl-gear[aria-expanded="true"] { background: rgba(255, 255, 255, .14); color: var(--bl-les-head-ink, #fff); }
 html.bl-og.bl-site-les #MainHeader .bl-gear { color: #fff; }
 html.bl-site-les .bl-menu { text-align: left; }
+/* The gear is the only theme and flair control on LowEndSpirit, in every design. */
+html.bl-site-les :is(.KarmaMeter-btn, .ThemeSwitcher-extras-wrap, .ThemeSwitcher-mobile-extras) { display: none !important; }
+html.bl-site-les .bl-menu { max-height: calc(100vh - 70px); overflow-y: auto; }
+
+/* Karma flair in V1 and V2, our look: a colored left bar and a soft tint in the site's level color.
+   Low karma fades through the site's own rules. The site's pixel corners, runner and skulls stay in OG only. */
+html.bl-on.bl-site-les :is([class*="les-karma-glow-"], [class*="les-karma-grey-"])::before,
+html.bl-on.bl-site-les :is([class*="les-karma-glow-"], [class*="les-karma-grey-"])::after { content: none !important; display: none !important; }
+html.bl-on.bl-site-les.bl-flair-on :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion)[class*="les-karma-glow-"] {
+  background-image: linear-gradient(90deg, rgb(var(--bl-k) / .16), rgb(var(--bl-k) / 0) 45%) !important;
+  box-shadow: inset 3px 0 0 rgb(var(--bl-k)) !important;
+}
+html.bl-on.bl-site-les.bl-flair-on.bl-dark :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion)[class*="les-karma-glow-"] { background-image: linear-gradient(90deg, rgb(var(--bl-k) / .22), rgb(var(--bl-k) / 0) 45%) !important; }
+html.bl-site-les .les-karma-glow-1 { --bl-k: 0 80 220; }
+html.bl-site-les .les-karma-glow-2 { --bl-k: 0 150 255; }
+html.bl-site-les .les-karma-glow-3 { --bl-k: 0 190 230; }
+html.bl-site-les .les-karma-glow-4 { --bl-k: 0 180 80; }
+html.bl-site-les .les-karma-glow-5 { --bl-k: 80 190 0; }
+html.bl-site-les .les-karma-glow-6 { --bl-k: 210 180 0; }
+html.bl-site-les .les-karma-glow-7 { --bl-k: 255 140 0; }
+html.bl-site-les .les-karma-glow-8 { --bl-k: 255 60 0; }
+html.bl-site-les .les-karma-glow-9 { --bl-k: 235 10 10; }
+html.bl-site-les .les-karma-glow-10 { --bl-k: 200 0 80; }
+html.bl-site-les .les-karma-glow-11 { --bl-k: 160 60 255; }
+html.bl-on.bl-site-les.bl-flair-on :is(.DataList li.ItemDiscussion.ItemDiscussion, .ItemComment, div.ItemDiscussion).les-karma-glow-11 {
+  background-image: linear-gradient(90deg, rgba(255, 0, 0, .14), rgba(255, 200, 0, .12) 12%, rgba(0, 200, 120, .12) 24%, rgba(0, 160, 255, .12) 36%, rgba(160, 60, 255, 0) 50%) !important;
+}
 /* Menus that open from the header (alerts, inbox, bookmarks, member menu, theme grid) sit inside the bar,
    so the bar's white text rule would reach them. They use surface colors instead, in both themes. */
 html.bl-on.bl-site-les #MainHeader :is(.Flyout, .MenuItems, .FlyoutMenu, .ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .dropdown-menu) { background: var(--bl-surface) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; }
