@@ -12,6 +12,8 @@
   const LES_THEME = /\/plugins\/ThemeChooser\/design\/(?!shared\.css)[^/?]+\.css/;
   const LES_DARK = '/plugins/ThemeChooser/design/dark.css';
   let lesWatch = null;
+  let lesBodyWatch = null;
+  let lesBodyDark = false;
   const media = matchMedia('(prefers-color-scheme: dark)');
   const read = () => { try { return localStorage.getItem(KEY) || 'auto'; } catch { return 'auto'; } };
   const readSig = () => { try { return localStorage.getItem(SIG_KEY) || 'expanded'; } catch { return 'expanded'; } };
@@ -31,29 +33,62 @@
     link.href = FONT_URL;
     (document.head || root).appendChild(link);
   };
-  // LowEndSpirit: our theme setting wins over the member's saved site theme.
-  const lesTheme = (dark) => {
-    const strip = (node) => {
-      if (node.tagName === 'LINK' && LES_THEME.test(node.getAttribute('href') || '') && node.id !== 'bl-les-dark') node.remove();
+  // LowEndSpirit themes. V1 and V2: site theme files never apply, also ones the site's theme menu adds later
+  // without a reload. OG is the stock site: a theme the member picked there stays, and our dark file is only used
+  // when they picked none. Karma colors follow our light or dark in every design.
+  const lesTheme = (design, dark) => {
+    const og = design === 'og';
+    const siteThemes = () => [...document.querySelectorAll('link[rel="stylesheet"]')].filter((l) => l.id !== 'bl-les-dark' && LES_THEME.test(l.getAttribute('href') || ''));
+    root.classList.toggle('les-karma-dark', dark);
+    root.classList.toggle('les-karma-explicit-light', !dark);
+    let link = document.getElementById('bl-les-dark');
+    if (og) {
+      lesWatch?.disconnect();
+      lesWatch = null;
+      if (dark && !link) {
+        link = document.createElement('link');
+        link.id = 'bl-les-dark';
+        link.rel = 'stylesheet';
+        link.href = LES_DARK;
+        (document.head || root).appendChild(link);
+        // The site's light rules have the same weight, so the dark file must come last in the head.
+        const settle = () => { if (siteThemes().length) link.remove(); else if (link.isConnected) document.head.appendChild(link); };
+        if (document.readyState === 'loading') addEventListener('DOMContentLoaded', settle, { once: true });
+        else settle();
+      } else if (!dark) link?.remove();
+      return;
+    }
+    link?.remove();
+    siteThemes().forEach((l) => l.remove());
+    // Site plugins style a few items by body.theme-*. Keep it matching our theme, also after the site's menu sets it.
+    lesBodyDark = dark;
+    const syncBody = () => {
+      const body = document.body;
+      if (!body) return;
+      const want = lesBodyDark ? ['theme-dark'] : [];
+      const have = [...body.classList].filter((c) => c.startsWith('theme-') && c !== 'theme-');
+      if (have.join() === want.join()) return;
+      have.forEach((c) => body.classList.remove(c));
+      want.forEach((c) => body.classList.add(c));
     };
-    document.querySelectorAll('link[rel="stylesheet"]').forEach(strip);
-    // Theme links that come later in the head are removed as they arrive.
+    const watchBody = () => {
+      syncBody();
+      if (!lesBodyWatch && document.body) {
+        lesBodyWatch = new MutationObserver(syncBody);
+        lesBodyWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      }
+    };
+    if (document.body) watchBody();
+    else addEventListener('DOMContentLoaded', watchBody, { once: true });
     if (!lesWatch) {
+      const strip = (node) => { if (node.tagName === 'LINK' && LES_THEME.test(node.getAttribute('href') || '')) node.remove(); };
       lesWatch = new MutationObserver((records) => records.forEach((r) => r.addedNodes.forEach(strip)));
       lesWatch.observe(root, { childList: true, subtree: true });
-      addEventListener('DOMContentLoaded', () => lesWatch.disconnect(), { once: true });
+      // After load only the head is watched, which is where the theme menu adds its file.
+      const narrow = () => { lesWatch?.disconnect(); lesWatch?.observe(document.head, { childList: true }); };
+      if (document.readyState === 'loading') addEventListener('DOMContentLoaded', narrow, { once: true });
+      else narrow();
     }
-    root.classList.toggle('les-karma-dark', dark);
-    let link = document.getElementById('bl-les-dark');
-    if (dark && !link) {
-      link = document.createElement('link');
-      link.id = 'bl-les-dark';
-      link.rel = 'stylesheet';
-      link.href = LES_DARK;
-      (document.head || root).appendChild(link);
-      // The site's light rules have the same weight, so the dark file must come last in the head.
-      addEventListener('DOMContentLoaded', () => { if (link.isConnected) document.head.appendChild(link); }, { once: true });
-    } else if (!dark) link?.remove();
   };
   const apply = () => {
     const mode = read();
@@ -64,7 +99,7 @@
     const dark = mode === 'auto' ? media.matches : mode === 'dark';
     // The site's own dark mode paints pale text over V1 and V2, so it stays off there. OG uses it.
     // This runs before the site's script reads the setting.
-    if (les) lesTheme(design === 'og' && dark);
+    if (les) lesTheme(design, dark);
     else try { localStorage.setItem('theme', design === 'og' && dark ? 'dark' : 'light'); } catch {}
     root.dataset.blDesign = design;
     if (design === 'v2') loadFont();

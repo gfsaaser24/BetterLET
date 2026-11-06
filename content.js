@@ -342,6 +342,20 @@
     chrome.storage.onChanged.addListener(paintUpdate);
   }
 
+  // ---- LowEndSpirit theme menu: a pick there sets our theme ----
+  // Light and vBulletin Light mean Light. Dark, Grey and vBulletin Dark mean Dark. The site still saves the pick.
+  // In OG the site shows its own theme, so only our saved setting changes.
+  if (les) {
+    document.addEventListener('click', (e) => {
+      const pick = e.target.closest?.('a.js-theme-switch');
+      if (!pick || !window.__letBetterTheme) return;
+      const key = (pick.getAttribute('href') || '').match(/themeChoose\/([^/?#]+)/)?.[1] || '';
+      const mode = /dark|grey/i.test(key) ? 'dark' : 'light';
+      if (og) { try { localStorage.setItem('letBetter.theme', mode); } catch {} }
+      else window.__letBetterTheme.set(mode);
+    }, true);
+  }
+
   // ---- clicks that work on every page ----
   document.addEventListener('click', (e) => {
     // Runs in capture, before the site's own handler.
