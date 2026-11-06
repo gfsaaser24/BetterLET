@@ -1,1 +1,1 @@
-- UI polish for LowEndSpirit
+- Addition of User Blocking, so you can block people and never see anything they say or do
