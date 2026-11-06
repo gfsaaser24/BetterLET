@@ -25,7 +25,7 @@ jobs:
       - name: List files with hashes
         if: steps.seen.outputs.skip != 'true'
         run: |
-          files=$(ls manifest.json background.js content.js early.js popovers.js popup.html popup.js update.html update.js updater.js ext.css styles.css rules.json icons/*.png)
+          files=$(ls manifest.json background.js content.js early.js popovers.js popup.html popup.js update.html update.js updater.js ext.css styles.css rules.json block.js icons/*.png)
           sha256sum $files | jq -R 'split("  ") | {sha256: .[0], path: .[1]}' | jq -s --arg v "$(jq -r .version manifest.json)" '{version: $v, files: .}' > release.json
           jq -e '.files | length > 10' release.json
       - name: Publish

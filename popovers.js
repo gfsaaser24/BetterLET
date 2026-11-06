@@ -104,7 +104,7 @@
     return users.get(slug);
   };
 
-  const userCard = (u) => {
+  const userCard = (u, slug) => {
     const head = el('div', 'bl-pop-user');
     if (u.photo) {
       const img = el('img');
@@ -125,6 +125,16 @@
     const box = el('div', 'bl-pop-body');
     box.append(head, specs);
     if (u.provider) box.appendChild(el('p', 'bl-pop-note', `Hosting provider: ${u.provider}`));
+    // Block or unblock from the card. Never on your own card.
+    const blocker = window.__letBetterBlock;
+    if (blocker && slug && decodeURIComponent(slug).toLowerCase() !== blocker.me()) {
+      const row = el('div', 'bl-pop-actions');
+      const btn = el('button', 'bl-btn bl-btn-small', blocker.has(slug) ? 'Unblock' : 'Block');
+      btn.type = 'button';
+      btn.addEventListener('click', () => blocker.open(decodeURIComponent(slug)));
+      row.appendChild(btn);
+      box.appendChild(row);
+    }
     return box;
   };
 
@@ -135,7 +145,7 @@
     pop.classList.add('bl-open');
     try {
       const u = await fetchUser(slug);
-      if (mine === token) fill(userCard(u));
+      if (mine === token) fill(userCard(u, slug));
     } catch {
       if (mine === token) fill(el('p', 'bl-pop-body bl-pop-note', 'Profile not available.'));
     }

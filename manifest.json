@@ -37,6 +37,7 @@
         "https://lowendspirit.com/*"
       ],
       "js": [
+        "block.js",
         "content.js",
         "popovers.js"
       ],

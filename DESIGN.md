@@ -30,6 +30,14 @@ Every read of another page goes through `politeFetch` (content.js and popovers.j
 
 **Rail lists.** V1 and V2, signed in: My threads (`/profile/discussions`) and Posted in (`/profile/comments`, one row per thread, linking to your latest comment there). Without a name, both pages show the signed-in member; the name from the header is only a fallback. Neither forum has a participated page. Both lists are cached 5 minutes in `letBetter.rail`, per forum. OG has no rail, so no lists.
 
+## Block list
+
+`block.js` keeps your own block list, per forum, in this browser (`letBetter.blocked`, keyed by lower-case profile name). Block buttons: a quiet Prohibit icon beside the name on every post (shows on hover and focus), a button under the name on a profile page, and a button on the hover card. Every one opens a confirm dialog (`<dialog>`, Cancel and Block); blocking yourself is not possible.
+
+What a block hides, in every design: their threads in lists (counted as hidden in the toolbar count), their comments, their posts quoted by others (a quote's only author mark is the "@name said:" line), and their name in "Last comment by". A thread they started, opened directly, shows a one-line notice with Unblock instead of the first post. The gear's Blocked people lists everyone with Unblock. A watcher re-applies the list to rows and comments added later.
+
+Messages: a conversation is hidden (inbox, inbox dropdown) only when every other person in it is blocked; in a group chat with anyone else, only the blocked person's messages go. A conversation page where everyone else is blocked shows a one-line notice. When the inbox badge shows unread, BetterLET reads the inbox (at most every 10 minutes, respecting the slow-down key) and opens each unread fully-blocked conversation in the background, one at a time. Opening is what marks it read on the forum; no action link is used. The badge drops on the current page at once.
+
 ## Page numbers
 
 Plain numbers with no boxes, in every design and theme. The current page is bold in the accent color. They always sit on their own row, clear of the cards above and below.
