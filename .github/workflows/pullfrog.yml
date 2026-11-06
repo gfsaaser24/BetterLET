@@ -24,7 +24,8 @@ jobs:
       pull-requests: read
     steps:
       # BetterLET: runs use our API keys, so only the owner and collaborators get them.
-      # The app names each run after its PR or issue ("Review #21 ..."); outside authors are skipped.
+      # The app names each run after its PR or issue ("Review #21 ..."); outside authors are skipped
+      # unless a maintainer tagged @pullfrog on that PR or issue in the last 30 minutes.
       - name: Members only
         id: gate
         env:
@@ -40,9 +41,25 @@ jobs:
           fi
           assoc=$(gh api "repos/$REPO/issues/$num" --jq .author_association 2>/dev/null || echo UNKNOWN)
           case "$assoc" in
-            OWNER|MEMBER|COLLABORATOR) echo "run=true" >> "$GITHUB_OUTPUT" ;;
-            *) echo "run=false" >> "$GITHUB_OUTPUT"; echo "Skipped: #$num is by an outside author ($assoc)." ;;
+            OWNER|MEMBER|COLLABORATOR) echo "run=true" >> "$GITHUB_OUTPUT"; exit 0 ;;
           esac
+          # Outside author: run only when the owner or a collaborator tagged @pullfrog in the last 30 minutes.
+          tagged=$( {
+            gh api "repos/$REPO/issues/$num/comments?per_page=100" 2>/dev/null || echo '[]'
+            gh api "repos/$REPO/pulls/$num/comments?per_page=100" 2>/dev/null || echo '[]'
+            gh api "repos/$REPO/pulls/$num/reviews?per_page=100" 2>/dev/null || echo '[]'
+          } | jq -s '[ .[] | arrays | .[]
+                | select((.author_association // "") | test("^(OWNER|MEMBER|COLLABORATOR)$"))
+                | select((.body // "") | test("@pullfrog"; "i"))
+                | select(((.created_at // .submitted_at // "1970-01-01T00:00:00Z") | fromdateiso8601) > (now - 1800))
+              ] | length' )
+          if [ "${tagged:-0}" -gt 0 ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "#$num is by an outside author ($assoc), but a maintainer tagged @pullfrog; running."
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipped: #$num is by an outside author ($assoc) and no maintainer tagged @pullfrog."
+          fi
       - name: Checkout code
         if: steps.gate.outputs.run == 'true'
         uses: actions/checkout@v6
