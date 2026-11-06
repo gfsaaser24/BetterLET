@@ -1324,6 +1324,10 @@ html.bl-og .bl-dash-badge { background: #ff0; color: #000; }
 #bl-update button { height: 28px; padding: 0 10px; background: var(--bl-fill); border: 0; border-radius: var(--bl-r-md); color: var(--bl-on-fill); font: 600 12px/1 var(--bl-text); cursor: pointer; }
 #bl-update .bl-update-later { background: none; color: var(--bl-muted); }
 
+/* ---- ads: hidden only by Ctrl+Shift+M ---- */
+html.bl-ads-off #Panel :is(.let-sidebar-stack, .bsarocks, [id^="bsap_"]), html.bl-ads-off #let-footer-custom-2026 { display: none !important; }
+#bl-toast { position: fixed; bottom: 20px; left: 50%; z-index: 9999; padding: 8px 14px; background: #14231a; border-radius: 6px; color: #fff; font: 600 13px/1 system-ui, sans-serif; transform: translateX(-50%); pointer-events: none; }
+
 /* ---- accessibility ---- */
 @media (prefers-reduced-motion: reduce) {
   html.bl-on:not(.bl-ready)::after { display: none; }

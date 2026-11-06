@@ -10,6 +10,10 @@
   const readSig = () => { try { return localStorage.getItem(SIG_KEY) || 'expanded'; } catch { return 'expanded'; } };
   // The old Ads setting is gone. Clear what it saved.
   try { localStorage.removeItem('letBetter.ads'); } catch {}
+  // Ctrl+Shift+M sets this key. There is no menu item for it.
+  const ADS_KEY = 'letBetter.adsHidden';
+  const adsHidden = () => { try { return localStorage.getItem(ADS_KEY) === '1'; } catch { return false; } };
+  root.classList.toggle('bl-ads-off', adsHidden());
   const readDesign = () => { try { return localStorage.getItem(DESIGN_KEY) || 'v1'; } catch { return 'v1'; } };
   // V2 uses LowEndBox's font. It loads only when V2 is on.
   const loadFont = () => {
@@ -65,6 +69,12 @@
     setSignatures(value) {
       try { localStorage.setItem(SIG_KEY, value); } catch {}
       apply();
+    },
+    toggleAds() {
+      const hide = !adsHidden();
+      try { localStorage.setItem(ADS_KEY, hide ? '1' : '0'); } catch {}
+      root.classList.toggle('bl-ads-off', hide);
+      return hide;
     },
     getDesign: readDesign,
     setDesign(design) {
