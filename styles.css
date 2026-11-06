@@ -1361,6 +1361,8 @@ html.bl-on.bl-site-les #MainHeader :is(.Navigation-link, .SignInLinks a, .MeBox 
 html.bl-on.bl-site-les #MainHeader .Navigation-link:hover { opacity: .8; }
 html.bl-on.bl-site-les.bl-dark #MainHeader .Header-logo img { border-radius: 6px; }
 html.bl-on.bl-site-les #MainHeader .SignInLinks a { background: transparent !important; border-color: color-mix(in srgb, var(--bl-les-head-ink) 45%, transparent) !important; }
+/* The site gives its fixed header z-index 2, under our toolbar and rail. Lift it so the gear menu and member menus open on top. */
+html.bl-site-les .Frame-header { z-index: var(--bl-z-head, 40) !important; }
 /* Gear: on the header bar, left of the sign-in links or the member menu. */
 html.bl-site-les #MainHeader .Header-right { display: flex; align-items: center; gap: 6px; }
 html.bl-site-les #bl-settings { order: 0; margin: 0 4px 0 0; }
@@ -1368,6 +1370,15 @@ html.bl-site-les #MainHeader .bl-gear { color: color-mix(in srgb, var(--bl-les-h
 html.bl-site-les #MainHeader .bl-gear:hover, html.bl-site-les #MainHeader .bl-gear[aria-expanded="true"] { background: rgba(255, 255, 255, .14); color: var(--bl-les-head-ink, #fff); }
 html.bl-og.bl-site-les #MainHeader .bl-gear { color: #fff; }
 html.bl-site-les .bl-menu { text-align: left; }
+/* Menus that open from the header (alerts, inbox, bookmarks, member menu, theme grid) sit inside the bar,
+   so the bar's white text rule would reach them. They use surface colors instead, in both themes. */
+html.bl-on.bl-site-les #MainHeader :is(.Flyout, .MenuItems, .FlyoutMenu, .ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .dropdown-menu) { background: var(--bl-surface) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les #MainHeader :is(.Flyout, .MenuItems, .FlyoutMenu, .ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .dropdown-menu) :is(a, button) { color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les #MainHeader .Flyout .PopList .Item.Center a { color: var(--bl-accent) !important; }
+/* The site's own pop-ups anywhere on the page. */
+html.bl-on.bl-site-les :is(.ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .token-input-dropdown, .ui-menu, .SelectFlyout, .richEditorFlyout, .editor-dropdown .Flyout) { background: var(--bl-surface) !important; border-color: var(--bl-line) !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les :is(.ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .LesShowLES-Popup, .token-input-dropdown, .ui-menu, .SelectFlyout, .richEditorFlyout) :is(a, button, li, span) { background-color: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les :is(.ThemeSwitcher-extras-dropdown, .ThemeSwitcher-mobile-extras-list, .token-input-dropdown, .ui-menu, .SelectFlyout) :is(a, button, li):hover, html.bl-on.bl-site-les :is(.token-input-selected-dropdown-item, .ui-state-active, .ui-state-focus, .ThemeSwitcher-extras-option--active) { background-color: var(--bl-surface2) !important; color: var(--bl-ink) !important; }
 
 /* Three columns, as on LowEndTalk: rail, content, offers and ads. The right column is 300px: the site's image grid is two 150px squares. */
 html.bl-on.bl-site-les .Frame-content > .Container { max-width: 1720px; padding-right: 20px; padding-left: 20px; }
