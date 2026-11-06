@@ -158,8 +158,8 @@
   };
 })();
 
-// Corner pop-ups from blocked people: hidden by CSS from the first paint. block.js loads later and handles
-// the rest. The style is rebuilt when the block list changes, in this tab or another.
+// Corner pop-ups that link to a blocked person: hidden by CSS from the first paint, until block.js checks them.
+// block.js then marks each one checked and applies its rule (the first person who is not you). The style is rebuilt when the block list changes, in this tab or another.
 (() => {
   const KEY = 'letBetter.blocked';
   const names = () => { try { return Object.keys(JSON.parse(localStorage.getItem(KEY)) || {}); } catch { return []; } };
@@ -178,7 +178,7 @@
       style.id = 'bl-block-early';
       (document.head || document.documentElement).appendChild(style);
     }
-    style.textContent = `.InformWrapper:has(${parts.join(', ')}) { display: none !important; }`;
+    style.textContent = `.InformWrapper:not([data-bl-checked]):has(${parts.join(', ')}) { display: none !important; }`;
   };
   build();
   addEventListener('bl-blocklist-change', build);

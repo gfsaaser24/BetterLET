@@ -149,7 +149,7 @@
       if (convoUrl(li) || !isNotice(li)) return;
       li.classList.toggle('bl-blocked', has(actorOf(li)));
     });
-    document.querySelectorAll('.InformWrapper').forEach((w) => w.classList.toggle('bl-blocked', has(actorOf(w))));
+    document.querySelectorAll('.InformWrapper').forEach((w) => { w.classList.toggle('bl-blocked', has(actorOf(w))); w.dataset.blChecked = '1'; });
   };
   // Pop-ups and the bell menu are added after load. A MutationObserver runs before the next paint,
   // so a blocked person's pop-up is hidden before it shows. This starts before the rest of the page work.
