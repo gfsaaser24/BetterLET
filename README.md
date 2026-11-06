@@ -6,8 +6,8 @@
 
 <p align="center">
   <strong>LowEndTalk and LowEndSpirit, rebuilt in your browser.</strong><br>
-  A Chrome extension that gives both forums a real layout, real scanning, and two real themes.<br><br>
-  Works in all chromium based browsers.
+  A browser extension that gives both forums a real layout, real scanning, and two real themes.<br><br>
+  Works in Chromium based browsers and Firefox.
 </p>
 
 <p align="center">
@@ -40,6 +40,16 @@
 3. Open `chrome://extensions` and turn on **Developer mode**. Leave it on.
 4. Click **Load unpacked** and pick the folder with `manifest.json`.
 5. Open [LowEndTalk](https://lowendtalk.com/categories/requests) or [LowEndSpirit](https://lowendspirit.com/discussions).
+
+### Firefox
+
+1. Download the latest zip from [Releases](https://github.com/gfsaaser24/BetterLET/releases) and unzip it somewhere it can stay.
+2. Open `about:debugging#/runtime/this-firefox` and click **Load Temporary Add-on**.
+3. Pick `manifest.json` in that folder.
+
+Firefox removes temporary add-ons when it restarts, so you load it again after each restart. A copy signed by Mozilla would install for good. Needs Firefox 142 or newer.
+
+To update in Firefox, unzip the new release over the same folder and click **Reload** on BetterLET in `about:debugging`. The one-click updater below is Chrome only, because Firefox has no folder picker.
 
 ## Updates
 
