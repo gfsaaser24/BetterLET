@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BetterLET",
-  "version": "1.32",
+  "version": "1.33",
   "description": "A cleaner LowEndTalk and LowEndSpirit: wide layout, compact rows, sorting, hide what you've seen.",
   "icons": {
     "16": "icons/icon16.png",
