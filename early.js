@@ -3,13 +3,13 @@
   const KEY = 'letBetter.theme';
   const DESIGN_KEY = 'letBetter.design';
   const SIG_KEY = 'letBetter.signatures';
-  const ADS_KEY = 'letBetter.ads';
   const FONT_URL = 'https://api.fontshare.com/css?f[]=general-sans@400,500,600,700&display=swap';
   const root = document.documentElement;
   const media = matchMedia('(prefers-color-scheme: dark)');
   const read = () => { try { return localStorage.getItem(KEY) || 'auto'; } catch { return 'auto'; } };
   const readSig = () => { try { return localStorage.getItem(SIG_KEY) || 'expanded'; } catch { return 'expanded'; } };
-  const readAds = () => { try { return localStorage.getItem(ADS_KEY) || 'show'; } catch { return 'show'; } };
+  // The old Ads setting is gone. Clear what it saved.
+  try { localStorage.removeItem('letBetter.ads'); } catch {}
   const readDesign = () => { try { return localStorage.getItem(DESIGN_KEY) || 'v1'; } catch { return 'v1'; } };
   // V2 uses LowEndBox's font. It loads only when V2 is on.
   const loadFont = () => {
@@ -26,7 +26,6 @@
     root.classList.toggle('bl-v2', design === 'v2');
     root.classList.toggle('bl-og', design === 'og');
     root.classList.toggle('bl-sig-closed', readSig() === 'collapsed');
-    root.classList.toggle('bl-ads-off', readAds() === 'block');
     const dark = mode === 'auto' ? media.matches : mode === 'dark';
     // The site's own dark mode paints pale text over V1 and V2, so it stays off there. OG uses it.
     // This runs before the site's script reads the setting.
@@ -65,11 +64,6 @@
     getSignatures: readSig,
     setSignatures(value) {
       try { localStorage.setItem(SIG_KEY, value); } catch {}
-      apply();
-    },
-    getAds: readAds,
-    setAds(value) {
-      try { localStorage.setItem(ADS_KEY, value); } catch {}
       apply();
     },
     getDesign: readDesign,
