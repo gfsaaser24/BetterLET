@@ -28,6 +28,7 @@
 - **Dashboard:** your counts, threads, and bookmarks on one page
 - **Cleaner pages:** rebuilt Categories, Profile, Settings, and Drafts
 - **User hover cards:** roles, join date, activity, thanks, and karma on LowEndSpirit
+- **Your own block list:** hide someone's threads, comments, messages, and quotes of them, from their profile, hover card, or post
 - **Fits every screen:** wide monitors, older laptops, and phones
 - **Respects the ads:** ads always show, and nothing conflicts with your own ad blocker
 - **One-click updates:** alerts, a built-in changelog, and every file checked before install
