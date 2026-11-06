@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         BetterLET
 // @namespace    better-let
-// @version      1.29
-// @description  A cleaner LowEndTalk: wide layout, compact rows, sorting, hide what you've seen.
+// @version      1.30
+// @description  A cleaner LowEndTalk and LowEndSpirit: wide layout, compact rows, sorting, hide what you've seen.
 // @match        https://lowendtalk.com/*
+// @match        https://lowendspirit.com/*
 // @grant        none
 // ==/UserScript==
 
@@ -38,11 +39,26 @@
   // OG keeps the stock page: no rail, no rebuilt pages, only the small features.
   const og = document.documentElement.classList.contains('bl-og');
 
+  // ---- two forums: the inside markup is the same, the page frame is not ----
+  // LowEndTalk: #Head, #Body > .Row (#Panel), #Foot. LowEndSpirit: #MainHeader, main.MainContent and aside.Panel in a .Frame-row, .Frame-footer.
+  const les = document.documentElement.classList.contains('bl-site-les');
+  const siteName = les ? 'LowEndSpirit' : 'LowEndTalk';
+  const mainColumn = les ? document.querySelector('main.MainContent') : document.querySelector('.ContentColumn');
+  // The shared styles target .ContentColumn, so LowEndSpirit's main column gets that class too.
+  if (les && mainColumn && !og) mainColumn.classList.add('ContentColumn');
+  const frame = les
+    ? { row: mainColumn?.closest('.Frame-row'), panel: document.querySelector('aside.Panel'), foot: document.querySelector('.Frame-footer'), head: document.querySelector('#MainHeader .Header-right') }
+    : { row: document.querySelector('#Body > .Row'), panel: document.querySelector('#Panel'), foot: document.querySelector('#Foot'), head: document.querySelector('#Head .Row') };
+  if (les && !og) {
+    frame.row?.classList.add('bl-les-row');
+    frame.panel?.classList.add('bl-les-panel');
+  }
+
   // The right column closes when nothing in it shows, such as when an ad blocker hides or strips
   // the ad blocks, so nobody gets an empty column.
   const fitPanel = () => {
-    const box = document.querySelector('#Body > .Row');
-    const side = document.querySelector('#Panel');
+    const box = frame.row;
+    const side = frame.panel;
     if (!box || !side || og) return;
     const shows = (el) => {
       if (['SCRIPT', 'STYLE', 'BR'].includes(el.tagName) || getComputedStyle(el).display === 'none') return false;
@@ -53,8 +69,7 @@
   };
 
   // ---- left rail: move the useful sidebar blocks away from the ads ----
-  const row = document.querySelector('#Body > .Row');
-  const panel = document.querySelector('#Panel');
+  const { row, panel } = frame;
   if (row && panel && !og) {
     const rail = document.createElement('div');
     rail.id = 'bl-rail';
@@ -73,7 +88,7 @@
     // Sponsor blocks can fill in after load.
     setTimeout(fitPanel, 3000);
 
-    const foot = document.querySelector('#Foot');
+    const { foot } = frame;
     if (foot) {
       const fit = () => row.style.setProperty('--bl-foot-h', `${foot.offsetHeight + 24}px`);
       fit();
@@ -82,7 +97,7 @@
   }
 
   // ---- settings: one gear beside the search box, with design and theme inside ----
-  const headRow = document.querySelector('#Head .Row');
+  const headRow = frame.head;
   if (headRow && window.__letBetterTheme) {
     const theme = window.__letBetterTheme;
     const box = document.createElement('div');
@@ -124,7 +139,8 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggle(false); });
     mark();
     // The search box floats right on the stock page, so a float placed after it lands to its left.
-    if (og) headRow.querySelector('.SiteSearch')?.after(box);
+    if (les) headRow.prepend(box);
+    else if (og) headRow.querySelector('.SiteSearch')?.after(box);
     else headRow.appendChild(box);
   }
 
@@ -150,7 +166,7 @@
       later.textContent = 'Later';
       later.addEventListener('click', () => chrome.storage.local.set({ dismissed: latest.version }));
       bar.append(text, open, later);
-      document.querySelector('.ContentColumn')?.prepend(bar);
+      mainColumn?.prepend(bar);
     };
     const paintUpdate = () => chrome.storage.local.get(['latest', 'dismissed']).then(showUpdate).catch(() => {});
     paintUpdate();
@@ -363,17 +379,23 @@
   // ---- dashboard: your numbers and threads on one page, at /discussions#dashboard ----
   const signedIn = document.querySelector('.MeBox .Username, .MeBox a[href^="/profile/"]');
   const discussionsLink = document.querySelector('#Head .SiteMenu a[href="/discussions"]');
-  if (signedIn && discussionsLink) {
+  const lesNav = les && document.querySelector('#MainHeader .Header-desktopNav');
+  if (signedIn && lesNav) {
+    const item = document.createElement('div');
+    item.className = 'Navigation-linkContainer';
+    item.innerHTML = '<a href="/discussions#dashboard" class="Navigation-link">Dashboard</a>';
+    lesNav.prepend(item);
+  } else if (signedIn && discussionsLink) {
     const li = document.createElement('li');
     li.innerHTML = '<a href="/discussions#dashboard">Dashboard</a>';
     // The space matches the stock menu, where spaces set the gap between items.
     discussionsLink.closest('li').after(' ', li);
   }
   addEventListener('hashchange', () => { if (location.pathname === '/discussions') location.reload(); });
-  const content = document.querySelector('.ContentColumn');
+  const content = mainColumn;
   if (location.pathname === '/discussions' && location.hash === '#dashboard' && content) {
     document.documentElement.classList.add('bl-dash-on');
-    document.title = 'Dashboard — LowEndTalk';
+    document.title = `Dashboard — ${siteName}`;
     const dash = document.createElement('div');
     dash.id = 'bl-dash';
     content.prepend(dash);

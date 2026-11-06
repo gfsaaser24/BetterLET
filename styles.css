@@ -1324,7 +1324,69 @@ html.bl-og .bl-dash-badge { background: #ff0; color: #000; }
 #bl-update button { height: 28px; padding: 0 10px; background: var(--bl-fill); border: 0; border-radius: var(--bl-r-md); color: var(--bl-on-fill); font: 600 12px/1 var(--bl-text); cursor: pointer; }
 #bl-update .bl-update-later { background: none; color: var(--bl-muted); }
 
+/* ---- LowEndSpirit: same tokens and inside styles, Keystone page frame. The LowEndTalk frame rules above do not match it. ---- */
+/* The header stays a brand bar. The logo image has the site green baked in, so light mode uses that green and dark mode shows the logo as a rounded badge. */
+html.bl-on.bl-site-les { --bl-sticky: 60px; --bl-les-head: #62a86f; --bl-les-head-ink: #fff; }
+html.bl-on.bl-site-les.bl-dark { --bl-les-head: #111813; --bl-les-head-ink: var(--bl-ink); }
+html.bl-on.bl-site-les #page { transition: opacity .18s ease-out; }
+html.bl-on.bl-site-les:not(.bl-ready) #page { opacity: 0; animation: bl-reveal 0s 3s forwards; }
+html.bl-on.bl-site-les :is(.Frame, .Frame-top, .Frame-body, .Frame-content, .Frame-contentWrap, .Frame-details) { background: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on.bl-site-les .Frame-header { background: var(--bl-les-head) !important; box-shadow: 0 1px 0 var(--bl-line); }
+html.bl-on.bl-site-les #MainHeader { background: transparent !important; color: var(--bl-les-head-ink) !important; }
+html.bl-on.bl-site-les #MainHeader :is(.Navigation-link, .SignInLinks a, .MeBox a, .Header-right a) { color: var(--bl-les-head-ink) !important; font-family: var(--bl-text) !important; }
+html.bl-on.bl-site-les #MainHeader .Navigation-link:hover { opacity: .8; }
+html.bl-on.bl-site-les.bl-dark #MainHeader .Header-logo img { border-radius: 6px; }
+html.bl-on.bl-site-les #MainHeader .SignInLinks a { background: transparent !important; border-color: color-mix(in srgb, var(--bl-les-head-ink) 45%, transparent) !important; }
+/* Gear: on the header bar, left of the sign-in links or the member menu. */
+html.bl-site-les #MainHeader .Header-right { display: flex; align-items: center; gap: 6px; }
+html.bl-site-les #bl-settings { order: 0; margin: 0 4px 0 0; }
+html.bl-site-les #MainHeader .bl-gear { color: color-mix(in srgb, var(--bl-les-head-ink, #fff) 85%, transparent); }
+html.bl-site-les #MainHeader .bl-gear:hover, html.bl-site-les #MainHeader .bl-gear[aria-expanded="true"] { background: rgba(255, 255, 255, .14); color: var(--bl-les-head-ink, #fff); }
+html.bl-og.bl-site-les #MainHeader .bl-gear { color: #fff; }
+html.bl-site-les .bl-menu { text-align: left; }
+
+/* Three columns, as on LowEndTalk: rail, content, offers and ads. The right column is 300px: the site's image grid is two 150px squares. */
+html.bl-on.bl-site-les .Frame-content > .Container { max-width: 1720px; padding-right: 20px; padding-left: 20px; }
+/* Keystone pulls this wrapper out past the container padding. Ours sets its own padding, so the wrapper sits flat. */
+html.bl-on.bl-site-les .Frame-contentWrap { box-sizing: border-box; width: auto !important; margin-right: 0 !important; margin-left: 0 !important; padding-right: 0 !important; padding-left: 0 !important; }
+html.bl-on .bl-les-row { display: grid !important; grid-template-columns: 224px minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+html.bl-on .bl-les-row.bl-no-panel { grid-template-columns: 224px minmax(0, 1fr); }
+html.bl-on .bl-les-row.bl-no-panel > .bl-les-panel { display: none; }
+html.bl-on .bl-les-row > .ContentColumn { grid-column: 2; grid-row: 1; width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+html.bl-on .bl-les-panel { grid-column: 3; grid-row: 1; box-sizing: border-box; width: 300px !important; margin: 0 !important; padding: 0 !important; background: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on .bl-les-panel :is(.Box, .LesOffersPanel, .LesOffersPanel-section) { background: transparent !important; color: var(--bl-ink) !important; }
+html.bl-on .bl-les-panel :is(h4, .LesOffersPanel-heading) { color: var(--bl-muted) !important; font-family: var(--bl-display) !important; }
+html.bl-on .bl-les-panel a { color: var(--bl-accent) !important; }
+html.bl-on.bl-site-les .BreadcrumbsBox { background: transparent !important; }
+/* The welcome box is also a .Box, and the rail clears .Box padding. */
+html.bl-site-les #bl-rail .GuestBox.Box { padding: 8px 10px !important; background: var(--bl-surface) !important; }
+
+/* Site styles that fade read rows, paint tags yellow, and float the category badge. */
+html.bl-on.bl-site-les .DataList li.ItemDiscussion.ItemDiscussion { opacity: 1 !important; background: var(--bl-surface) !important; }
+html.bl-on.bl-site-les .DataList li.ItemDiscussion.ItemDiscussion:hover { background: var(--bl-surface2) !important; }
+html.bl-on.bl-site-les .DataList .Item.Read .Title { font-weight: inherit !important; }
+html.bl-on.bl-site-les :is(.Tag, .HasNew, .Tag-Announcement) { background: var(--bl-surface2) !important; border: 1px solid var(--bl-line) !important; color: var(--bl-ink) !important; font-weight: 600 !important; }
+
+html.bl-on.bl-site-les :is(.Frame-footer, .Footer) { background: var(--bl-surface) !important; color: var(--bl-muted) !important; }
+html.bl-on.bl-site-les .Frame-footer { margin-top: 24px; border-top: 1px solid var(--bl-line); }
+html.bl-on.bl-site-les .Footer a { color: var(--bl-ink) !important; }
+
+@media (max-width: 1100px) {
+  html.bl-on .bl-les-row { grid-template-columns: 180px minmax(0, 1fr) 300px; gap: 16px; }
+  html.bl-on .bl-les-row.bl-no-panel { grid-template-columns: 180px minmax(0, 1fr); }
+  html.bl-on.bl-site-les .Frame-content > .Container { padding-right: 16px; padding-left: 16px; }
+}
+@media (max-width: 860px) {
+  html.bl-on .bl-les-row, html.bl-on .bl-les-row.bl-no-panel { grid-template-columns: minmax(0, 1fr); }
+  html.bl-on .bl-les-row > :is(#bl-rail, .ContentColumn, .bl-les-panel) { grid-column: 1; grid-row: auto; }
+  html.bl-on .bl-les-row > #bl-rail { position: static; max-height: none; }
+  html.bl-on .bl-les-panel { order: 2; width: auto !important; }
+  html.bl-on.bl-site-les .Frame-content > .Container { padding-right: 8px; padding-left: 8px; }
+}
+
 /* ---- ads: hidden only by Ctrl+Shift+M ---- */
+/* LowEndSpirit offers panel: the section with no heading. */
+html.bl-ads-off .LesOffersPanel-section:not(:has(> .LesOffersPanel-heading)) { display: none !important; }
 html.bl-ads-off #Panel :is(.let-sidebar-stack, .bsarocks, [id^="bsap_"]), html.bl-ads-off #let-footer-custom-2026 { display: none !important; }
 #bl-toast { position: fixed; bottom: 20px; left: 50%; z-index: 9999; padding: 8px 14px; background: #14231a; border-radius: 6px; color: #fff; font: 600 13px/1 system-ui, sans-serif; transform: translateX(-50%); pointer-events: none; }
 
