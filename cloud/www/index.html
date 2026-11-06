@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BetterLET — LowEndTalk and LowEndSpirit, rebuilt in your browser</title>
+  <meta name="description" content="BetterLET is a free, open-source Chrome extension for LowEndTalk and LowEndSpirit: a scannable thread list, a deal and giveaway finder, thread previews, and your own block list.">
+  <meta name="theme-color" content="#f3f7f1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0f0b" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://betterle.win/">
+  <meta property="og:title" content="BetterLET — LowEndTalk and LowEndSpirit, rebuilt in your browser">
+  <meta property="og:description" content="A free Chrome extension for the two low-end hosting forums. Scan threads faster, find deals, preview posts, block the noise.">
+  <meta property="og:image" content="https://betterle.win/media/card.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="@gabefletcher">
+  <link rel="icon" href="/media/icon32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/media/icon128.png">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="top">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="BetterLET home"><img src="/media/icon32.png" width="24" height="24" alt=""><span>BetterLET</span></a>
+      <nav aria-label="Sections">
+        <a href="#features">Features</a>
+        <a href="#who">Who it's for</a>
+        <a href="#install">Install</a>
+        <a href="#releases">Releases</a>
+      </nav>
+      <a class="btn btn-small" href="https://github.com/gfsaaser24/BetterLET" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i>GitHub</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="hero-copy reveal">
+        <h1>LowEndTalk and LowEndSpirit, rebuilt in your browser.</h1>
+        <p class="lede">BetterLET is a free Chrome extension for the two low-end hosting forums. A thread list you can scan, a deal finder, previews before you click, and a block list for the noise.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/gfsaaser24/BetterLET/releases/latest" rel="noopener"><i class="ph ph-download-simple" aria-hidden="true"></i>Download <span class="ver" data-latest>v1.32</span></a>
+          <a class="btn" href="https://github.com/gfsaaser24/BetterLET" rel="noopener">View the source</a>
+        </div>
+        <p class="fine">Free and open source. Works in Chrome, Edge, Brave and other Chromium browsers. Your settings stay in your browser.</p>
+      </div>
+      <figure class="hero-shot reveal">
+        <picture>
+          <source srcset="/media/compare-dark.webp" media="(prefers-color-scheme: dark)">
+          <img src="/media/compare.webp" width="1440" height="1007" alt="The stock LowEndTalk thread list beside the same list in BetterLET's V1 and V2 designs">
+        </picture>
+      </figure>
+    </section>
+
+    <section class="sites reveal" aria-label="Works on">
+      <p class="sites-label">Works on</p>
+      <a class="site" href="https://lowendtalk.com" rel="noopener"><strong>LowEndTalk</strong><span>lowendtalk.com</span><i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>
+      <a class="site" href="https://lowendspirit.com" rel="noopener"><strong>LowEndSpirit</strong><span>lowendspirit.com</span><i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>
+    </section>
+
+    <section class="designs" aria-labelledby="designs-title">
+      <div class="section-head reveal">
+        <h2 id="designs-title">Three looks. Pick yours in one click.</h2>
+        <p>Every design has Auto, Light and Dark, and the same features. Switch any time from the gear in the forum header.</p>
+      </div>
+      <div class="designs-body reveal">
+        <div class="segmented" role="tablist" aria-label="Design">
+          <button role="tab" aria-selected="false" aria-controls="design-shot" data-design="og">OG</button>
+          <button role="tab" aria-selected="true" aria-controls="design-shot" data-design="v1">V1</button>
+          <button role="tab" aria-selected="false" aria-controls="design-shot" data-design="v2">V2</button>
+          <span class="segmented-thumb" aria-hidden="true"></span>
+        </div>
+        <p class="design-note" data-note>V1: a three-column layout that reads like a server rack. Status lights show what's new.</p>
+        <figure class="design-shot" id="design-shot" role="tabpanel">
+          <picture>
+            <source data-dark srcset="/media/v1-dark.webp" media="(prefers-color-scheme: dark)">
+            <img data-light src="/media/v1.webp" width="1440" height="1000" alt="BetterLET's V1 design on the LowEndTalk thread list">
+          </picture>
+        </figure>
+      </div>
+    </section>
+
+    <section class="features" id="features" aria-labelledby="features-title">
+      <div class="section-head reveal">
+        <h2 id="features-title">Everything the forums are missing.</h2>
+        <p>Built by a regular, for the way people actually use these boards: checking offers, following threads, and skipping what they've seen.</p>
+      </div>
+      <div class="feature-groups">
+        <article class="group reveal">
+          <h3><i class="ph ph-list-checks" aria-hidden="true"></i>Scan faster</h3>
+          <ul>
+            <li><b>Status lights</b> on every thread you haven't opened, or that has new replies since you did.</li>
+            <li><b>Sort, hide seen, hide pinned</b>, and load the next page into the same list.</li>
+            <li><b>The title opens the first post.</b> The date and arrow jump to the last comment.</li>
+            <li><b>Start dates</b> beside reply and view counts.</li>
+          </ul>
+        </article>
+        <article class="group reveal">
+          <h3><i class="ph ph-tag" aria-hidden="true"></i>Find deals</h3>
+          <ul>
+            <li><b>Deal and giveaway finder:</b> show only deals, only giveaways, or no deals at all.</li>
+            <li><b>Deal and Giveaway tags</b> on each thread, from its category and title.</li>
+            <li>Loads more pages on its own when a page has only a few matches.</li>
+          </ul>
+        </article>
+        <article class="group reveal">
+          <h3><i class="ph ph-eye" aria-hidden="true"></i>Look before you click</h3>
+          <ul>
+            <li><b>Thread previews:</b> hover a title to read the start of the first post.</li>
+            <li><b>Hover cards</b> for people: roles, join date, activity, thanks, and karma on LowEndSpirit.</li>
+          </ul>
+        </article>
+        <article class="group reveal">
+          <h3><i class="ph ph-sidebar-simple" aria-hidden="true"></i>Your corner</h3>
+          <ul>
+            <li><b>My threads and Posted in</b> in the left sidebar, with new replies first.</li>
+            <li><b>Dashboard</b> with your counts, threads, and bookmarks on one page.</li>
+            <li><b>Categories</b> one click away on both forums.</li>
+          </ul>
+        </article>
+        <article class="group reveal">
+          <h3><i class="ph ph-prohibit" aria-hidden="true"></i>Quiet the noise</h3>
+          <ul>
+            <li><b>Your own block list.</b> Their threads, comments, quotes of them, and DMs disappear.</li>
+            <li>Block from a profile, a hover card, or beside a name on any post. Undo from the gear.</li>
+          </ul>
+        </article>
+        <article class="group reveal">
+          <h3><i class="ph ph-arrows-clockwise" aria-hidden="true"></i>Stays current</h3>
+          <ul>
+            <li><b>One-click updates</b> straight from this project's GitHub releases.</li>
+            <li>Every file is checked against its published hash before it is installed.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="who" id="who" aria-labelledby="who-title">
+      <div class="section-head reveal">
+        <h2 id="who-title">Who it's for</h2>
+        <p>Anyone who spends real time on LowEndTalk or LowEndSpirit.</p>
+      </div>
+      <dl class="who-list reveal">
+        <div><dt><i class="ph ph-lightning" aria-hidden="true"></i>Deal hunters</dt><dd>You check the offers boards every day. The finder and status lights show you only what's new and worth a look.</dd></div>
+        <div><dt><i class="ph ph-chat-circle-dots" aria-hidden="true"></i>Providers</dt><dd>You post offers and answer questions. My threads and Posted in keep every conversation you're part of in one place.</dd></div>
+        <div><dt><i class="ph ph-user-circle" aria-hidden="true"></i>Long-time regulars</dt><dd>You've read these forums for years. Previews, hide seen, and a block list give you back the time the stock layout takes.</dd></div>
+      </dl>
+    </section>
+
+    <section class="install" id="install" aria-labelledby="install-title">
+      <div class="section-head reveal">
+        <h2 id="install-title">Install in a minute</h2>
+        <p>No store and no account. Load it once, and BetterLET updates itself from here on.</p>
+      </div>
+      <ol class="steps reveal">
+        <li><b>Download</b> the latest zip from <a href="https://github.com/gfsaaser24/BetterLET/releases/latest" rel="noopener">Releases</a> and unzip it.</li>
+        <li><b>Move the folder</b> somewhere it can stay, such as <code>Documents\BetterLET</code>.</li>
+        <li><b>Open</b> <code>chrome://extensions</code> and turn on <b>Developer mode</b>.</li>
+        <li><b>Click Load unpacked</b> and pick the folder with <code>manifest.json</code>. Then open either forum.</li>
+      </ol>
+    </section>
+
+    <section class="releases" id="releases" aria-labelledby="releases-title">
+      <div class="section-head reveal">
+        <h2 id="releases-title">Release log</h2>
+        <p>Straight from <a href="https://github.com/gfsaaser24/BetterLET/releases" rel="noopener">GitHub releases</a>.</p>
+      </div>
+      <ol class="log reveal" data-log aria-live="polite"></ol>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand"><img src="/media/icon32.png" width="20" height="20" alt=""><span>BetterLET</span></div>
+      <nav aria-label="Links">
+        <a href="https://lowendtalk.com" rel="noopener">LowEndTalk</a>
+        <a href="https://lowendspirit.com" rel="noopener">LowEndSpirit</a>
+        <a href="https://github.com/gfsaaser24/BetterLET" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i>GitHub</a>
+        <a href="https://x.com/gabefletcher" rel="noopener"><i class="ph ph-x-logo" aria-hidden="true"></i>@gabefletcher</a>
+      </nav>
+      <p class="fine">An independent project. Not run by or affiliated with LowEndTalk or LowEndSpirit.</p>
+    </div>
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

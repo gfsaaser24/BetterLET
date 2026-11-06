@@ -7,7 +7,8 @@
 <p align="center">
   <strong>LowEndTalk and LowEndSpirit, rebuilt in your browser.</strong><br>
   A Chrome extension that gives both forums a real layout, real scanning, and two real themes.<br><br>
-  Works in all chromium based browsers.
+  Works in all chromium based browsers.<br><br>
+  <a href="https://betterle.win">betterle.win</a>
 </p>
 
 <p align="center">

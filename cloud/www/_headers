@@ -1,0 +1,11 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' https://api.fontshare.com https://unpkg.com; font-src https://cdn.fontshare.com https://unpkg.com; script-src 'self'; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none'
+
+/media/*
+  Cache-Control: public, max-age=604800
+
+/releases.json
+  Cache-Control: public, max-age=300

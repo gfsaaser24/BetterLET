@@ -18,6 +18,10 @@ LowEndSpirit specifics: the header stays a green brand bar: the accent green in 
 
 Karma flair is CSS on the site's side: rows and posts carry `les-karma-glow-1` to `-11` (good) or `les-karma-grey-1` to `-5` (low), and body classes pick the mode. So the member's server setting does not matter. The gear's Karma flair (On, Bad karma only, Off, saved in `letBetter.flair`) sets the body class and `html.bl-flair-*`. V1 and V2 draw their own flair: a soft tint in the site's level color, fading out by mid-row (no stripe, so it never competes with the status lights), and low karma fades by the site's own rules. The site's pixel corners, runner and skulls show in OG only. Any new extension file must also go in the `files=` list in `.github/workflows/release.yml`, or updates will miss it.
 
+## Website
+
+`cloud/www` is betterle.win, a Cloudflare Pages project (`betterle-win`) in the same account as the update Worker. Same palette as the extension, General Sans, Phosphor icons. The release log loads live from GitHub releases and falls back to `releases.json`, saved at deploy. Deploy from `cloud/www` with `wrangler pages deploy . --project-name betterle-win --branch main`. Run `gh api repos/gfsaaser24/BetterLET/releases --paginate --jq '[.[] | {tag: .tag_name, date: .published_at, body: .body}]' > releases.json` first, so the fallback stays current.
+
 ## Page reads
 
 Every read of another page goes through `politeFetch` (content.js and popovers.js). A 429 or 503, or LowEndSpirit bouncing a request to `/categories`, stops all background reads for 10 minutes (`letBetter.backoff`). A click on Load next page still loads. LowEndSpirit allows fewer requests than LowEndTalk: start dates load one at a time with a 1.5s gap, and the finder auto-loads at most 2 pages. Test against the live forums sparingly; the test browser shares the user's IP.
