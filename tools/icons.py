@@ -29,6 +29,7 @@ ICONS = {
     '.SpSignatures': ('signature', 'regular'),
     '.SpQuote': ('quotes', 'regular'),
     '.SpMessage': ('paper-plane-tilt', 'regular'),
+    '.SpNewMessage': ('note-pencil', 'regular'),
     '.bl-gear-icon': ('gear-six', 'regular'),
     '.bl-menu button[aria-checked="true"]::after': ('check', 'bold'),
     '.ReactQuote': ('quotes', 'regular'),
@@ -38,7 +39,7 @@ ICONS = {
     '.bl-go': ('arrow-right', 'bold'),
     'a.Bookmark': ('bookmark-simple', 'regular'),
     'a.Bookmark.Bookmarked, html.bl-on .Bookmarked a.Bookmark': ('bookmark-simple', 'fill'),
-    '.SiteSearch input[type="submit"]': ('magnifying-glass', 'regular'),
+    ':is(.SiteSearch, .SearchBox) input[type="submit"]': ('magnifying-glass', 'regular'),
 }
 
 

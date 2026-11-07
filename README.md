@@ -31,9 +31,11 @@
 - **Your own block list:** hide someone's threads, comments, messages, and quotes of them, from their profile, hover card, or post
 - **Fits every screen:** wide monitors, older laptops, and phones
 - **Respects the ads:** ads always show, and nothing conflicts with your own ad blocker
-- **One-click updates:** alerts, a built-in changelog, and every file checked before install
+- **One-click updates:** alerts, a built-in changelog, and every file checked before install (Chromium). In Firefox Developer Edition, Nightly and ESR, Firefox installs updates itself.
 
 ## Install
+
+### Chrome, Edge, Brave and other Chromium browsers
 
 1. Download the latest zip from [Releases](https://github.com/gfsaaser24/BetterLET/releases) and unzip it.
 2. Move the folder somewhere it can stay, such as `Documents\BetterLET`. Keep it there. Chrome runs the extension from this folder.
@@ -65,6 +67,8 @@ Firefox removes temporary add-ons when it restarts, so you load it again after e
 ## Updates
 
 BetterLET checks for a new version every 6 hours. When one is out, you see it in the toolbar menu, in the gear, and in a bar on the forum.
+
+In Firefox, updates work as described under [Firefox](#firefox) above. The steps below are for Chromium browsers.
 
 ### One-time setup
 
