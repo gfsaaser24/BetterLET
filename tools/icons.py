@@ -39,7 +39,7 @@ ICONS = {
     '.bl-go': ('arrow-right', 'bold'),
     'a.Bookmark': ('bookmark-simple', 'regular'),
     'a.Bookmark.Bookmarked, html.bl-on .Bookmarked a.Bookmark': ('bookmark-simple', 'fill'),
-    '.SiteSearch input[type="submit"]': ('magnifying-glass', 'regular'),
+    ':is(.SiteSearch, .SearchBox) input[type="submit"]': ('magnifying-glass', 'regular'),
 }
 
 
