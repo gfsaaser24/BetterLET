@@ -1,7 +1,7 @@
 (async () => {
   const $ = (id) => document.getElementById(id);
   const current = chrome.runtime.getManifest().version;
-  // Firefox has no folder picker, so it updates by hand from the zip.
+  // Firefox has no folder picker. An installed .xpi updates itself through update_url; a temporary add-on updates by hand.
   const canPick = 'showDirectoryPicker' in window;
   const query = new URLSearchParams(location.search);
   const say = (text, bad = false) => {
@@ -71,7 +71,9 @@
         ? `From github.com/${BLUpdater.REPO}, tag ${latest.tag}. Every file is checked before it is installed.`
         : `From github.com/${BLUpdater.REPO}, tag ${latest.tag}.`;
       $('zip').hidden = false;
-      $('zip').href = `https://github.com/${BLUpdater.REPO}/archive/refs/tags/${latest.tag}.zip`;
+      $('zip').href = canPick
+        ? `https://github.com/${BLUpdater.REPO}/archive/refs/tags/${latest.tag}.zip`
+        : `https://github.com/${BLUpdater.REPO}/releases/download/${latest.tag}/betterlet-${latest.version}.xpi`;
     }
     return latest;
   };
