@@ -29,6 +29,7 @@ ICONS = {
     '.SpSignatures': ('signature', 'regular'),
     '.SpQuote': ('quotes', 'regular'),
     '.SpMessage': ('paper-plane-tilt', 'regular'),
+    '.SpNewMessage': ('note-pencil', 'regular'),
     '.bl-gear-icon': ('gear-six', 'regular'),
     '.bl-menu button[aria-checked="true"]::after': ('check', 'bold'),
     '.ReactQuote': ('quotes', 'regular'),
