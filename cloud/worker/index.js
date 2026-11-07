@@ -2,6 +2,7 @@
 // One way only: the public routes are read-only, and the webhook is signed, and files are only ever listed from the release itself.
 const REPO = 'gfsaaser24/BetterLET';
 const KEEP = 30;
+const GECKO_ID = 'betterlet@betterle.win';
 const JSON_HEADERS = {
   'content-type': 'application/json; charset=utf-8',
   'access-control-allow-origin': '*',
@@ -80,6 +81,24 @@ export default {
     if (request.method === 'GET' && pathname === '/latest') {
       const latest = await env.UPDATES.get('latest', 'json');
       return latest ? reply(latest) : reply({ error: 'no release yet' }, 404);
+    }
+    // Firefox reads this through browser_specific_settings.gecko.update_url and installs any higher version.
+    if (request.method === 'GET' && pathname === '/firefox/updates.json') {
+      const latest = await env.UPDATES.get('latest', 'json');
+      const updates = latest ? [{ version: latest.version, update_link: `${new URL(request.url).origin}/firefox/betterlet-${latest.version}.xpi` }] : [];
+      return reply({ addons: { [GECKO_ID]: { updates } } });
+    }
+    // The package from the GitHub release, sent with the type Firefox expects for an add-on.
+    const xpi = pathname.match(/^\/firefox\/betterlet-(\d+(?:\.\d+)*)\.xpi$/);
+    if (request.method === 'GET' && xpi) {
+      const res = await github(`https://github.com/${REPO}/releases/download/v${xpi[1]}/betterlet-${xpi[1]}.xpi`);
+      if (!res.ok) return reply({ error: 'no Firefox package for that version' }, 404);
+      return new Response(res.body, { headers: {
+        'content-type': 'application/x-xpinstall',
+        'content-disposition': `attachment; filename="betterlet-${xpi[1]}.xpi"`,
+        'cache-control': 'public, max-age=3600',
+        'x-content-type-options': 'nosniff',
+      } });
     }
     if (request.method === 'GET' && pathname === '/releases') {
       return reply((await env.UPDATES.get('releases', 'json')) || []);

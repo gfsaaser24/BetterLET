@@ -28,6 +28,15 @@ jobs:
           files=$(ls manifest.json background.js content.js early.js popovers.js popup.html popup.js update.html update.js updater.js ext.css styles.css rules.json block.js icons/*.png)
           sha256sum $files | jq -R 'split("  ") | {sha256: .[0], path: .[1]}' | jq -s --arg v "$(jq -r .version manifest.json)" '{version: $v, files: .}' > release.json
           jq -e '.files | length > 10' release.json
+      # Firefox package: the same files, zipped with manifest.json at the root. Firefox Developer Edition,
+      # Nightly and ESR install it unsigned; the update Worker serves it to them as an update.
+      - name: Build Firefox package
+        if: steps.seen.outputs.skip != 'true'
+        run: |
+          v=$(jq -r .version manifest.json)
+          zip -X -q "betterlet-$v.xpi" $(jq -r '.files[].path' release.json)
+          unzip -l "betterlet-$v.xpi" | grep -q ' manifest.json$'
+          echo "xpi=betterlet-$v.xpi" >> "$GITHUB_ENV"
       - name: Publish
         if: steps.seen.outputs.skip != 'true'
-        run: gh release create "${{ steps.version.outputs.tag }}" release.json --target "$GITHUB_SHA" --title "BetterLET ${{ steps.version.outputs.tag }}" --notes-file RELEASE_NOTES.md
+        run: gh release create "${{ steps.version.outputs.tag }}" release.json "$xpi" --target "$GITHUB_SHA" --title "BetterLET ${{ steps.version.outputs.tag }}" --notes-file RELEASE_NOTES.md

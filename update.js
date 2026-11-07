@@ -1,6 +1,8 @@
 (async () => {
   const $ = (id) => document.getElementById(id);
   const current = chrome.runtime.getManifest().version;
+  // Firefox has no folder picker. An installed .xpi updates itself through update_url; a temporary add-on updates by hand.
+  const canPick = 'showDirectoryPicker' in window;
   const query = new URLSearchParams(location.search);
   const say = (text, bad = false) => {
     $('status').textContent = text;
@@ -53,17 +55,25 @@
     const dir = await savedFolder();
     const waiting = latest && BLUpdater.newer(latest.version, current);
     $('title').textContent = `BetterLET ${current}`;
-    $('folder').hidden = Boolean(dir);
+    $('folder').hidden = Boolean(dir) || !canPick;
+    $('install').hidden = !canPick;
+    $('manual').hidden = canPick;
     $('update').hidden = !waiting;
     if (query.has('done')) $('intro').textContent = 'Update installed. Refresh any open LowEndTalk or LowEndSpirit tabs to use it.';
-    else if (query.has('welcome')) $('intro').textContent = 'Welcome. Connect your folder once, and updates install with one click.';
+    else if (query.has('welcome')) $('intro').textContent = canPick
+      ? 'Welcome. Connect your folder once, and updates install with one click.'
+      : 'Welcome. When a new version is out, BetterLET tells you here.';
     else if (!waiting) $('intro').textContent = latest ? 'You have the latest version.' : 'No release has been published yet.';
     else $('intro').textContent = '';
     if (waiting) {
       $('update-title').textContent = `Version ${latest.version} is ready`;
-      $('update-source').textContent = `From github.com/${BLUpdater.REPO}, tag ${latest.tag}. Every file is checked before it is installed.`;
+      $('update-source').textContent = canPick
+        ? `From github.com/${BLUpdater.REPO}, tag ${latest.tag}. Every file is checked before it is installed.`
+        : `From github.com/${BLUpdater.REPO}, tag ${latest.tag}.`;
       $('zip').hidden = false;
-      $('zip').href = `https://github.com/${BLUpdater.REPO}/archive/refs/tags/${latest.tag}.zip`;
+      $('zip').href = canPick
+        ? `https://github.com/${BLUpdater.REPO}/archive/refs/tags/${latest.tag}.zip`
+        : `https://github.com/${BLUpdater.REPO}/releases/download/${latest.tag}/betterlet-${latest.version}.xpi`;
     }
     return latest;
   };

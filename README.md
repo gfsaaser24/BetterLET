@@ -6,8 +6,8 @@
 
 <p align="center">
   <strong>LowEndTalk and LowEndSpirit, rebuilt in your browser.</strong><br>
-  A Chrome extension that gives both forums a real layout, real scanning, and two real themes.<br><br>
-  Works in all chromium based browsers.
+  A browser extension that gives both forums a real layout, real scanning, and two real themes.<br><br>
+  Works in Chromium based browsers and Firefox.
 </p>
 
 <p align="center">
@@ -40,6 +40,27 @@
 3. Open `chrome://extensions` and turn on **Developer mode**. Leave it on.
 4. Click **Load unpacked** and pick the folder with `manifest.json`.
 5. Open [LowEndTalk](https://lowendtalk.com/categories/requests) or [LowEndSpirit](https://lowendspirit.com/discussions).
+
+### Firefox
+
+BetterLET needs Firefox 142 or newer. Mozilla has not signed it, so how it installs depends on your Firefox.
+
+**Firefox Developer Edition, Nightly or ESR: installs for good, and updates itself**
+
+1. Open `about:config`, search for `xpinstall.signatures.required`, and set it to `false`. Only these three versions of Firefox allow this.
+2. Download `betterlet-<version>.xpi` from the latest [release](https://github.com/gfsaaser24/BetterLET/releases/latest).
+3. Open `about:addons`, click the gear, choose **Install Add-on From File**, and pick the `.xpi`.
+4. Open [LowEndTalk](https://lowendtalk.com/categories/requests) or [LowEndSpirit](https://lowendspirit.com/discussions).
+
+Firefox checks for new versions by itself and installs them. You can also check now from `about:addons`: gear, **Check for Updates**.
+
+**Regular Firefox: until the next restart**
+
+1. Download the `.xpi` from the latest [release](https://github.com/gfsaaser24/BetterLET/releases/latest).
+2. Open `about:debugging#/runtime/this-firefox` and click **Load Temporary Add-on**.
+3. Pick the `.xpi`.
+
+Firefox removes temporary add-ons when it restarts, so you load it again after each restart. To update, load the new `.xpi` the same way.
 
 ## Updates
 
